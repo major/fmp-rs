@@ -4,16 +4,18 @@ use crate::client::FmpClient;
 use crate::endpoint::{
     ANALYST_ESTIMATES, BALANCE_SHEET_STATEMENT, BALANCE_SHEET_STATEMENT_GROWTH,
     CASH_FLOW_STATEMENT, CASH_FLOW_STATEMENT_GROWTH, DIVIDENDS, EARNINGS_CALENDAR,
-    ENTERPRISE_VALUES, FINANCIAL_SCORES, HISTORICAL_PRICE_EOD_FULL, INCOME_STATEMENT,
-    INCOME_STATEMENT_AS_REPORTED, INCOME_STATEMENT_GROWTH, KEY_EXECUTIVES, KEY_METRICS, PROFILE,
-    QUOTE, RATIOS, SEARCH_SYMBOL, SEC_FILINGS_SEARCH_SYMBOL, SPLITS, STOCK_NEWS, STOCK_PEERS,
-    STOCK_PRICE_CHANGE, TECHNICAL_SMA, TREASURY_RATES,
+    ENTERPRISE_VALUES, FINANCIAL_REPORTS_DATES, FINANCIAL_SCORES, GRADES_CONSENSUS,
+    HISTORICAL_PRICE_EOD_FULL, INCOME_STATEMENT, INCOME_STATEMENT_AS_REPORTED,
+    INCOME_STATEMENT_GROWTH, KEY_EXECUTIVES, KEY_METRICS, PRICE_TARGET_CONSENSUS,
+    PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATIOS, SEARCH_SYMBOL, SEC_FILINGS_SEARCH_SYMBOL,
+    SHARES_FLOAT, SPLITS, STOCK_NEWS, STOCK_PEERS, STOCK_PRICE_CHANGE, TECHNICAL_SMA,
+    TREASURY_RATES,
 };
 use crate::error::{Error, Result};
 
 use super::args::{
-    CalendarCommand, Command, CompanyCommand, FilingsCommand, FundamentalsCommand, MarketCommand,
-    NewsArgs, NewsCommand, RatesCommand, TechnicalCommand,
+    AnalystCommand, CalendarCommand, Command, CompanyCommand, FilingsCommand, FundamentalsCommand,
+    MarketCommand, NewsArgs, NewsCommand, RatesCommand, TechnicalCommand,
 };
 use super::dispatch::{
     run_annual, run_by_date_range, run_by_symbol, run_by_symbol_date_range, run_news, run_query,
@@ -27,6 +29,7 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
         Command::Company(command) => execute_company(client, command).await,
         Command::Market(command) => execute_market(client, command).await,
         Command::Fundamentals(command) => execute_fundamentals(client, command).await,
+        Command::Analyst(command) => execute_analyst(client, command).await,
         Command::Calendar(command) => execute_calendar(client, command).await,
         Command::Rates(command) => execute_rates(client, command).await,
         Command::Technical(command) => execute_technical(client, command).await,
@@ -139,6 +142,8 @@ async fn execute_company(client: &FmpClient, command: &CompanyCommand) -> Result
         CompanyCommand::FinancialScores(args) => {
             run_by_symbol(client, FINANCIAL_SCORES, &args.symbol).await
         }
+        CompanyCommand::ShareFloat(args) => run_by_symbol(client, SHARES_FLOAT, &args.symbol).await,
+        CompanyCommand::Rating(args) => run_by_symbol(client, GRADES_CONSENSUS, &args.symbol).await,
     }
 }
 
@@ -212,6 +217,20 @@ async fn execute_fundamentals(
         }
         FundamentalsCommand::AnalystEstimates(args) => {
             run_annual(client, ANALYST_ESTIMATES, &args.symbol, args.limit).await
+        }
+        FundamentalsCommand::ReportDates(args) => {
+            run_by_symbol(client, FINANCIAL_REPORTS_DATES, &args.symbol).await
+        }
+    }
+}
+
+async fn execute_analyst(client: &FmpClient, command: &AnalystCommand) -> Result<CommandPayload> {
+    match command {
+        AnalystCommand::PriceTargetConsensus(args) => {
+            run_by_symbol(client, PRICE_TARGET_CONSENSUS, &args.symbol).await
+        }
+        AnalystCommand::PriceTargetSummary(args) => {
+            run_by_symbol(client, PRICE_TARGET_SUMMARY, &args.symbol).await
         }
     }
 }

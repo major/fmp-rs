@@ -42,6 +42,10 @@ pub enum Command {
     #[command(subcommand)]
     Fundamentals(FundamentalsCommand),
 
+    /// Analyst price target endpoints.
+    #[command(subcommand)]
+    Analyst(AnalystCommand),
+
     /// Date-based market calendars.
     #[command(subcommand)]
     Calendar(CalendarCommand),
@@ -187,6 +191,12 @@ pub enum CompanyCommand {
 
     /// Get financial scores for a symbol.
     FinancialScores(SymbolArgs),
+
+    /// Get share float data for a symbol.
+    ShareFloat(SymbolArgs),
+
+    /// Get analyst rating consensus for a symbol.
+    Rating(SymbolArgs),
 }
 
 /// Market data commands.
@@ -246,6 +256,19 @@ pub enum FundamentalsCommand {
 
     /// Get annual analyst estimates for a symbol.
     AnalystEstimates(AnnualArgs),
+
+    /// Get available financial report dates for a symbol.
+    ReportDates(SymbolArgs),
+}
+
+/// Analyst-focused commands.
+#[derive(Debug, Subcommand)]
+pub enum AnalystCommand {
+    /// Get price target consensus for a symbol.
+    PriceTargetConsensus(SymbolArgs),
+
+    /// Get price target summary for a symbol.
+    PriceTargetSummary(SymbolArgs),
 }
 
 /// Calendar commands.

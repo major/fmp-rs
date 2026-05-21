@@ -59,6 +59,10 @@ pub const TREASURY_RATES: Endpoint = Endpoint::new("treasury-rates");
 pub const TECHNICAL_SMA: Endpoint = Endpoint::new("technical-indicators/sma");
 /// Stock price change endpoint.
 pub const STOCK_PRICE_CHANGE: Endpoint = Endpoint::new("stock-price-change");
+/// Shares float endpoint.
+pub const SHARES_FLOAT: Endpoint = Endpoint::new("shares-float");
+/// Financial report dates endpoint.
+pub const FINANCIAL_REPORTS_DATES: Endpoint = Endpoint::new("financial-reports-dates");
 /// Annual income statement endpoint.
 pub const INCOME_STATEMENT: Endpoint = Endpoint::new("income-statement");
 /// Annual income statement as reported endpoint.
@@ -84,5 +88,11 @@ pub const ENTERPRISE_VALUES: Endpoint = Endpoint::new("enterprise-values");
 pub const FINANCIAL_SCORES: Endpoint = Endpoint::new("financial-scores");
 /// Annual analyst estimates endpoint.
 pub const ANALYST_ESTIMATES: Endpoint = Endpoint::new("analyst-estimates");
+/// Price target consensus endpoint.
+pub const PRICE_TARGET_CONSENSUS: Endpoint = Endpoint::new("price-target-consensus");
+/// Price target summary endpoint.
+pub const PRICE_TARGET_SUMMARY: Endpoint = Endpoint::new("price-target-summary");
+/// Analyst grades consensus endpoint.
+pub const GRADES_CONSENSUS: Endpoint = Endpoint::new("grades-consensus");
 /// Stock news endpoint.
 pub const STOCK_NEWS: Endpoint = Endpoint::new("news/stock");
