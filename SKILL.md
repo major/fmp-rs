@@ -15,7 +15,9 @@ Global options:
 - `-h`, `--help`: print help.
 - `-V`, `--version`: print version.
 
-Output is compact JSON on one line. Normal output goes to stdout. Errors are JSON on stderr. The CLI does not provide output formatting or filtering options.
+Running `fmp-agent` without a command prints this generic help text.
+
+Command responses are compact JSON on one line. Normal command output goes to stdout, and runtime errors are JSON on stderr. Help and version output are human-readable text. The CLI does not provide output formatting or filtering options.
 
 ## Commands
 
