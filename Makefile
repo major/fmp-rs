@@ -1,4 +1,4 @@
-.PHONY: audit check clean clippy coverage doc fmt fmt-fix patch-coverage test
+.PHONY: audit check clean clippy coverage doc fmt fmt-fix machete patch-coverage test
 
 CLIPPY_FLAGS := -D warnings
 RUSTDOCFLAGS := -D rustdoc::broken-intra-doc-links -D rustdoc::private-intra-doc-links
@@ -35,6 +35,9 @@ patch-coverage:
 
 audit:
 	cargo audit
+
+machete:
+	cargo machete
 
 clean:
 	cargo clean

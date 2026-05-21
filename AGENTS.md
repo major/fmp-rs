@@ -28,6 +28,7 @@ Keep `AGENTS.md`, `README.md`, and `SKILL.md` updated with code changes. Stale d
 - Coverage: `make coverage` runs `cargo llvm-cov --workspace --all-features --fail-under-lines 90`.
 - Patch coverage: `make patch-coverage` generates `lcov.info` and runs `diff-cover` against `PATCH_COVERAGE_BASE ?= main` with `PATCH_COVERAGE_FAIL_UNDER ?= 100`. Use `DIFF_COVER='uvx diff-cover'` when the standalone command is not installed.
 - Audit: `make audit` runs `cargo audit`.
+- Unused dependencies: `make machete` runs `cargo machete` (install with `cargo install cargo-machete --locked`).
 - Local CLI smoke test after building: `FMP_API_KEY=<key> cargo run -- market quote AAPL` or `target/debug/fmp-agent market quote AAPL`; never commit `.env`.
 
 ## Automation
@@ -35,6 +36,8 @@ Keep `AGENTS.md`, `README.md`, and `SKILL.md` updated with code changes. Stale d
 - GitHub CI lives in `.github/workflows/ci.yml` and mirrors `make check` across supported feature shapes. Keep the default CLI build and library-only `--no-default-features` checks green.
 - Codecov uses `codecov.yml` for 90 percent project coverage and 100 percent patch coverage. The CI coverage job uploads `lcov.info` only when `CODECOV_TOKEN` is available.
 - Security audit lives in `.github/workflows/audit.yml` and runs on `Cargo.toml`/`Cargo.lock` changes plus a daily schedule.
+- Unused-dependency check runs as the `machete` job in `.github/workflows/ci.yml` via `cargo machete`.
+- `Cargo.toml` has a `[lints.rust]` table that denies the `unused` lint group declaratively, so `cargo build` and `cargo check` also reject unused imports, unused variables, and dead code without needing `-D warnings`. Per-item `#[allow(...)]` still works because the group is set with `priority = -1`.
 - Release automation uses `release-plz.toml`, `cliff.toml`, `dist-workspace.toml`, `.github/workflows/cd.yml`, and `.github/workflows/release.yml`.
 - CodeRabbit uses `.coderabbit.yaml`. Keep its path instructions aligned with this repo's JSON CLI, library-only feature support, and endpoint inventory rules.
 - `rust-toolchain.toml` pins Rust 1.95 for local consistency with the MSRV workflow.
