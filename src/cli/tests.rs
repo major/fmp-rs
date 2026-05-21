@@ -144,6 +144,98 @@ fn parses_grouped_news_command() {
 }
 
 #[test]
+fn parses_new_symbol_commands() {
+    let cases = [
+        (
+            [
+                "fmp",
+                "--api-key",
+                "test-key",
+                "company",
+                "share-float",
+                "AAPL",
+            ],
+            "company share-float",
+        ),
+        (
+            ["fmp", "--api-key", "test-key", "company", "rating", "AAPL"],
+            "company rating",
+        ),
+        (
+            [
+                "fmp",
+                "--api-key",
+                "test-key",
+                "fundamentals",
+                "report-dates",
+                "AAPL",
+            ],
+            "fundamentals report-dates",
+        ),
+        (
+            [
+                "fmp",
+                "--api-key",
+                "test-key",
+                "analyst",
+                "price-target-consensus",
+                "AAPL",
+            ],
+            "analyst price-target-consensus",
+        ),
+        (
+            [
+                "fmp",
+                "--api-key",
+                "test-key",
+                "analyst",
+                "price-target-summary",
+                "AAPL",
+            ],
+            "analyst price-target-summary",
+        ),
+    ];
+
+    for (args, expected) in cases {
+        let cli = Cli::parse_from(args);
+
+        match expected {
+            "company share-float" => {
+                assert!(matches!(
+                    cli.command,
+                    Command::Company(CompanyCommand::ShareFloat(_))
+                ));
+            }
+            "company rating" => {
+                assert!(matches!(
+                    cli.command,
+                    Command::Company(CompanyCommand::Rating(_))
+                ));
+            }
+            "fundamentals report-dates" => {
+                assert!(matches!(
+                    cli.command,
+                    Command::Fundamentals(FundamentalsCommand::ReportDates(_))
+                ));
+            }
+            "analyst price-target-consensus" => {
+                assert!(matches!(
+                    cli.command,
+                    Command::Analyst(AnalystCommand::PriceTargetConsensus(_))
+                ));
+            }
+            "analyst price-target-summary" => {
+                assert!(matches!(
+                    cli.command,
+                    Command::Analyst(AnalystCommand::PriceTargetSummary(_))
+                ));
+            }
+            _ => unreachable!(),
+        }
+    }
+}
+
+#[test]
 fn parses_legacy_news_alias() {
     let cli = Cli::parse_from([
         "fmp",
@@ -256,6 +348,26 @@ async fn execute_symbol_commands_use_endpoint_descriptors() {
         (
             "financial-scores",
             Command::Company(CompanyCommand::FinancialScores(symbol("AAPL"))),
+        ),
+        (
+            "shares-float",
+            Command::Company(CompanyCommand::ShareFloat(symbol("AAPL"))),
+        ),
+        (
+            "grades-consensus",
+            Command::Company(CompanyCommand::Rating(symbol("AAPL"))),
+        ),
+        (
+            "financial-reports-dates",
+            Command::Fundamentals(FundamentalsCommand::ReportDates(symbol("AAPL"))),
+        ),
+        (
+            "price-target-consensus",
+            Command::Analyst(AnalystCommand::PriceTargetConsensus(symbol("AAPL"))),
+        ),
+        (
+            "price-target-summary",
+            Command::Analyst(AnalystCommand::PriceTargetSummary(symbol("AAPL"))),
         ),
     ];
     let mut mocks = Vec::new();

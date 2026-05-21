@@ -37,9 +37,11 @@ fmp-agent company executives <SYMBOL>
 fmp-agent company peers <SYMBOL>
 fmp-agent company stats <SYMBOL>
 fmp-agent company financial-scores <SYMBOL>
+fmp-agent company share-float <SYMBOL>
+fmp-agent company rating <SYMBOL>
 ```
 
-Company commands cover profile/reference data, key executives, peer companies, profile-backed key statistics, and financial scores.
+Company commands cover profile/reference data, key executives, peer companies, profile-backed key statistics, financial scores, share float, and rating consensus.
 
 ### Market
 
@@ -68,9 +70,19 @@ fmp-agent fundamentals balance-sheet-growth <SYMBOL> [--limit <LIMIT>]
 fmp-agent fundamentals cash-flow-growth <SYMBOL> [--limit <LIMIT>]
 fmp-agent fundamentals enterprise-values <SYMBOL> [--limit <LIMIT>]
 fmp-agent fundamentals analyst-estimates <SYMBOL> [--limit <LIMIT>]
+fmp-agent fundamentals report-dates <SYMBOL>
 ```
 
-Fundamentals commands return annual statement, ratio, metric, growth, enterprise value, and analyst estimate rows. `--limit` sets the maximum annual rows returned.
+Fundamentals commands return annual statement, ratio, metric, growth, enterprise value, analyst estimate, and financial report date rows. `--limit` sets the maximum annual rows returned for statement-like endpoints.
+
+### Analyst
+
+```bash
+fmp-agent analyst price-target-consensus <SYMBOL>
+fmp-agent analyst price-target-summary <SYMBOL>
+```
+
+Analyst commands cover price target consensus and summary data for a symbol.
 
 ### Calendar, rates, technicals, filings, and news
 
@@ -109,7 +121,12 @@ fmp-agent fundamentals balance-sheet-growth AAPL --limit 5
 fmp-agent fundamentals cash-flow-growth AAPL --limit 5
 fmp-agent fundamentals enterprise-values AAPL --limit 5
 fmp-agent company financial-scores AAPL
+fmp-agent company share-float AAPL
+fmp-agent company rating AAPL
 fmp-agent fundamentals analyst-estimates AAPL --limit 5
+fmp-agent fundamentals report-dates AAPL
+fmp-agent analyst price-target-consensus AAPL
+fmp-agent analyst price-target-summary AAPL
 fmp-agent news stock AAPL --limit 10
 ```
 

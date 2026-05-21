@@ -54,6 +54,11 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Enterprise value | `enterprise-values?symbol=AAPL&period=annual&limit=5` | confirmed | Array with `stockPrice`, `numberOfShares`, `marketCapitalization`, `enterpriseValue`. |
 | SEC filings by symbol | `sec-filings-search/symbol?symbol=AAPL&from=2024-01-01&to=2024-03-01` | confirmed | Array with `symbol`, `cik`, `filingDate`, `acceptedDate`, `formType`, `link`, `finalLink`. |
 | Analyst estimates | `analyst-estimates?symbol=AAPL&period=annual&limit=5` | confirmed | Array with estimate ranges and averages such as `revenueLow`, `revenueHigh`, `revenueAvg`. |
+| Price target consensus | `price-target-consensus?symbol=AAPL` | confirmed | Array with `symbol`, `targetHigh`, `targetLow`, `targetMedian`, and `targetConsensus`. |
+| Price target summary | `price-target-summary?symbol=AAPL` | confirmed | Array with price target averages and counts for recent periods plus publisher data. |
+| Analyst grades consensus | `grades-consensus?symbol=AAPL` | confirmed | Array with `strongBuy`, `buy`, `hold`, `sell`, `strongSell`, and `consensus`. |
+| Shares float | `shares-float?symbol=AAPL` | confirmed | Array with `symbol`, `date`, `freeFloat`, `floatShares`, `outstandingShares`, and `source`. |
+| Financial report dates | `financial-reports-dates?symbol=AAPL` | confirmed | Array with report metadata such as `symbol`, `fiscalYear`, `period`, and JSON/report links. |
 | Stock peers | `stock-peers?symbol=AAPL` | confirmed | Array with peer `symbol`, `companyName`, `price`, `mktCap`. |
 | Historical dividends | `dividends?symbol=AAPL` | confirmed | Array with `date`, `recordDate`, `paymentDate`, `adjDividend`, `dividend`, `yield`. |
 | Historical splits | `splits?symbol=AAPL` | confirmed | Array with `date`, `numerator`, `denominator`, `splitType`. |
@@ -83,7 +88,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Company/reference | [Company outlook](https://site.financialmodelingprep.com/developer/docs/company-outlook-api) | inferred | high | Aggregated endpoint, confirm exact Starter behavior. |
 | Company/reference | [Stock peers](https://site.financialmodelingprep.com/developer/docs/stock-peers-api) | confirmed | medium | Tested `stock-peers?symbol=AAPL`; implemented as `company peers`. |
 | Company/reference | [Symbol lookup](https://site.financialmodelingprep.com/developer/docs/stock-ticker-symbol-lookup-api) | confirmed | high | Tested `search-symbol?query=AAPL`; needed for search/discovery commands. |
-| Company/reference | [Historical share float](https://site.financialmodelingprep.com/developer/docs/company-historical-share-float) | inferred | medium | Historical depth likely capped at 5 years. |
+| Company/reference | [Historical share float](https://site.financialmodelingprep.com/developer/docs/company-historical-share-float) | confirmed | medium | Tested `shares-float?symbol=AAPL`; implemented as `company share-float`. Historical depth likely capped at 5 years. |
 | Company/reference | [All countries](https://site.financialmodelingprep.com/developer/docs/all-countries-company-information) | excluded | low | Non-US/global coverage is not Starter-safe. |
 | Company/reference | [Euronext prices](https://site.financialmodelingprep.com/developer/docs/euronext-prices-api) | excluded | low | Non-US/global coverage is not Starter-safe. |
 | Quote/market | [Stock market quote](https://site.financialmodelingprep.com/developer/docs/stock-market-quote-free-api) | confirmed | high | Tested `quote?symbol=AAPL`. |
@@ -100,7 +105,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Fundamentals/statements | [Balance sheet](https://site.financialmodelingprep.com/developer/docs/balance-sheet-statements-financial-statements) | confirmed | high | Tested `balance-sheet-statement?symbol=AAPL&period=annual&limit=5`. |
 | Fundamentals/statements | [Cash flow](https://site.financialmodelingprep.com/developer/docs/cashflow-statements-financial-statements) | confirmed | high | Tested `cash-flow-statement?symbol=AAPL&period=annual&limit=5`. |
 | Fundamentals/statements | [Income statement as reported](https://site.financialmodelingprep.com/developer/docs/financial-statement-as-reported-api) | confirmed | medium | Tested `income-statement-as-reported?symbol=AAPL&period=annual&limit=5`; implemented as `fundamentals income-statement-as-reported`. |
-| Fundamentals/statements | [Financial report dates](https://site.financialmodelingprep.com/developer/docs/financial-reports-dates) | inferred | medium | Useful supporting endpoint. |
+| Fundamentals/statements | [Financial report dates](https://site.financialmodelingprep.com/developer/docs/financial-reports-dates) | confirmed | medium | Tested `financial-reports-dates?symbol=AAPL`; implemented as `fundamentals report-dates`. |
 | Fundamentals/statements | [Annual report form](https://site.financialmodelingprep.com/developer/docs/annual-report-form-api) | inferred | medium | Confirm entitlement and document/download shape. |
 | Ratios/metrics/growth | [Key metrics](https://site.financialmodelingprep.com/developer/docs/company-key-metrics-api) | confirmed | high | Tested `key-metrics?symbol=AAPL&period=annual&limit=5`. |
 | Ratios/metrics/growth | [Financial ratios](https://site.financialmodelingprep.com/developer/docs/financial-ratio-free-api) | confirmed | high | Tested `ratios?symbol=AAPL&period=annual&limit=5`. |
@@ -162,10 +167,10 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Analyst/ratings/price targets | [Analyst estimates](https://site.financialmodelingprep.com/developer/docs/analyst-estimates-api) | confirmed | medium | Tested `analyst-estimates?symbol=AAPL&period=annual&limit=5`. |
 | Analyst/ratings/price targets | [Analyst recommendations](https://site.financialmodelingprep.com/developer/docs/analyst-stock-recommendations-api) | inferred | medium | Verify before exposing. |
 | Analyst/ratings/price targets | [Price target](https://site.financialmodelingprep.com/developer/docs/price-target-api) | inferred | medium | Verify before exposing. |
-| Analyst/ratings/price targets | [Price target summary](https://site.financialmodelingprep.com/developer/docs/price-target-summary-api) | inferred | medium | Verify before exposing. |
-| Analyst/ratings/price targets | [Price target consensus](https://site.financialmodelingprep.com/developer/docs/price-target-consensus-api) | inferred | medium | Verify before exposing. |
+| Analyst/ratings/price targets | [Price target summary](https://site.financialmodelingprep.com/developer/docs/price-target-summary-api) | confirmed | medium | Tested `price-target-summary?symbol=AAPL`; implemented as `analyst price-target-summary`. |
+| Analyst/ratings/price targets | [Price target consensus](https://site.financialmodelingprep.com/developer/docs/price-target-consensus-api) | confirmed | medium | Tested `price-target-consensus?symbol=AAPL`; implemented as `analyst price-target-consensus`. |
 | Analyst/ratings/price targets | [Upgrades and downgrades](https://site.financialmodelingprep.com/developer/docs/upgrades-and-downgrades-api) | inferred | medium | Verify before exposing. |
-| Analyst/ratings/price targets | [Company rating](https://site.financialmodelingprep.com/developer/docs/companies-rating-free-api) | inferred | medium | Verify before exposing. |
+| Analyst/ratings/price targets | [Company rating](https://site.financialmodelingprep.com/developer/docs/companies-rating-free-api) | confirmed | medium | Tested `grades-consensus?symbol=AAPL`; implemented as `company rating`. |
 | Analyst/ratings/price targets | [Historical rating](https://site.financialmodelingprep.com/developer/docs/historical-rating-company-information) | inferred | low | Verify before exposing. |
 | Technicals | [Intraday SMA](https://site.financialmodelingprep.com/developer/docs/technical-intraday-sma) | confirmed | low | Tested daily `technical-indicators/sma?symbol=AAPL&periodLength=10&timeframe=1day`; implemented as `technical sma`; intraday access still needs testing. |
 | Technicals | [Intraday EMA](https://site.financialmodelingprep.com/developer/docs/technical-intraday-ema) | excluded | low | Technical indicators are excluded by pricing. |

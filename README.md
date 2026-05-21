@@ -22,7 +22,7 @@ FMP_API_KEY=your-key cargo run -- market quote AAPL
 
 ## Commands
 
-See [`SKILL.md`](SKILL.md) for the full command reference and examples. Commands are grouped by domain, including `company`, `market`, `fundamentals`, `calendar`, `rates`, `technical`, `filings`, and `news`. Legacy flat commands still parse for compatibility, but new usage should prefer the grouped form.
+See [`SKILL.md`](SKILL.md) for the full command reference and examples. Commands are grouped by domain, including `company`, `market`, `fundamentals`, `analyst`, `calendar`, `rates`, `technical`, `filings`, and `news`. Legacy flat commands still parse for compatibility, but new usage should prefer the grouped form.
 
 In the repo, use `cargo run -- <GROUP> <COMMAND>` with the same arguments before installing or after cleaning the build. After `cargo build`, run the built binary as `target/debug/fmp-agent`, for example `target/debug/fmp-agent market quote AAPL`.
 
