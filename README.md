@@ -46,9 +46,12 @@ make check
 make coverage
 make patch-coverage
 make audit
+make machete
 ```
 
 `make check` runs formatting, clippy, tests, and docs for the supported feature shapes: the default CLI build and the library-only `--no-default-features` build. The GitHub CI workflow mirrors those checks across Linux, macOS, and Windows, with an MSRV job pinned to Rust 1.95.
+
+`make machete` runs [`cargo machete`](https://github.com/bnjbvr/cargo-machete) to catch unused entries in `Cargo.toml`. Install it once with `cargo install cargo-machete --locked`. The same check runs as the `machete` job in CI. The `[lints.rust]` table in `Cargo.toml` separately denies the `unused` lint group so dead code and unused imports fail `cargo build` even without the `-D warnings` flag.
 
 `make coverage` enforces 90 percent line coverage with `cargo llvm-cov`. `make patch-coverage` generates `lcov.info` and checks changed-line coverage against `main` with `diff-cover`, matching the Codecov patch gate used for GitHub PRs. Override the comparison base with `PATCH_COVERAGE_BASE=<branch>`, lower the local threshold with `PATCH_COVERAGE_FAIL_UNDER=<percent>`, or use `DIFF_COVER='uvx diff-cover'` if `diff-cover` is not installed as a standalone command.
 
