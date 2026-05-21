@@ -24,11 +24,11 @@ Output is always compact JSON on one line for shell pipelines. The CLI does not 
 
 ## Using as a library
 
-Other Rust projects (for example an MCP server) can depend on `fmp` as an API client without pulling in the CLI by disabling default features:
+Other Rust projects (for example an MCP server) can depend on `rusty-fmp` as an API client without pulling in the CLI by disabling default features:
 
 ```toml
 [dependencies]
-fmp = { version = "0.1", default-features = false }
+rusty-fmp = { version = "0.1", default-features = false }
 ```
 
 This excludes `clap` and `dotenvy` and exposes `FmpClient`, `Endpoint`, `Error`, and `Result`. The `cli` feature (enabled by default) adds the `Cli` parser and the `run` entry point used by the `fmp-agent` binary.

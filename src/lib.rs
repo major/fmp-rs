@@ -1,4 +1,4 @@
-//! Library implementation for the `fmp` crate.
+//! Library implementation for the `rusty-fmp` crate.
 //!
 //! The HTTP client (`FmpClient`), endpoint descriptors, and error types are always available
 //! so other Rust projects (for example an MCP server) can consume the API without pulling in
@@ -8,7 +8,7 @@
 //! Library-only consumers should disable default features:
 //!
 //! ```toml
-//! fmp = { version = "0.1", default-features = false }
+//! rusty-fmp = { version = "0.1", default-features = false }
 //! ```
 
 #![deny(missing_docs)]

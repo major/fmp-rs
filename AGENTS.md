@@ -4,9 +4,9 @@ Keep `AGENTS.md`, `README.md`, and `SKILL.md` updated with code changes. Stale d
 
 ## Project shape
 
-- Rust 2024 crate package named `fmp`, MSRV 1.95 from `Cargo.toml`; it builds the CLI binary as `fmp-agent`.
+- Rust 2024 crate package named `rusty-fmp`, MSRV 1.95 from `Cargo.toml`; it builds the CLI binary as `fmp-agent`.
 - The crate has a default `cli` feature that pulls in `clap` and `dotenvy` and enables the `cli` module. Library-only consumers depend with `default-features = false` and get just `FmpClient`, `Endpoint`, `Error`, and `Result`. The `fmp-agent` binary has `required-features = ["cli"]`.
-- `src/main.rs` is intentionally thin: load `.env`, parse Clap, call `fmp::run`, render structured JSON errors to stderr.
+- `src/main.rs` is intentionally thin: load `.env`, parse Clap, call `rusty_fmp::run`, render structured JSON errors to stderr.
 - `src/lib.rs` denies missing docs. Always re-exports `FmpClient`, `Endpoint`, `Error`, `Result`. Behind the `cli` feature it also exposes the `cli` module and re-exports `Cli` and `run`.
 - `src/endpoint.rs` owns the public `Endpoint` descriptors and shared defaults (`ANNUAL_PERIOD`, `ANNUAL_LIMIT`, `NEWS_LIMIT`). Add only confirmed paths from `docs/api-inventory.md` there.
 - `src/cli/` owns command parsing and stdout JSON shape. `mod.rs` is the public entry point for `Cli` and `run`, `args.rs` owns Clap command/argument definitions, `commands.rs` owns command dispatch, `dispatch.rs` owns shape helpers (`run_query`, `run_by_symbol`, `run_by_symbol_date_range`, `run_by_date_range`, `run_annual`, `run_technical_sma`, `run_news`), `output.rs` owns the compact JSON success envelope, and `tests.rs` keeps CLI parser/dispatch tests. User-facing commands are grouped under domain subcommands (`company`, `market`, `fundamentals`, `calendar`, `rates`, `technical`, `filings`, `news`), with hidden legacy flat aliases for compatibility. CLI output is always compact JSON and no output formatting or filtering options are available.

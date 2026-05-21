@@ -1,6 +1,6 @@
 use std::process::ExitCode;
 
-use fmp::{Cli, run};
+use rusty_fmp::{Cli, run};
 
 #[tokio::main]
 async fn main() -> ExitCode {
