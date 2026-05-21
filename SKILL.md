@@ -80,9 +80,10 @@ Fundamentals commands return annual statement, ratio, metric, growth, enterprise
 ```bash
 fmp-agent analyst price-target-consensus <SYMBOL>
 fmp-agent analyst price-target-summary <SYMBOL>
+fmp-agent analyst grades <SYMBOL>
 ```
 
-Analyst commands cover price target consensus and summary data for a symbol.
+Analyst commands cover price target consensus, price target summary, and analyst grade actions for a symbol.
 
 ### Calendar, rates, technicals, filings, and news
 
@@ -92,9 +93,13 @@ fmp-agent rates treasury [--from <FROM>] [--to <TO>]
 fmp-agent technical sma <SYMBOL> [--period-length <PERIOD_LENGTH>] [--timeframe <TIMEFRAME>]
 fmp-agent filings sec <SYMBOL> [--from <FROM>] [--to <TO>]
 fmp-agent news stock <SYMBOL> [--limit <LIMIT>]
+fmp-agent news general [--page <PAGE>] [--limit <LIMIT>]
+fmp-agent news articles [--page <PAGE>] [--limit <LIMIT>]
+fmp-agent news forex [--page <PAGE>] [--limit <LIMIT>]
+fmp-agent news crypto [--page <PAGE>] [--limit <LIMIT>]
 ```
 
-Technical SMA defaults are `--period-length 10` and `--timeframe 1day`. Stock news `--limit` sets the maximum news items returned.
+Technical SMA defaults are `--period-length 10` and `--timeframe 1day`. Stock news `--limit` sets the maximum news items returned. Paginated news commands default to page 0 and limit 10 when omitted.
 
 ## Examples
 
@@ -127,7 +132,12 @@ fmp-agent fundamentals analyst-estimates AAPL --limit 5
 fmp-agent fundamentals report-dates AAPL
 fmp-agent analyst price-target-consensus AAPL
 fmp-agent analyst price-target-summary AAPL
+fmp-agent analyst grades AAPL
 fmp-agent news stock AAPL --limit 10
+fmp-agent news general --page 0 --limit 10
+fmp-agent news articles --page 0 --limit 10
+fmp-agent news forex --page 0 --limit 10
+fmp-agent news crypto --page 0 --limit 10
 ```
 
 In the repo, use `cargo run -- <COMMAND>` for the same arguments before installing or after cleaning the build.

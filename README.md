@@ -60,4 +60,4 @@ Releases use release-plz for release PRs and crates.io publishing, git-cliff for
 
 Before adding a new CLI endpoint, check `docs/api-inventory.md`. The CLI should expose endpoints only after account access is confirmed there, and the inventory should be updated when new probes are performed.
 
-New endpoints are added by registering an `Endpoint` constant in `src/endpoint.rs` and dispatching through the shape-based methods on `FmpClient` (`query`, `by_symbol`, `by_symbol_date_range`, `by_date_range`, `annual`, `technical`, `news`) and the matching `run_*` helper in `src/cli/dispatch.rs`. There are no per-endpoint client wrappers.
+New endpoints are added by registering an `Endpoint` constant in `src/endpoint.rs` and dispatching through the shape-based methods on `FmpClient` (`query`, `by_symbol`, `by_symbol_date_range`, `by_date_range`, `annual`, `technical`, `news`, `paged`) and the matching `run_*` helper in `src/cli/dispatch.rs`. There are no per-endpoint client wrappers.
