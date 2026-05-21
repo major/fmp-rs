@@ -56,6 +56,18 @@ fmp-agent market price-change <SYMBOL>
 
 Market commands cover quotes, end-of-day price bars, daily chart aliases, dividends, splits, and price change percentages. Date ranges use inclusive `YYYY-MM-DD` values.
 
+### Crypto and forex
+
+```bash
+fmp-agent crypto list
+fmp-agent crypto quote <SYMBOL>
+fmp-agent crypto historical <SYMBOL> [--from <FROM>] [--to <TO>]
+fmp-agent forex quote <SYMBOL>
+fmp-agent forex historical <SYMBOL> [--from <FROM>] [--to <TO>]
+```
+
+Crypto and forex commands cover supported cryptocurrency symbols, full quotes, currency exchange quotes, and end-of-day price bars. Date ranges use inclusive `YYYY-MM-DD` values.
+
 ### Fundamentals
 
 ```bash
@@ -114,6 +126,11 @@ fmp-agent market dividends AAPL
 fmp-agent market splits AAPL
 fmp-agent calendar earnings --from 2026-01-01 --to 2026-01-31
 fmp-agent rates treasury --from 2025-01-01 --to 2025-01-31
+fmp-agent crypto list
+fmp-agent crypto quote BTCUSD
+fmp-agent crypto historical BTCUSD --from 2025-01-01 --to 2025-01-03
+fmp-agent forex quote EURUSD
+fmp-agent forex historical EURUSD --from 2025-01-01 --to 2025-01-03
 fmp-agent technical sma AAPL --period-length 10 --timeframe 1day
 fmp-agent market price-change AAPL
 fmp-agent filings sec AAPL --from 2024-01-01 --to 2024-03-01

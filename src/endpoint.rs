@@ -46,6 +46,8 @@ pub const KEY_EXECUTIVES: Endpoint = Endpoint::new("key-executives");
 pub const QUOTE: Endpoint = Endpoint::new("quote");
 /// Historical end-of-day price endpoint.
 pub const HISTORICAL_PRICE_EOD_FULL: Endpoint = Endpoint::new("historical-price-eod/full");
+/// Cryptocurrency list endpoint.
+pub const CRYPTOCURRENCY_LIST: Endpoint = Endpoint::new("cryptocurrency-list");
 /// Stock peers endpoint.
 pub const STOCK_PEERS: Endpoint = Endpoint::new("stock-peers");
 /// Historical dividends endpoint.

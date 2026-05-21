@@ -3,23 +3,24 @@
 use crate::client::FmpClient;
 use crate::endpoint::{
     ANALYST_ESTIMATES, BALANCE_SHEET_STATEMENT, BALANCE_SHEET_STATEMENT_GROWTH,
-    CASH_FLOW_STATEMENT, CASH_FLOW_STATEMENT_GROWTH, CRYPTO_NEWS, DIVIDENDS, EARNINGS_CALENDAR,
-    ENTERPRISE_VALUES, FINANCIAL_REPORTS_DATES, FINANCIAL_SCORES, FMP_ARTICLES, FOREX_NEWS,
-    GENERAL_NEWS, GRADES, GRADES_CONSENSUS, HISTORICAL_PRICE_EOD_FULL, INCOME_STATEMENT,
-    INCOME_STATEMENT_AS_REPORTED, INCOME_STATEMENT_GROWTH, KEY_EXECUTIVES, KEY_METRICS,
-    PRICE_TARGET_CONSENSUS, PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATIOS, SEARCH_SYMBOL,
-    SEC_FILINGS_SEARCH_SYMBOL, SHARES_FLOAT, SPLITS, STOCK_NEWS, STOCK_PEERS, STOCK_PRICE_CHANGE,
-    TECHNICAL_SMA, TREASURY_RATES,
+    CASH_FLOW_STATEMENT, CASH_FLOW_STATEMENT_GROWTH, CRYPTO_NEWS, CRYPTOCURRENCY_LIST, DIVIDENDS,
+    EARNINGS_CALENDAR, ENTERPRISE_VALUES, FINANCIAL_REPORTS_DATES, FINANCIAL_SCORES, FMP_ARTICLES,
+    FOREX_NEWS, GENERAL_NEWS, GRADES, GRADES_CONSENSUS, HISTORICAL_PRICE_EOD_FULL,
+    INCOME_STATEMENT, INCOME_STATEMENT_AS_REPORTED, INCOME_STATEMENT_GROWTH, KEY_EXECUTIVES,
+    KEY_METRICS, PRICE_TARGET_CONSENSUS, PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATIOS,
+    SEARCH_SYMBOL, SEC_FILINGS_SEARCH_SYMBOL, SHARES_FLOAT, SPLITS, STOCK_NEWS, STOCK_PEERS,
+    STOCK_PRICE_CHANGE, TECHNICAL_SMA, TREASURY_RATES,
 };
 use crate::error::{Error, Result};
 
 use super::args::{
-    AnalystCommand, CalendarCommand, Command, CompanyCommand, FilingsCommand, FundamentalsCommand,
-    MarketCommand, NewsArgs, NewsCommand, RatesCommand, TechnicalCommand,
+    AnalystCommand, CalendarCommand, Command, CompanyCommand, CryptoCommand, FilingsCommand,
+    ForexCommand, FundamentalsCommand, MarketCommand, NewsArgs, NewsCommand, RatesCommand,
+    TechnicalCommand,
 };
 use super::dispatch::{
-    run_annual, run_by_date_range, run_by_symbol, run_by_symbol_date_range, run_news, run_paged,
-    run_query, run_technical_sma,
+    run_annual, run_by_date_range, run_by_symbol, run_by_symbol_date_range, run_endpoint, run_news,
+    run_paged, run_query, run_technical_sma,
 };
 use super::output::CommandPayload;
 
@@ -34,6 +35,8 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
         Command::Rates(command) => execute_rates(client, command).await,
         Command::Technical(command) => execute_technical(client, command).await,
         Command::Filings(command) => execute_filings(client, command).await,
+        Command::Crypto(command) => execute_crypto(client, command).await,
+        Command::Forex(command) => execute_forex(client, command).await,
         Command::News(args) => execute_news(client, args).await,
         Command::Profile(args) | Command::CompanyStats(args) => {
             run_by_symbol(client, PROFILE, &args.symbol).await
@@ -276,6 +279,39 @@ async fn execute_filings(client: &FmpClient, command: &FilingsCommand) -> Result
             run_by_symbol_date_range(
                 client,
                 SEC_FILINGS_SEARCH_SYMBOL,
+                &args.symbol,
+                &args.from,
+                &args.to,
+            )
+            .await
+        }
+    }
+}
+
+async fn execute_crypto(client: &FmpClient, command: &CryptoCommand) -> Result<CommandPayload> {
+    match command {
+        CryptoCommand::List => run_endpoint(client, CRYPTOCURRENCY_LIST).await,
+        CryptoCommand::Quote(args) => run_by_symbol(client, QUOTE, &args.symbol).await,
+        CryptoCommand::Historical(args) => {
+            run_by_symbol_date_range(
+                client,
+                HISTORICAL_PRICE_EOD_FULL,
+                &args.symbol,
+                &args.from,
+                &args.to,
+            )
+            .await
+        }
+    }
+}
+
+async fn execute_forex(client: &FmpClient, command: &ForexCommand) -> Result<CommandPayload> {
+    match command {
+        ForexCommand::Quote(args) => run_by_symbol(client, QUOTE, &args.symbol).await,
+        ForexCommand::Historical(args) => {
+            run_by_symbol_date_range(
+                client,
+                HISTORICAL_PRICE_EOD_FULL,
                 &args.symbol,
                 &args.from,
                 &args.to,

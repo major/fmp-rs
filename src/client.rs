@@ -1,8 +1,8 @@
 //! HTTP client for Financial Modeling Prep stable endpoints.
 //!
 //! The client exposes a small set of *shape*-based methods. Each method
-//! corresponds to a common FMP query shape (symbol only, date range, annual
-//! statement, etc.) and accepts an [`Endpoint`] descriptor from
+//! corresponds to a common FMP query shape (no parameters, symbol only, date
+//! range, annual statement, etc.) and accepts an [`Endpoint`] descriptor from
 //! [`crate::endpoint`].
 //!
 //! # Errors
@@ -66,6 +66,15 @@ impl FmpClient {
             base_url,
             api_key: api_key.into(),
         })
+    }
+
+    /// Calls `endpoint` without endpoint-specific query parameters.
+    ///
+    /// # Errors
+    ///
+    /// See [module-level errors](self#errors).
+    pub async fn endpoint(&self, endpoint: Endpoint) -> Result<Value> {
+        self.get(endpoint, &[]).await
     }
 
     /// Calls `endpoint` with a free-text `query` parameter (`?query=...`).
@@ -264,13 +273,13 @@ mod tests {
     use super::*;
     use crate::endpoint::{
         ANALYST_ESTIMATES, BALANCE_SHEET_STATEMENT, BALANCE_SHEET_STATEMENT_GROWTH,
-        CASH_FLOW_STATEMENT, CASH_FLOW_STATEMENT_GROWTH, CRYPTO_NEWS, DIVIDENDS, EARNINGS_CALENDAR,
-        ENTERPRISE_VALUES, FINANCIAL_REPORTS_DATES, FINANCIAL_SCORES, FMP_ARTICLES, FOREX_NEWS,
-        GENERAL_NEWS, GRADES, GRADES_CONSENSUS, HISTORICAL_PRICE_EOD_FULL, INCOME_STATEMENT,
-        INCOME_STATEMENT_AS_REPORTED, INCOME_STATEMENT_GROWTH, KEY_EXECUTIVES, KEY_METRICS,
-        PRICE_TARGET_CONSENSUS, PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATIOS, SEARCH_SYMBOL,
-        SEC_FILINGS_SEARCH_SYMBOL, SHARES_FLOAT, SPLITS, STOCK_PEERS, STOCK_PRICE_CHANGE,
-        TECHNICAL_SMA, TREASURY_RATES,
+        CASH_FLOW_STATEMENT, CASH_FLOW_STATEMENT_GROWTH, CRYPTO_NEWS, CRYPTOCURRENCY_LIST,
+        DIVIDENDS, EARNINGS_CALENDAR, ENTERPRISE_VALUES, FINANCIAL_REPORTS_DATES, FINANCIAL_SCORES,
+        FMP_ARTICLES, FOREX_NEWS, GENERAL_NEWS, GRADES, GRADES_CONSENSUS,
+        HISTORICAL_PRICE_EOD_FULL, INCOME_STATEMENT, INCOME_STATEMENT_AS_REPORTED,
+        INCOME_STATEMENT_GROWTH, KEY_EXECUTIVES, KEY_METRICS, PRICE_TARGET_CONSENSUS,
+        PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATIOS, SEARCH_SYMBOL, SEC_FILINGS_SEARCH_SYMBOL,
+        SHARES_FLOAT, SPLITS, STOCK_PEERS, STOCK_PRICE_CHANGE, TECHNICAL_SMA, TREASURY_RATES,
     };
 
     /// Returns a client wired to `server`'s base URL with `api_key=test-key`.
@@ -286,6 +295,27 @@ mod tests {
 
         assert!(output.contains("<redacted>"));
         assert!(!output.contains("secret-key"));
+    }
+
+    #[tokio::test]
+    async fn endpoint_sends_expected_request() {
+        let server = MockServer::start_async().await;
+        let mock = server
+            .mock_async(|when, then| {
+                when.method(GET)
+                    .path("/cryptocurrency-list")
+                    .query_param("apikey", "test-key");
+                then.status(200).json_body(json!([{ "symbol": "BTCUSD" }]));
+            })
+            .await;
+
+        let value = test_client(&server)
+            .endpoint(CRYPTOCURRENCY_LIST)
+            .await
+            .unwrap();
+
+        mock.assert_async().await;
+        assert_eq!(value[0]["symbol"], "BTCUSD");
     }
 
     #[tokio::test]

@@ -62,6 +62,14 @@ pub enum Command {
     #[command(subcommand)]
     Filings(FilingsCommand),
 
+    /// Cryptocurrency quotes and historical prices.
+    #[command(subcommand)]
+    Crypto(CryptoCommand),
+
+    /// Forex quotes and historical prices.
+    #[command(subcommand)]
+    Forex(ForexCommand),
+
     /// News endpoints.
     News(NewsArgs),
 
@@ -302,6 +310,29 @@ pub enum FilingsCommand {
     Sec(SymbolDateRangeArgs),
 }
 
+/// Cryptocurrency commands.
+#[derive(Debug, Subcommand)]
+pub enum CryptoCommand {
+    /// List supported cryptocurrency symbols.
+    List,
+
+    /// Get the latest quote for a cryptocurrency pair.
+    Quote(SymbolArgs),
+
+    /// Get historical end-of-day price bars for a cryptocurrency pair.
+    Historical(SymbolDateRangeArgs),
+}
+
+/// Forex commands.
+#[derive(Debug, Subcommand)]
+pub enum ForexCommand {
+    /// Get the latest quote for a forex pair.
+    Quote(SymbolArgs),
+
+    /// Get historical end-of-day price bars for a forex pair.
+    Historical(SymbolDateRangeArgs),
+}
+
 /// News commands.
 #[derive(Debug, Subcommand)]
 pub enum NewsCommand {
@@ -331,7 +362,7 @@ pub struct SymbolArgs {
 /// Shared symbol and date range arguments.
 #[derive(Debug, Args)]
 pub struct SymbolDateRangeArgs {
-    /// Ticker symbol.
+    /// Ticker symbol, forex pair, or crypto pair.
     pub symbol: String,
 
     /// Inclusive start date in `YYYY-MM-DD` format.
