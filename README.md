@@ -28,6 +28,8 @@ In the repo, use `cargo run -- <GROUP> <COMMAND>` with the same arguments before
 
 Output is always compact JSON on one line for shell pipelines. The CLI does not provide output formatting or filtering options.
 
+Running `fmp-agent` without a command prints the generic help text.
+
 ## Using as a library
 
 Other Rust projects (for example an MCP server) can depend on `rusty-fmp` as an API client without pulling in the CLI by disabling default features:
