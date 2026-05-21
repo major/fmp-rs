@@ -10,8 +10,11 @@ pub const ANNUAL_PERIOD: &str = "annual";
 /// Default row limit for annual statement-style endpoints.
 pub const ANNUAL_LIMIT: u16 = 5;
 
-/// Default item limit for stock news endpoints.
+/// Default item limit for news endpoints.
 pub const NEWS_LIMIT: u16 = 10;
+
+/// Default page for paginated endpoints.
+pub const PAGE: u16 = 0;
 
 /// Stable API endpoint path.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -88,6 +91,8 @@ pub const ENTERPRISE_VALUES: Endpoint = Endpoint::new("enterprise-values");
 pub const FINANCIAL_SCORES: Endpoint = Endpoint::new("financial-scores");
 /// Annual analyst estimates endpoint.
 pub const ANALYST_ESTIMATES: Endpoint = Endpoint::new("analyst-estimates");
+/// Analyst grades endpoint.
+pub const GRADES: Endpoint = Endpoint::new("grades");
 /// Price target consensus endpoint.
 pub const PRICE_TARGET_CONSENSUS: Endpoint = Endpoint::new("price-target-consensus");
 /// Price target summary endpoint.
@@ -96,3 +101,11 @@ pub const PRICE_TARGET_SUMMARY: Endpoint = Endpoint::new("price-target-summary")
 pub const GRADES_CONSENSUS: Endpoint = Endpoint::new("grades-consensus");
 /// Stock news endpoint.
 pub const STOCK_NEWS: Endpoint = Endpoint::new("news/stock");
+/// General news endpoint.
+pub const GENERAL_NEWS: Endpoint = Endpoint::new("news/general-latest");
+/// FMP articles endpoint.
+pub const FMP_ARTICLES: Endpoint = Endpoint::new("fmp-articles");
+/// Forex news endpoint.
+pub const FOREX_NEWS: Endpoint = Endpoint::new("news/forex-latest");
+/// Crypto news endpoint.
+pub const CRYPTO_NEWS: Endpoint = Endpoint::new("news/crypto-latest");

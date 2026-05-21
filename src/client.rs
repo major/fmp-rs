@@ -18,7 +18,7 @@ use std::fmt;
 use reqwest::{StatusCode, Url};
 use serde_json::Value;
 
-use crate::endpoint::{ANNUAL_LIMIT, ANNUAL_PERIOD, Endpoint, NEWS_LIMIT};
+use crate::endpoint::{ANNUAL_LIMIT, ANNUAL_PERIOD, Endpoint, NEWS_LIMIT, PAGE};
 use crate::error::{Error, Result};
 
 const DEFAULT_BASE_URL: &str = "https://financialmodelingprep.com/stable/";
@@ -187,6 +187,24 @@ impl FmpClient {
             .await
     }
 
+    /// Calls a paginated `endpoint` with `?page=...&limit=...` (`page`
+    /// defaults to [`PAGE`] and `limit` defaults to [`NEWS_LIMIT`]).
+    ///
+    /// # Errors
+    ///
+    /// See [module-level errors](self#errors).
+    pub async fn paged(
+        &self,
+        endpoint: Endpoint,
+        page: Option<u16>,
+        limit: Option<u16>,
+    ) -> Result<Value> {
+        let page = page.unwrap_or(PAGE).to_string();
+        let limit = limit.unwrap_or(NEWS_LIMIT).to_string();
+        self.get(endpoint, &[("page", &page), ("limit", &limit)])
+            .await
+    }
+
     async fn get(&self, endpoint: Endpoint, params: &[(&str, &str)]) -> Result<Value> {
         let url = self.build_url(endpoint.path(), params)?;
         let response = self.http.get(url).send().await?;
@@ -246,12 +264,13 @@ mod tests {
     use super::*;
     use crate::endpoint::{
         ANALYST_ESTIMATES, BALANCE_SHEET_STATEMENT, BALANCE_SHEET_STATEMENT_GROWTH,
-        CASH_FLOW_STATEMENT, CASH_FLOW_STATEMENT_GROWTH, DIVIDENDS, EARNINGS_CALENDAR,
-        ENTERPRISE_VALUES, FINANCIAL_REPORTS_DATES, FINANCIAL_SCORES, GRADES_CONSENSUS,
-        HISTORICAL_PRICE_EOD_FULL, INCOME_STATEMENT, INCOME_STATEMENT_AS_REPORTED,
-        INCOME_STATEMENT_GROWTH, KEY_EXECUTIVES, KEY_METRICS, PRICE_TARGET_CONSENSUS,
-        PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATIOS, SEARCH_SYMBOL, SEC_FILINGS_SEARCH_SYMBOL,
-        SHARES_FLOAT, SPLITS, STOCK_PEERS, STOCK_PRICE_CHANGE, TECHNICAL_SMA, TREASURY_RATES,
+        CASH_FLOW_STATEMENT, CASH_FLOW_STATEMENT_GROWTH, CRYPTO_NEWS, DIVIDENDS, EARNINGS_CALENDAR,
+        ENTERPRISE_VALUES, FINANCIAL_REPORTS_DATES, FINANCIAL_SCORES, FMP_ARTICLES, FOREX_NEWS,
+        GENERAL_NEWS, GRADES, GRADES_CONSENSUS, HISTORICAL_PRICE_EOD_FULL, INCOME_STATEMENT,
+        INCOME_STATEMENT_AS_REPORTED, INCOME_STATEMENT_GROWTH, KEY_EXECUTIVES, KEY_METRICS,
+        PRICE_TARGET_CONSENSUS, PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATIOS, SEARCH_SYMBOL,
+        SEC_FILINGS_SEARCH_SYMBOL, SHARES_FLOAT, SPLITS, STOCK_PEERS, STOCK_PRICE_CHANGE,
+        TECHNICAL_SMA, TREASURY_RATES,
     };
 
     /// Returns a client wired to `server`'s base URL with `api_key=test-key`.
@@ -307,6 +326,7 @@ mod tests {
             SHARES_FLOAT,
             GRADES_CONSENSUS,
             FINANCIAL_REPORTS_DATES,
+            GRADES,
             PRICE_TARGET_CONSENSUS,
             PRICE_TARGET_SUMMARY,
         ];
@@ -468,6 +488,38 @@ mod tests {
         let client = test_client(&server);
         for endpoint in endpoints {
             client.annual(endpoint, "AAPL", None).await.unwrap();
+        }
+
+        for mock in mocks {
+            mock.assert_async().await;
+        }
+    }
+
+    #[tokio::test]
+    async fn paged_endpoints_send_expected_requests() {
+        let server = MockServer::start_async().await;
+        let endpoints = [GENERAL_NEWS, FMP_ARTICLES, FOREX_NEWS, CRYPTO_NEWS];
+        let mut mocks = Vec::new();
+
+        for endpoint in endpoints {
+            mocks.push(
+                server
+                    .mock_async(|when, then| {
+                        when.method(GET)
+                            .path(format!("/{}", endpoint.path()))
+                            .query_param("page", "0")
+                            .query_param("limit", "10")
+                            .query_param("apikey", "test-key");
+                        then.status(200)
+                            .json_body(json!([{ "title": "Market news" }]));
+                    })
+                    .await,
+            );
+        }
+
+        let client = test_client(&server);
+        for endpoint in endpoints {
+            client.paged(endpoint, None, None).await.unwrap();
         }
 
         for mock in mocks {

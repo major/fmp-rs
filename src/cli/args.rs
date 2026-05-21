@@ -42,7 +42,7 @@ pub enum Command {
     #[command(subcommand)]
     Fundamentals(FundamentalsCommand),
 
-    /// Analyst price target endpoints.
+    /// Analyst ratings and price target endpoints.
     #[command(subcommand)]
     Analyst(AnalystCommand),
 
@@ -269,6 +269,9 @@ pub enum AnalystCommand {
 
     /// Get price target summary for a symbol.
     PriceTargetSummary(SymbolArgs),
+
+    /// Get analyst grade actions for a symbol.
+    Grades(SymbolArgs),
 }
 
 /// Calendar commands.
@@ -304,6 +307,18 @@ pub enum FilingsCommand {
 pub enum NewsCommand {
     /// Get recent stock news for a symbol.
     Stock(StockNewsArgs),
+
+    /// Get latest general market news.
+    General(PagedArgs),
+
+    /// Get latest FMP articles.
+    Articles(PagedArgs),
+
+    /// Get latest forex news.
+    Forex(PagedArgs),
+
+    /// Get latest crypto news.
+    Crypto(PagedArgs),
 }
 
 /// Shared symbol argument.
@@ -389,6 +404,18 @@ pub struct StockNewsArgs {
     pub symbol: String,
 
     /// Maximum number of news items to return.
+    #[arg(long)]
+    pub limit: Option<u16>,
+}
+
+/// Shared paginated endpoint arguments.
+#[derive(Debug, Args)]
+pub struct PagedArgs {
+    /// Zero-based result page.
+    #[arg(long)]
+    pub page: Option<u16>,
+
+    /// Maximum number of items to return.
     #[arg(long)]
     pub limit: Option<u16>,
 }

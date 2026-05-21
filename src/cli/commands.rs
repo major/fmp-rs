@@ -3,13 +3,13 @@
 use crate::client::FmpClient;
 use crate::endpoint::{
     ANALYST_ESTIMATES, BALANCE_SHEET_STATEMENT, BALANCE_SHEET_STATEMENT_GROWTH,
-    CASH_FLOW_STATEMENT, CASH_FLOW_STATEMENT_GROWTH, DIVIDENDS, EARNINGS_CALENDAR,
-    ENTERPRISE_VALUES, FINANCIAL_REPORTS_DATES, FINANCIAL_SCORES, GRADES_CONSENSUS,
-    HISTORICAL_PRICE_EOD_FULL, INCOME_STATEMENT, INCOME_STATEMENT_AS_REPORTED,
-    INCOME_STATEMENT_GROWTH, KEY_EXECUTIVES, KEY_METRICS, PRICE_TARGET_CONSENSUS,
-    PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATIOS, SEARCH_SYMBOL, SEC_FILINGS_SEARCH_SYMBOL,
-    SHARES_FLOAT, SPLITS, STOCK_NEWS, STOCK_PEERS, STOCK_PRICE_CHANGE, TECHNICAL_SMA,
-    TREASURY_RATES,
+    CASH_FLOW_STATEMENT, CASH_FLOW_STATEMENT_GROWTH, CRYPTO_NEWS, DIVIDENDS, EARNINGS_CALENDAR,
+    ENTERPRISE_VALUES, FINANCIAL_REPORTS_DATES, FINANCIAL_SCORES, FMP_ARTICLES, FOREX_NEWS,
+    GENERAL_NEWS, GRADES, GRADES_CONSENSUS, HISTORICAL_PRICE_EOD_FULL, INCOME_STATEMENT,
+    INCOME_STATEMENT_AS_REPORTED, INCOME_STATEMENT_GROWTH, KEY_EXECUTIVES, KEY_METRICS,
+    PRICE_TARGET_CONSENSUS, PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATIOS, SEARCH_SYMBOL,
+    SEC_FILINGS_SEARCH_SYMBOL, SHARES_FLOAT, SPLITS, STOCK_NEWS, STOCK_PEERS, STOCK_PRICE_CHANGE,
+    TECHNICAL_SMA, TREASURY_RATES,
 };
 use crate::error::{Error, Result};
 
@@ -18,8 +18,8 @@ use super::args::{
     MarketCommand, NewsArgs, NewsCommand, RatesCommand, TechnicalCommand,
 };
 use super::dispatch::{
-    run_annual, run_by_date_range, run_by_symbol, run_by_symbol_date_range, run_news, run_query,
-    run_technical_sma,
+    run_annual, run_by_date_range, run_by_symbol, run_by_symbol_date_range, run_news, run_paged,
+    run_query, run_technical_sma,
 };
 use super::output::CommandPayload;
 
@@ -232,6 +232,7 @@ async fn execute_analyst(client: &FmpClient, command: &AnalystCommand) -> Result
         AnalystCommand::PriceTargetSummary(args) => {
             run_by_symbol(client, PRICE_TARGET_SUMMARY, &args.symbol).await
         }
+        AnalystCommand::Grades(args) => run_by_symbol(client, GRADES, &args.symbol).await,
     }
 }
 
@@ -288,6 +289,18 @@ async fn execute_news(client: &FmpClient, args: &NewsArgs) -> Result<CommandPayl
     match &args.command {
         Some(NewsCommand::Stock(args)) => {
             run_news(client, STOCK_NEWS, &args.symbol, args.limit).await
+        }
+        Some(NewsCommand::General(args)) => {
+            run_paged(client, GENERAL_NEWS, args.page, args.limit).await
+        }
+        Some(NewsCommand::Articles(args)) => {
+            run_paged(client, FMP_ARTICLES, args.page, args.limit).await
+        }
+        Some(NewsCommand::Forex(args)) => {
+            run_paged(client, FOREX_NEWS, args.page, args.limit).await
+        }
+        Some(NewsCommand::Crypto(args)) => {
+            run_paged(client, CRYPTO_NEWS, args.page, args.limit).await
         }
         None => {
             let symbol = args.symbol.as_deref().ok_or(Error::MissingArgument(

@@ -70,6 +70,11 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Balance sheet growth | `balance-sheet-statement-growth?symbol=AAPL&period=annual&limit=5` | confirmed | Array with growth fields such as `growthCashAndCashEquivalents`, `growthShortTermInvestments`, and `growthCashAndShortTermInvestments`. |
 | Cash flow growth | `cash-flow-statement-growth?symbol=AAPL&period=annual&limit=5` | confirmed | Array with growth fields such as `growthNetIncome`, `growthDepreciationAndAmortization`, and `growthDeferredIncomeTax`. |
 | Financial scores | `financial-scores?symbol=AAPL` | confirmed | Array with score fields such as `altmanZScore`, `piotroskiScore`, `workingCapital`, `totalAssets`, `retainedEarnings`, and `ebit`. |
+| General news | `news/general-latest?page=0&limit=1` | confirmed | Array with news fields such as `symbol`, `publishedDate`, `publisher`, `title`, `image`, `site`, `text`, and `url`. |
+| FMP articles | `fmp-articles?page=0&limit=1` | confirmed | Array with article fields such as `title`, `date`, `content`, `tickers`, `image`, `link`, `author`, and `site`. |
+| Forex news | `news/forex-latest?page=0&limit=1` | confirmed | Array with news fields such as `symbol`, `publishedDate`, `publisher`, `title`, `image`, `site`, `text`, and `url`. |
+| Crypto news | `news/crypto-latest?page=0&limit=1` | confirmed | Array with news fields such as `symbol`, `publishedDate`, `publisher`, `title`, `image`, `site`, `text`, and `url`. |
+| Analyst grades | `grades?symbol=AAPL` | confirmed | Array with grade action fields such as `symbol`, `date`, `gradingCompany`, `previousGrade`, `newGrade`, and `action`. |
 | ETF holdings | `etf/holdings?symbol=SPY` | denied | HTTP 402 subscription restriction. |
 | Earnings transcript | `earning-call-transcript?symbol=AAPL&year=2024&quarter=1` | denied | HTTP 402 subscription restriction. |
 | Transcript dates | `earning-call-transcript-dates?symbol=AAPL` | denied | HTTP 402 subscription restriction. |
@@ -115,12 +120,12 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Ratios/metrics/growth | [Cash flow statement growth](https://site.financialmodelingprep.com/developer/docs/company-financial-statement-growth-api) | confirmed | medium | Tested `cash-flow-statement-growth?symbol=AAPL&period=annual&limit=5`; implemented as `fundamentals cash-flow-growth`. |
 | Ratios/metrics/growth | [Enterprise value](https://site.financialmodelingprep.com/developer/docs/company-enterprise-value-api) | confirmed | medium | Tested `enterprise-values?symbol=AAPL&period=annual&limit=5`. |
 | Ratios/metrics/growth | [Financial scores](https://site.financialmodelingprep.com/developer/docs/stock-financial-scores) | confirmed | medium | Tested `financial-scores?symbol=AAPL`; implemented as `company financial-scores`. |
-| News | [FMP articles](https://site.financialmodelingprep.com/developer/docs/fmp-articles-api) | explicit | medium | Market news category. |
-| News | [General news](https://site.financialmodelingprep.com/developer/docs/general-news-api) | explicit | medium | Market news category. |
+| News | [FMP articles](https://site.financialmodelingprep.com/developer/docs/fmp-articles-api) | confirmed | medium | Tested `fmp-articles?page=0&limit=1`; implemented as `news articles`. |
+| News | [General news](https://site.financialmodelingprep.com/developer/docs/general-news-api) | confirmed | medium | Tested `news/general-latest?page=0&limit=1`; implemented as `news general`. |
 | News | [Stock news](https://site.financialmodelingprep.com/developer/docs/stock-news-api) | confirmed | high | Tested `news/stock?symbols=AAPL&limit=5`; good first news command. |
-| News | [Forex news](https://site.financialmodelingprep.com/developer/docs/forex-news-api) | explicit | low | Included by forex/news categories. |
-| News | [Crypto news](https://site.financialmodelingprep.com/developer/docs/crypto-news-api) | explicit | low | Included by crypto/news categories. |
-| News | [Press releases](https://site.financialmodelingprep.com/developer/docs/press-releases-api) | inferred | medium | Verify whether press releases are under news entitlement. |
+| News | [Forex news](https://site.financialmodelingprep.com/developer/docs/forex-news-api) | confirmed | low | Tested `news/forex-latest?page=0&limit=1`; implemented as `news forex`. |
+| News | [Crypto news](https://site.financialmodelingprep.com/developer/docs/crypto-news-api) | confirmed | low | Tested `news/crypto-latest?page=0&limit=1`; implemented as `news crypto`. |
+| News | [Press releases](https://site.financialmodelingprep.com/developer/docs/press-releases-api) | denied | medium | Tested `press-releases?symbol=AAPL&page=0&limit=1`, which returned HTTP 404 with an empty array; tested `news/press-releases-latest?page=0&limit=1`, which returned HTTP 402 subscription restriction. |
 | News | [Social sentiment](https://site.financialmodelingprep.com/developer/docs/social-sentiment-api) | unknown | low | Not clearly mapped to Starter. |
 | Crypto/forex/commodities | [Crypto quote/list](https://site.financialmodelingprep.com/developer/docs/crypto-currency-free-api) | confirmed | medium | Tested `quote?symbol=BTCUSD`. |
 | Crypto/forex/commodities | [Bitcoin price](https://site.financialmodelingprep.com/developer/docs/bitcoin-price-free-api) | explicit | low | Crypto category. |
@@ -165,7 +170,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | ETFs/funds/13F | [Form 13F](https://site.financialmodelingprep.com/developer/docs/form-13f-api) | excluded | low | 13F institutional holdings are excluded by pricing. |
 | Analyst/ratings/price targets | [Financial estimates](https://site.financialmodelingprep.com/developer/docs/stable/financial-estimates) | inferred | medium | Analyst estimate availability needs API Viewer confirmation. |
 | Analyst/ratings/price targets | [Analyst estimates](https://site.financialmodelingprep.com/developer/docs/analyst-estimates-api) | confirmed | medium | Tested `analyst-estimates?symbol=AAPL&period=annual&limit=5`. |
-| Analyst/ratings/price targets | [Analyst recommendations](https://site.financialmodelingprep.com/developer/docs/analyst-stock-recommendations-api) | inferred | medium | Verify before exposing. |
+| Analyst/ratings/price targets | [Analyst recommendations](https://site.financialmodelingprep.com/developer/docs/analyst-stock-recommendations-api) | confirmed | medium | Tested `grades?symbol=AAPL`; implemented as `analyst grades`. |
 | Analyst/ratings/price targets | [Price target](https://site.financialmodelingprep.com/developer/docs/price-target-api) | inferred | medium | Verify before exposing. |
 | Analyst/ratings/price targets | [Price target summary](https://site.financialmodelingprep.com/developer/docs/price-target-summary-api) | confirmed | medium | Tested `price-target-summary?symbol=AAPL`; implemented as `analyst price-target-summary`. |
 | Analyst/ratings/price targets | [Price target consensus](https://site.financialmodelingprep.com/developer/docs/price-target-consensus-api) | confirmed | medium | Tested `price-target-consensus?symbol=AAPL`; implemented as `analyst price-target-consensus`. |

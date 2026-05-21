@@ -46,6 +46,13 @@ fn stock_news(symbol: &str) -> StockNewsArgs {
     }
 }
 
+fn paged() -> PagedArgs {
+    PagedArgs {
+        page: Some(0),
+        limit: Some(3),
+    }
+}
+
 #[test]
 fn parses_historical_command() {
     let cli = Cli::parse_from([
@@ -144,6 +151,49 @@ fn parses_grouped_news_command() {
 }
 
 #[test]
+fn parses_paginated_news_commands() {
+    let cases = [
+        ("general", "general"),
+        ("articles", "articles"),
+        ("forex", "forex"),
+        ("crypto", "crypto"),
+    ];
+
+    for (subcommand, expected) in cases {
+        let cli = Cli::parse_from([
+            "fmp",
+            "--api-key",
+            "test-key",
+            "news",
+            subcommand,
+            "--page",
+            "0",
+            "--limit",
+            "3",
+        ]);
+
+        let Command::News(NewsArgs {
+            command: Some(command),
+            symbol: None,
+            limit: None,
+        }) = cli.command
+        else {
+            panic!("expected grouped news command");
+        };
+
+        let args = match command {
+            NewsCommand::General(args) if expected == "general" => args,
+            NewsCommand::Articles(args) if expected == "articles" => args,
+            NewsCommand::Forex(args) if expected == "forex" => args,
+            NewsCommand::Crypto(args) if expected == "crypto" => args,
+            _ => panic!("unexpected news command"),
+        };
+        assert_eq!(args.page, Some(0));
+        assert_eq!(args.limit, Some(3));
+    }
+}
+
+#[test]
 fn parses_new_symbol_commands() {
     let cases = [
         (
@@ -194,6 +244,10 @@ fn parses_new_symbol_commands() {
             ],
             "analyst price-target-summary",
         ),
+        (
+            ["fmp", "--api-key", "test-key", "analyst", "grades", "AAPL"],
+            "analyst grades",
+        ),
     ];
 
     for (args, expected) in cases {
@@ -228,6 +282,12 @@ fn parses_new_symbol_commands() {
                 assert!(matches!(
                     cli.command,
                     Command::Analyst(AnalystCommand::PriceTargetSummary(_))
+                ));
+            }
+            "analyst grades" => {
+                assert!(matches!(
+                    cli.command,
+                    Command::Analyst(AnalystCommand::Grades(_))
                 ));
             }
             _ => unreachable!(),
@@ -368,6 +428,10 @@ async fn execute_symbol_commands_use_endpoint_descriptors() {
         (
             "price-target-summary",
             Command::Analyst(AnalystCommand::PriceTargetSummary(symbol("AAPL"))),
+        ),
+        (
+            "grades",
+            Command::Analyst(AnalystCommand::Grades(symbol("AAPL"))),
         ),
     ];
     let mut mocks = Vec::new();
@@ -518,6 +582,99 @@ async fn execute_news_commands_use_endpoint_descriptor() {
 
         assert_eq!(payload.endpoint, "news/stock");
         assert_eq!(payload.query["limit"], 3);
+    }
+}
+
+#[tokio::test]
+async fn execute_paginated_news_commands_use_endpoint_descriptors() {
+    let server = MockServer::start_async().await;
+    let cases = [
+        (
+            "news/general-latest",
+            0,
+            3,
+            Command::News(NewsArgs {
+                command: Some(NewsCommand::General(paged())),
+                symbol: None,
+                limit: None,
+            }),
+        ),
+        (
+            "fmp-articles",
+            0,
+            3,
+            Command::News(NewsArgs {
+                command: Some(NewsCommand::Articles(paged())),
+                symbol: None,
+                limit: None,
+            }),
+        ),
+        (
+            "news/forex-latest",
+            0,
+            3,
+            Command::News(NewsArgs {
+                command: Some(NewsCommand::Forex(paged())),
+                symbol: None,
+                limit: None,
+            }),
+        ),
+        (
+            "news/crypto-latest",
+            0,
+            3,
+            Command::News(NewsArgs {
+                command: Some(NewsCommand::Crypto(paged())),
+                symbol: None,
+                limit: None,
+            }),
+        ),
+        (
+            "news/general-latest",
+            0,
+            10,
+            Command::News(NewsArgs {
+                command: Some(NewsCommand::General(PagedArgs {
+                    page: None,
+                    limit: None,
+                })),
+                symbol: None,
+                limit: None,
+            }),
+        ),
+    ];
+    let mut mocks = Vec::new();
+
+    for (path, page, limit, _) in &cases {
+        mocks.push(
+            server
+                .mock_async(|when, then| {
+                    when.method(GET)
+                        .path(format!("/{path}"))
+                        .query_param("page", page.to_string())
+                        .query_param("limit", limit.to_string())
+                        .query_param("apikey", "test-key");
+                    then.status(200)
+                        .json_body(json!([{ "title": "Market news" }]));
+                })
+                .await,
+        );
+    }
+
+    let client = test_client(&server);
+    for (expected_path, expected_page, expected_limit, command) in cases {
+        let payload = execute(&client, &command).await.unwrap();
+
+        assert_eq!(payload.endpoint, expected_path);
+        assert_eq!(
+            payload.query,
+            json!({ "page": expected_page, "limit": expected_limit })
+        );
+        assert_eq!(payload.data[0]["title"], "Market news");
+    }
+
+    for mock in mocks {
+        mock.assert_async().await;
     }
 }
 
