@@ -6,11 +6,24 @@ fn bare_command_prints_help() {
         .output()
         .unwrap();
 
-    assert!(output.status.success());
-    assert!(output.stderr.is_empty());
-
     let help = String::from_utf8(output.stdout).unwrap();
-    assert!(help.contains("Usage: fmp-agent [OPTIONS] <COMMAND>"));
-    assert!(help.contains("Commands:"));
+    let stderr = String::from_utf8(output.stderr).unwrap();
+
+    assert!(
+        output.status.success(),
+        "expected bare command to succeed, got status {:?}\nstdout:\n{}\nstderr:\n{}",
+        output.status.code(),
+        help,
+        stderr
+    );
+    assert!(stderr.is_empty(), "expected empty stderr, got:\n{stderr}");
+    assert!(
+        help.contains("Usage: fmp-agent [OPTIONS] <COMMAND>"),
+        "expected help usage in stdout, got:\n{help}"
+    );
+    assert!(
+        help.contains("Commands:"),
+        "expected commands section in stdout, got:\n{help}"
+    );
     assert!(!help.contains("requires a subcommand"));
 }
