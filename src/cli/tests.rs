@@ -39,6 +39,14 @@ fn symbol_date_range(symbol: &str) -> SymbolDateRangeArgs {
     }
 }
 
+fn optional_symbol_date_range(symbol: &str) -> SymbolDateRangeArgs {
+    SymbolDateRangeArgs {
+        symbol: symbol.to_owned(),
+        from: None,
+        to: None,
+    }
+}
+
 fn stock_news(symbol: &str) -> StockNewsArgs {
     StockNewsArgs {
         symbol: symbol.to_owned(),
@@ -296,6 +304,71 @@ fn parses_new_symbol_commands() {
 }
 
 #[test]
+fn parses_crypto_and_forex_commands() {
+    let cases: &[(&[&str], &str)] = &[
+        (
+            &["fmp", "--api-key", "test-key", "crypto", "list"],
+            "crypto list",
+        ),
+        (
+            &["fmp", "--api-key", "test-key", "crypto", "quote", "BTCUSD"],
+            "crypto quote",
+        ),
+        (
+            &[
+                "fmp",
+                "--api-key",
+                "test-key",
+                "crypto",
+                "historical",
+                "BTCUSD",
+            ],
+            "crypto historical",
+        ),
+        (
+            &["fmp", "--api-key", "test-key", "forex", "quote", "EURUSD"],
+            "forex quote",
+        ),
+        (
+            &[
+                "fmp",
+                "--api-key",
+                "test-key",
+                "forex",
+                "historical",
+                "EURUSD",
+            ],
+            "forex historical",
+        ),
+    ];
+
+    for (args, expected) in cases {
+        let cli = Cli::parse_from(*args);
+
+        match *expected {
+            "crypto list" => assert!(matches!(cli.command, Command::Crypto(CryptoCommand::List))),
+            "crypto quote" => assert!(matches!(
+                cli.command,
+                Command::Crypto(CryptoCommand::Quote(_))
+            )),
+            "crypto historical" => assert!(matches!(
+                cli.command,
+                Command::Crypto(CryptoCommand::Historical(_))
+            )),
+            "forex quote" => assert!(matches!(
+                cli.command,
+                Command::Forex(ForexCommand::Quote(_))
+            )),
+            "forex historical" => assert!(matches!(
+                cli.command,
+                Command::Forex(ForexCommand::Historical(_))
+            )),
+            _ => unreachable!(),
+        }
+    }
+}
+
+#[test]
 fn parses_legacy_news_alias() {
     let cli = Cli::parse_from([
         "fmp",
@@ -458,6 +531,101 @@ async fn execute_symbol_commands_use_endpoint_descriptors() {
         assert_eq!(payload.data[0]["symbol"], "AAPL");
     }
 
+    for mock in mocks {
+        mock.assert_async().await;
+    }
+}
+
+#[tokio::test]
+async fn execute_crypto_and_forex_commands_use_endpoint_descriptors() {
+    let server = MockServer::start_async().await;
+    let list_mock = server
+        .mock_async(|when, then| {
+            when.method(GET)
+                .path("/cryptocurrency-list")
+                .query_param("apikey", "test-key");
+            then.status(200).json_body(json!([{ "symbol": "BTCUSD" }]));
+        })
+        .await;
+    let quote_cases = [
+        (
+            "BTCUSD",
+            Command::Crypto(CryptoCommand::Quote(symbol("BTCUSD"))),
+        ),
+        (
+            "EURUSD",
+            Command::Forex(ForexCommand::Quote(symbol("EURUSD"))),
+        ),
+    ];
+    let historical_cases = [
+        (
+            "BTCUSD",
+            Command::Crypto(CryptoCommand::Historical(optional_symbol_date_range(
+                "BTCUSD",
+            ))),
+        ),
+        (
+            "EURUSD",
+            Command::Forex(ForexCommand::Historical(optional_symbol_date_range(
+                "EURUSD",
+            ))),
+        ),
+    ];
+    let mut mocks = Vec::new();
+
+    for (symbol, _) in &quote_cases {
+        mocks.push(
+            server
+                .mock_async(|when, then| {
+                    when.method(GET)
+                        .path("/quote")
+                        .query_param("symbol", *symbol)
+                        .query_param("apikey", "test-key");
+                    then.status(200).json_body(json!([{ "symbol": symbol }]));
+                })
+                .await,
+        );
+    }
+    for (symbol, _) in &historical_cases {
+        mocks.push(
+            server
+                .mock_async(|when, then| {
+                    when.method(GET)
+                        .path("/historical-price-eod/full")
+                        .query_param("symbol", *symbol)
+                        .query_param("apikey", "test-key");
+                    then.status(200).json_body(json!([{ "symbol": symbol }]));
+                })
+                .await,
+        );
+    }
+
+    let client = test_client(&server);
+    let payload = execute(&client, &Command::Crypto(CryptoCommand::List))
+        .await
+        .unwrap();
+    assert_eq!(payload.endpoint, "cryptocurrency-list");
+    assert_eq!(payload.query, json!({}));
+    assert_eq!(payload.data[0]["symbol"], "BTCUSD");
+
+    for (symbol, command) in quote_cases {
+        let payload = execute(&client, &command).await.unwrap();
+        assert_eq!(payload.endpoint, "quote");
+        assert_eq!(payload.query, json!({ "symbol": symbol }));
+        assert_eq!(payload.data[0]["symbol"], symbol);
+    }
+
+    for (symbol, command) in historical_cases {
+        let payload = execute(&client, &command).await.unwrap();
+        assert_eq!(payload.endpoint, "historical-price-eod/full");
+        assert_eq!(
+            payload.query,
+            json!({ "symbol": symbol, "from": null, "to": null })
+        );
+        assert_eq!(payload.data[0]["symbol"], symbol);
+    }
+
+    list_mock.assert_async().await;
     for mock in mocks {
         mock.assert_async().await;
     }
@@ -868,6 +1036,16 @@ async fn execute_date_range_commands_use_endpoint_descriptors() {
             "sec-filings-search/symbol",
             "IBM",
             Command::Filings(FilingsCommand::Sec(symbol_date_range("IBM"))),
+        ),
+        (
+            "historical-price-eod/full",
+            "BTCUSD",
+            Command::Crypto(CryptoCommand::Historical(symbol_date_range("BTCUSD"))),
+        ),
+        (
+            "historical-price-eod/full",
+            "EURUSD",
+            Command::Forex(ForexCommand::Historical(symbol_date_range("EURUSD"))),
         ),
     ];
     let mut mocks = Vec::new();

@@ -49,6 +49,9 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Stock news | `news/stock?symbols=AAPL&limit=5` | confirmed | Array with news fields such as `symbol`, `publishedDate`, `publisher`, `title`, `url`. |
 | Crypto quote | `quote?symbol=BTCUSD` | confirmed | Array with the same quote shape as equities. |
 | Forex quote | `quote?symbol=EURUSD` | confirmed | Array with the same quote shape as equities. |
+| Cryptocurrency list | `cryptocurrency-list` | confirmed | Array with cryptocurrency fields such as `symbol`, `name`, `exchange`, `icoDate`, `circulatingSupply`, and `totalSupply`. |
+| Crypto historical EOD | `historical-price-eod/full?symbol=BTCUSD&from=2025-01-01&to=2025-01-03` | confirmed | Array of daily bars with `symbol`, `date`, `open`, `high`, `low`, `close`, `volume`, `change`, `changePercent`, and `vwap`. |
+| Forex historical EOD | `historical-price-eod/full?symbol=EURUSD&from=2025-01-01&to=2025-01-03` | confirmed | Array of daily bars with `symbol`, `date`, `open`, `high`, `low`, `close`, `volume`, `change`, `changePercent`, and `vwap`. |
 | Earnings calendar | `earnings-calendar?from=2026-01-01&to=2026-01-31` | confirmed | Array with `symbol`, `date`, `epsActual`, `epsEstimated`, `revenueActual`, `revenueEstimated`. |
 | Income statement growth | `income-statement-growth?symbol=AAPL&period=annual&limit=5` | confirmed | Array with growth fields such as `growthRevenue`, `growthCostOfRevenue`, `growthGrossProfit`. |
 | Enterprise value | `enterprise-values?symbol=AAPL&period=annual&limit=5` | confirmed | Array with `stockPrice`, `numberOfShares`, `marketCapitalization`, `enterpriseValue`. |
@@ -127,12 +130,12 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | News | [Crypto news](https://site.financialmodelingprep.com/developer/docs/crypto-news-api) | confirmed | low | Tested `news/crypto-latest?page=0&limit=1`; implemented as `news crypto`. |
 | News | [Press releases](https://site.financialmodelingprep.com/developer/docs/press-releases-api) | denied | medium | Tested `press-releases?symbol=AAPL&page=0&limit=1`, which returned HTTP 404 with an empty array; tested `news/press-releases-latest?page=0&limit=1`, which returned HTTP 402 subscription restriction. |
 | News | [Social sentiment](https://site.financialmodelingprep.com/developer/docs/social-sentiment-api) | unknown | low | Not clearly mapped to Starter. |
-| Crypto/forex/commodities | [Crypto quote/list](https://site.financialmodelingprep.com/developer/docs/crypto-currency-free-api) | confirmed | medium | Tested `quote?symbol=BTCUSD`. |
+| Crypto/forex/commodities | [Crypto quote/list](https://site.financialmodelingprep.com/developer/docs/crypto-currency-free-api) | confirmed | medium | Tested `cryptocurrency-list` and `quote?symbol=BTCUSD`; implemented as `crypto list` and `crypto quote`. |
 | Crypto/forex/commodities | [Bitcoin price](https://site.financialmodelingprep.com/developer/docs/bitcoin-price-free-api) | explicit | low | Crypto category. |
-| Crypto/forex/commodities | [Crypto historical](https://site.financialmodelingprep.com/developer/docs/cryptocurrency-historical-data-api) | explicit | medium | Historical depth may be capped. |
-| Crypto/forex/commodities | [Currency exchange rate](https://site.financialmodelingprep.com/developer/docs/currency-exchange-rate-free-api) | confirmed | medium | Tested `quote?symbol=EURUSD`. |
-| Crypto/forex/commodities | [Forex historical](https://site.financialmodelingprep.com/developer/docs/forex-historical-data-api) | explicit | medium | Historical depth may be capped. |
-| Crypto/forex/commodities | [Full quote forex](https://site.financialmodelingprep.com/developer/docs/full-quote-forex) | explicit | low | Forex category. |
+| Crypto/forex/commodities | [Crypto historical](https://site.financialmodelingprep.com/developer/docs/cryptocurrency-historical-data-api) | confirmed | medium | Tested `historical-price-eod/full?symbol=BTCUSD`; implemented as `crypto historical`. Historical depth may be capped. |
+| Crypto/forex/commodities | [Currency exchange rate](https://site.financialmodelingprep.com/developer/docs/currency-exchange-rate-free-api) | confirmed | medium | Tested `quote?symbol=EURUSD`; implemented as `forex quote`. |
+| Crypto/forex/commodities | [Forex historical](https://site.financialmodelingprep.com/developer/docs/forex-historical-data-api) | confirmed | medium | Tested `historical-price-eod/full?symbol=EURUSD`; implemented as `forex historical`. Historical depth may be capped. |
+| Crypto/forex/commodities | [Full quote forex](https://site.financialmodelingprep.com/developer/docs/full-quote-forex) | confirmed | low | Tested `quote?symbol=EURUSD`; implemented as `forex quote`. |
 | Crypto/forex/commodities | [Commodities list](https://site.financialmodelingprep.com/developer/docs/commodities-list-commodities) | unknown | low | Commodities are not named in Starter summary. |
 | Crypto/forex/commodities | [Commodities prices](https://site.financialmodelingprep.com/developer/docs/commodities-prices-api) | unknown | low | Commodities are not named in Starter summary. |
 | Crypto/forex/commodities | [Commodity historical](https://site.financialmodelingprep.com/developer/docs/commodity-historical-price-api) | unknown | low | Commodities are not named in Starter summary. |
@@ -217,6 +220,11 @@ Start with endpoints marked `explicit` and `high` priority:
 | `fmp-agent fundamentals ratios <symbol>` | Financial ratios | Explicit annual ratios category. |
 | `fmp-agent fundamentals metrics <symbol>` | Key metrics | Explicit annual fundamentals category. |
 | `fmp-agent news stock <symbol>` | Stock news | Explicit news category. |
+| `fmp-agent crypto list` | Cryptocurrency list | Confirmed Starter crypto category and useful for symbol discovery. |
+| `fmp-agent crypto quote <symbol>` | Cryptocurrency quote | Confirmed crypto quote shape shares the stable `quote` endpoint. |
+| `fmp-agent crypto historical <symbol>` | Cryptocurrency historical EOD | Confirmed crypto EOD bars share the stable historical endpoint. |
+| `fmp-agent forex quote <symbol>` | Currency exchange rate | Confirmed forex quote shape shares the stable `quote` endpoint. |
+| `fmp-agent forex historical <symbol>` | Forex historical EOD | Confirmed forex EOD bars share the stable historical endpoint. |
 
 ## Verification plan
 

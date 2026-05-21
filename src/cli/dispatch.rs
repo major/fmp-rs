@@ -8,6 +8,11 @@ use crate::error::Result;
 
 use super::output::CommandPayload;
 
+pub(super) async fn run_endpoint(client: &FmpClient, endpoint: Endpoint) -> Result<CommandPayload> {
+    let data = client.endpoint(endpoint).await?;
+    Ok(CommandPayload::new(endpoint.path(), json!({}), data))
+}
+
 pub(super) async fn run_query(
     client: &FmpClient,
     endpoint: Endpoint,
