@@ -10,9 +10,7 @@ async fn main() -> ExitCode {
 
     let cli = match Cli::try_parse() {
         Ok(cli) => cli,
-        Err(error)
-            if error.kind() == ErrorKind::MissingSubcommand && std::env::args_os().len() == 1 =>
-        {
+        Err(error) if error.kind() == ErrorKind::MissingSubcommand && no_cli_args() => {
             let mut command = Cli::command();
             command.set_bin_name("fmp-agent");
             print!("{}", command.render_help());
@@ -39,4 +37,8 @@ async fn main() -> ExitCode {
             ExitCode::FAILURE
         }
     }
+}
+
+fn no_cli_args() -> bool {
+    std::env::args_os().nth(1).is_none()
 }

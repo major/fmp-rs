@@ -26,7 +26,7 @@ See [`SKILL.md`](SKILL.md) for the full command reference and examples. Commands
 
 In the repo, use `cargo run -- <GROUP> <COMMAND>` with the same arguments before installing or after cleaning the build. After `cargo build`, run the built binary as `target/debug/fmp-agent`, for example `target/debug/fmp-agent market quote AAPL`.
 
-Output is always compact JSON on one line for shell pipelines. The CLI does not provide output formatting or filtering options.
+Command responses are compact JSON on one line for shell pipelines, and runtime errors are JSON on stderr. Help and version output are human-readable text. The CLI does not provide output formatting or filtering options.
 
 Running `fmp-agent` without a command prints the generic help text.
 

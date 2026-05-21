@@ -3,6 +3,9 @@ use std::process::Command;
 #[test]
 fn bare_command_prints_help() {
     let output = Command::new(env!("CARGO_BIN_EXE_fmp-agent"))
+        .env("CLAP_COLOR", "never")
+        .env("FMP_BASE_URL", "")
+        .env("NO_COLOR", "1")
         .output()
         .unwrap();
 
