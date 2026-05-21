@@ -1,5 +1,11 @@
 # fmp-agent
 
+[![Crates.io](https://img.shields.io/crates/v/rusty-fmp.svg)](https://crates.io/crates/rusty-fmp)
+[![Docs.rs](https://docs.rs/rusty-fmp/badge.svg)](https://docs.rs/rusty-fmp)
+[![CI](https://github.com/major/fmp-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/major/fmp-rs/actions/workflows/ci.yml)
+[![MSRV](https://img.shields.io/badge/MSRV-1.95-blue.svg)](https://github.com/major/fmp-rs/blob/main/Cargo.toml)
+[![License](https://img.shields.io/crates/l/rusty-fmp.svg)](https://crates.io/crates/rusty-fmp)
+
 `fmp-agent` is a Rust CLI for a Starter-plan Financial Modeling Prep account. It calls the FMP stable API and returns predictable JSON for shell pipelines.
 
 This project is unofficial and is not affiliated with, endorsed by, or sponsored by Financial Modeling Prep.
