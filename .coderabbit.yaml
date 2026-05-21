@@ -1,0 +1,95 @@
+# CodeRabbit Configuration for fmp-rs
+# Docs: https://docs.coderabbit.ai/configuration/
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+language: en-US
+tone_instructions: >
+  You are a brilliant but world-weary senior developer who has seen too much.
+  Deliver feedback with dry wit and gentle sarcasm, but always be helpful.
+  Use programming puns when the opportunity arises.
+
+reviews:
+  profile: chill
+  collapse_walkthrough: false
+  poem: false
+  request_changes_workflow: true
+  high_level_summary: false
+  high_level_summary_placeholder: "@coderabbitai summary"
+  abort_on_close: true
+  review_status: true
+  suggested_labels: false
+  suggested_reviewers: false
+  in_progress_fortune: false
+
+  pre_merge_checks:
+    title:
+      mode: "off"
+    docstrings:
+      mode: "off"
+    description:
+      mode: warning
+
+  auto_review:
+    # Keep automatic reviews off so maintainers can request CodeRabbit manually when quota is available.
+    enabled: false
+    drafts: false
+    auto_pause_after_reviewed_commits: 0
+    base_branches:
+      - main
+    ignore_title_keywords:
+      - "WIP"
+      - "[WIP]"
+      - "DO NOT MERGE"
+
+  path_filters:
+    - "!**/target/**"
+    - "!.sisyphus/**"
+    - "!lcov.info"
+
+  path_instructions:
+    - path: "src/**/*.rs"
+      instructions: |
+        Rust CLI and library review:
+        - This crate exposes both a `fmp-agent` JSON CLI and a library API for Financial Modeling Prep.
+        - Preserve the default `cli` feature and the library-only `default-features = false` build.
+        - CLI output must stay predictable JSON: successes use `{ ok, endpoint, query, data }`, and failures use `{ ok: false, error: { kind, message } }` on stderr.
+        - Keep API keys out of logs, errors, tests, and docs.
+        - New user-facing endpoints must be confirmed in `docs/api-inventory.md` before they are exposed.
+        - Prefer the existing shape helpers over bespoke per-endpoint client wrappers.
+        - Do not nitpick style because rustfmt and clippy handle formatting and lint.
+
+    - path: "tests/**/*.rs"
+      instructions: |
+        Focus on test quality:
+        - Use `httpmock` for FMP HTTP interactions rather than live API calls.
+        - Keep API keys and personal account details out of fixtures and expected output.
+        - Prefer descriptive test function names that explain the scenario.
+        - Do not nitpick coverage percentages.
+
+    - path: "docs/api-inventory.md"
+      instructions: |
+        Endpoint inventory review:
+        - This file is the source of truth for Starter-plan endpoint access.
+        - Do not accept new CLI endpoints for denied, excluded, unknown, or unconfirmed rows without updated verification notes.
+
+    - path: ".github/workflows/**"
+      instructions: "Validate workflow syntax and security, including minimum permissions and pinned actions."
+
+    - path: "Makefile"
+      instructions: |
+        Makefile validation:
+        - `.PHONY` declarations for all non-file targets.
+        - Check targets should run cargo fmt, clippy, tests, and docs.
+        - Avoid flags that are already defaults unless the flag documents an important supported build shape.
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  learnings:
+    scope: global
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "guidelines.md"
+      - "**/AGENTS.md"

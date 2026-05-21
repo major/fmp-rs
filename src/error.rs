@@ -1,0 +1,58 @@
+//! Error types for the FMP CLI.
+
+/// Convenient result alias for this crate.
+pub type Result<T> = std::result::Result<T, Error>;
+
+/// Errors returned by the FMP CLI and client.
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    /// The API key was not provided.
+    #[error("missing FMP API key; set FMP_API_KEY or pass --api-key")]
+    MissingApiKey,
+
+    /// The configured base URL is invalid.
+    #[error("invalid FMP base URL: {0}")]
+    InvalidBaseUrl(String),
+
+    /// A required CLI argument was not provided.
+    #[error("missing required CLI argument: {0}")]
+    MissingArgument(&'static str),
+
+    /// The API returned a non-successful response.
+    #[error("FMP API request failed with HTTP {status}: {message}")]
+    Api {
+        /// HTTP status code returned by the API.
+        status: u16,
+        /// Redacted response body or status message.
+        message: String,
+    },
+
+    /// The HTTP client failed before receiving a usable response.
+    #[error("HTTP request failed: {0}")]
+    Http(reqwest::Error),
+
+    /// JSON serialization failed while rendering output.
+    #[error("failed to render JSON output: {0}")]
+    Json(#[from] serde_json::Error),
+}
+
+impl From<reqwest::Error> for Error {
+    fn from(error: reqwest::Error) -> Self {
+        Self::Http(error.without_url())
+    }
+}
+
+impl Error {
+    /// Returns a stable machine-readable error kind.
+    #[must_use]
+    pub const fn kind(&self) -> &'static str {
+        match self {
+            Self::MissingApiKey => "missing_api_key",
+            Self::InvalidBaseUrl(_) => "invalid_base_url",
+            Self::MissingArgument(_) => "missing_argument",
+            Self::Api { .. } => "api_error",
+            Self::Http(_) => "http_error",
+            Self::Json(_) => "json_error",
+        }
+    }
+}
