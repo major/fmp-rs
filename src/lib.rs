@@ -7,6 +7,9 @@
 //!
 //! Library-only consumers should disable default features:
 //!
+//! This crate emits log records via the [`log`] crate. Callers control output
+//! by installing a compatible logger (e.g., `env_logger` in the `cli` feature).
+//!
 //! ```toml
 //! rusty-fmp = { version = "0.1", default-features = false }
 //! ```

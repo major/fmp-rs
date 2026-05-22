@@ -1,5 +1,6 @@
 fn main() {
     println!("cargo::rerun-if-changed=build.rs");
+    println!("cargo::rerun-if-changed=src/cli/args.rs");
 
     if std::env::var("CARGO_FEATURE_CLI").is_err() {
         return;
@@ -25,6 +26,13 @@ fn main() {
                 .help("FMP stable API base URL. Override for tests or proxies.")
                 .env("FMP_BASE_URL")
                 .default_value("https://financialmodelingprep.com/stable/"),
+        )
+        .arg(
+            clap::Arg::new("verbose")
+                .long("verbose")
+                .short('v')
+                .help("Increase log verbosity. Use -v for INFO, -vv for DEBUG, -vvv for TRACE.")
+                .action(clap::ArgAction::Count),
         )
         .subcommand(clap::Command::new("search").about("Search for a tradable symbol by ticker or company name"))
         .subcommand(clap::Command::new("company").about("Company profile, peers, executives, and scores"))
