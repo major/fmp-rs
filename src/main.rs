@@ -6,6 +6,7 @@ use rusty_fmp::{Cli, run};
 
 #[tokio::main]
 async fn main() -> ExitCode {
+    human_panic::setup_panic!();
     dotenvy::dotenv().ok();
 
     let cli = match Cli::try_parse() {
