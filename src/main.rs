@@ -35,7 +35,7 @@ async fn main() -> ExitCode {
                 "{}",
                 serde_json::to_string(&body).unwrap_or_else(|_| body.to_string())
             );
-            ExitCode::FAILURE
+            error.exit_code()
         }
     }
 }

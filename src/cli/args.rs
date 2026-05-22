@@ -6,7 +6,11 @@ const DEFAULT_BASE_URL: &str = "https://financialmodelingprep.com/stable/";
 
 /// Financial Modeling Prep CLI optimized for predictable JSON output.
 #[derive(Debug, Parser)]
-#[command(version, about)]
+#[command(
+    version,
+    about,
+    after_help = "EXIT CODES:\n  0  Success\n  2  Usage error (bad flags or arguments)\n  3  Configuration error (missing API key or invalid base URL)\n  4  Network error (HTTP request failed)\n  5  API error (server returned an error response)\n  6  Parse error (JSON deserialization failed)"
+)]
 pub struct Cli {
     /// FMP API key. Prefer `FMP_API_KEY` in `.env` or the environment so shells do not record it.
     #[arg(long, env = "FMP_API_KEY", hide_env_values = true)]
