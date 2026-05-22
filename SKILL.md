@@ -12,6 +12,7 @@ Global options:
 
 - `--api-key <API_KEY>`: FMP API key. Prefer `FMP_API_KEY` or local `.env`.
 - `--base-url <BASE_URL>`: FMP stable API base URL. Defaults to `https://financialmodelingprep.com/stable/`; can also use `FMP_BASE_URL`.
+- `-v`, `--verbose`: increase log verbosity. Pass once for INFO, twice (`-vv`) for DEBUG, three times (`-vvv`) for TRACE. Log output goes to stderr.
 - `-h`, `--help`: print help.
 - `-V`, `--version`: print version.
 
