@@ -105,7 +105,7 @@ Analyst commands cover price target consensus, price target summary, and analyst
 fmp-agent calendar earnings [--from <FROM>] [--to <TO>]
 fmp-agent rates treasury [--from <FROM>] [--to <TO>]
 fmp-agent technical sma <SYMBOL> [--period-length <PERIOD_LENGTH>] [--timeframe <TIMEFRAME>]
-fmp-agent filings sec <SYMBOL> [--from <FROM>] [--to <TO>]
+fmp-agent filings sec-filings <SYMBOL> [--from <FROM>] [--to <TO>]
 fmp-agent news stock <SYMBOL> [--limit <LIMIT>]
 fmp-agent news general [--page <PAGE>] [--limit <LIMIT>]
 fmp-agent news articles [--page <PAGE>] [--limit <LIMIT>]
@@ -113,7 +113,7 @@ fmp-agent news forex [--page <PAGE>] [--limit <LIMIT>]
 fmp-agent news crypto [--page <PAGE>] [--limit <LIMIT>]
 ```
 
-Technical SMA defaults are `--period-length 10` and `--timeframe 1day`. Stock news `--limit` sets the maximum news items returned. Paginated news commands default to page 0 and limit 10 when omitted.
+Technical SMA defaults are `--period-length 10` and `--timeframe 1day`. SEC filings default `--from` to 90 days ago when omitted. Stock news `--limit` sets the maximum news items returned. Paginated news commands default to page 0 and limit 10 when omitted.
 
 ## Examples
 
@@ -135,7 +135,7 @@ fmp-agent forex quote EURUSD
 fmp-agent forex historical EURUSD --from 2025-01-01 --to 2025-01-03
 fmp-agent technical sma AAPL --period-length 10 --timeframe 1day
 fmp-agent market price-change AAPL
-fmp-agent filings sec AAPL --from 2024-01-01 --to 2024-03-01
+fmp-agent filings sec-filings AAPL --from 2024-01-01 --to 2024-03-01
 fmp-agent fundamentals income-statement AAPL --limit 5
 fmp-agent fundamentals income-statement-as-reported AAPL --limit 5
 fmp-agent fundamentals balance-sheet AAPL --limit 5

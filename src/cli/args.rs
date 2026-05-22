@@ -121,7 +121,7 @@ pub enum Command {
     #[command(hide = true)]
     StockPriceChange(SymbolArgs),
 
-    /// Hidden compatibility alias for `filings sec`.
+    /// Hidden compatibility alias for `filings sec-filings`.
     #[command(hide = true)]
     SecFilings(SymbolDateRangeArgs),
 
@@ -307,7 +307,7 @@ pub enum TechnicalCommand {
 #[derive(Debug, Subcommand)]
 pub enum FilingsCommand {
     /// Get SEC filings for a symbol.
-    Sec(SymbolDateRangeArgs),
+    SecFilings(SymbolDateRangeArgs),
 }
 
 /// Cryptocurrency commands.

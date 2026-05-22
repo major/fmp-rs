@@ -149,7 +149,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Calendars/corporate actions | [Stock split calendar](https://site.financialmodelingprep.com/developer/docs/stock-split-calendar-api) | excluded | low | Corporate calendars are excluded by pricing. |
 | Calendars/corporate actions | [IPO calendar](https://site.financialmodelingprep.com/developer/docs/ipo-calendar-api) | excluded | low | Corporate calendars are excluded by pricing. |
 | Calendars/corporate actions | [Market open](https://site.financialmodelingprep.com/developer/docs/is-the-market-open-api) | unknown | low | Utility endpoint, confirm entitlement. |
-| SEC/filings/insider | [SEC filings](https://site.financialmodelingprep.com/developer/docs/sec-filings-api) | confirmed | medium | Tested `sec-filings-search/symbol?symbol=AAPL&from=2024-01-01&to=2024-03-01`; implemented as `filings sec`. |
+| SEC/filings/insider | [SEC filings](https://site.financialmodelingprep.com/developer/docs/sec-filings-api) | confirmed | medium | Tested `sec-filings-search/symbol?symbol=AAPL&from=2024-01-01&to=2024-03-01`; implemented as `filings sec-filings`. |
 | SEC/filings/insider | [SEC RSS feeds](https://site.financialmodelingprep.com/developer/docs/sec-rss-feeds-api) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [All SEC RSS feeds](https://site.financialmodelingprep.com/developer/docs/sec-all-rss-feeds-api) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [RSS feed 8-K](https://site.financialmodelingprep.com/developer/docs/rss-feed-8k-api) | unknown | low | Verify before exposing. |
