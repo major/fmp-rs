@@ -234,7 +234,7 @@ Before implementing an endpoint as supported:
 2. Test the endpoint with the account API key.
 3. Record the result as `confirmed` or `denied` in this file.
 4. Capture required parameters and a representative response shape.
-5. Keep CLI output as compact JSON only. Do not add table, CSV, pretty-printing, filtering, or other output-shaping options.
+5. Keep successful CLI output as the raw FMP JSON payload on one line. Do not add table, CSV, pretty-printing, filtering, or other output-shaping options.
 
 ## Public source URLs
 

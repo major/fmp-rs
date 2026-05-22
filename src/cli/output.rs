@@ -1,18 +1,20 @@
-//! CLI output envelope types and rendering.
+//! CLI output rendering.
 
-use serde::Serialize;
 use serde_json::Value;
 
 use crate::error::Result;
 
 #[derive(Debug)]
 pub(super) struct CommandPayload {
+    #[cfg(test)]
     pub(super) endpoint: &'static str,
+    #[cfg(test)]
     pub(super) query: Value,
     pub(super) data: Value,
 }
 
 impl CommandPayload {
+    #[cfg(test)]
     pub(super) fn new(endpoint: &'static str, query: Value, data: Value) -> Self {
         Self {
             endpoint,
@@ -20,23 +22,13 @@ impl CommandPayload {
             data,
         }
     }
-}
 
-#[derive(Debug, Serialize)]
-struct OutputBody {
-    ok: bool,
-    endpoint: &'static str,
-    query: Value,
-    data: Value,
+    #[cfg(not(test))]
+    pub(super) fn new(_endpoint: &'static str, _query: Value, data: Value) -> Self {
+        Self { data }
+    }
 }
 
 pub(super) fn render_output(payload: CommandPayload) -> Result<String> {
-    let output = OutputBody {
-        ok: true,
-        endpoint: payload.endpoint,
-        query: payload.query,
-        data: payload.data,
-    };
-
-    Ok(serde_json::to_string(&output)?)
+    Ok(serde_json::to_string(&payload.data)?)
 }

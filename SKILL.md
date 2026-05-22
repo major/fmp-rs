@@ -17,7 +17,7 @@ Global options:
 
 Running `fmp-agent` without a command prints this generic help text.
 
-Command responses are compact JSON on one line. Normal command output goes to stdout, and runtime errors are JSON on stderr. Help and version output are human-readable text. The CLI does not provide output formatting or filtering options.
+Successful command responses are the raw FMP JSON payload on one line. Normal command output goes to stdout, and runtime errors are JSON on stderr. Help and version output are human-readable text. The CLI does not provide output formatting or filtering options.
 
 ## Commands
 

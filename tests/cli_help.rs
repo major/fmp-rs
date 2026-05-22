@@ -98,8 +98,5 @@ fn command_invocation_prints_compact_json() {
     );
 
     let output: serde_json::Value = serde_json::from_str(stdout.trim_end()).unwrap();
-    assert_eq!(output["ok"], true);
-    assert_eq!(output["endpoint"], "search-symbol");
-    assert_eq!(output["query"], json!({ "query": "Apple" }));
-    assert_eq!(output["data"], json!([{ "symbol": "AAPL" }]));
+    assert_eq!(output, json!([{ "symbol": "AAPL" }]));
 }
