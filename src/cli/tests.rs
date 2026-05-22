@@ -83,7 +83,7 @@ fn parses_historical_command() {
 }
 
 #[test]
-fn render_output_returns_compact_json_envelope() {
+fn render_output_returns_compact_json_payload() {
     let payload = CommandPayload::new(
         "quote",
         json!({ "symbol": "AAPL" }),
@@ -96,11 +96,8 @@ fn render_output_returns_compact_json_envelope() {
 
     let output: Value = serde_json::from_str(&output).unwrap();
 
-    assert_eq!(output["ok"], true);
-    assert_eq!(output["endpoint"], "quote");
-    assert_eq!(output["query"], json!({ "symbol": "AAPL" }));
     assert_eq!(
-        output["data"],
+        output,
         json!([{ "symbol": "AAPL", "price": 200.0, "volume": 1000 }])
     );
 }

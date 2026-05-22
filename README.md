@@ -6,7 +6,7 @@
 [![MSRV](https://img.shields.io/badge/MSRV-1.95-blue.svg)](https://github.com/major/fmp-rs/blob/main/Cargo.toml)
 [![License](https://img.shields.io/crates/l/rusty-fmp.svg)](https://crates.io/crates/rusty-fmp)
 
-`fmp-agent` is a Rust CLI for a Starter-plan Financial Modeling Prep account. It calls the FMP stable API and returns predictable JSON for shell pipelines.
+`fmp-agent` is a Rust CLI for a Starter-plan Financial Modeling Prep account. It calls the FMP stable API and returns raw JSON payloads for shell pipelines.
 
 This project is unofficial and is not affiliated with, endorsed by, or sponsored by Financial Modeling Prep.
 
@@ -26,7 +26,7 @@ See [`SKILL.md`](SKILL.md) for the full command reference and examples. Commands
 
 In the repo, use `cargo run -- <GROUP> <COMMAND>` with the same arguments before installing or after cleaning the build. After `cargo build`, run the built binary as `target/debug/fmp-agent`, for example `target/debug/fmp-agent market quote AAPL`.
 
-Command responses are compact JSON on one line for shell pipelines, and runtime errors are JSON on stderr. Help and version output are human-readable text. The CLI does not provide output formatting or filtering options.
+Successful command responses are the raw FMP JSON payload on one line for shell pipelines, and runtime errors are JSON on stderr. Help and version output are human-readable text. The CLI does not provide output formatting or filtering options.
 
 Running `fmp-agent` without a command prints the generic help text.
 

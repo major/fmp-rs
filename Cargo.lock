@@ -1296,7 +1296,6 @@ dependencies = [
  "dotenvy",
  "httpmock",
  "reqwest",
- "serde",
  "serde_json",
  "thiserror",
  "tokio",

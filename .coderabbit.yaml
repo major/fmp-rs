@@ -52,7 +52,7 @@ reviews:
         Rust CLI and library review:
         - This crate exposes both a `fmp-agent` JSON CLI and a library API for Financial Modeling Prep.
         - Preserve the default `cli` feature and the library-only `default-features = false` build.
-        - CLI output must stay predictable JSON: successes use `{ ok, endpoint, query, data }`, and failures use `{ ok: false, error: { kind, message } }` on stderr.
+        - CLI output must stay predictable JSON: successes are the raw FMP JSON payload on one stdout line, and failures use `{ ok: false, error: { kind, message } }` on stderr.
         - Keep API keys out of logs, errors, tests, and docs.
         - New user-facing endpoints must be confirmed in `docs/api-inventory.md` before they are exposed.
         - Prefer the existing shape helpers over bespoke per-endpoint client wrappers.
