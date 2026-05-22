@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2026-05-22
+
+### <!-- 1 -->🐛 Bug Fixes
+
+- *(cli)* Emit raw success payloads
+
+### <!-- 2 -->📚 Documentation
+
+- Remove duplicate changelog header
+
+### <!-- 7 -->⚙️ Miscellaneous
+
+- Update gitignore
+
+
 ## [0.3.0] - 2026-05-21
 
 ### <!-- 0 -->🚀 Features
