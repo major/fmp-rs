@@ -45,7 +45,3 @@ All notable changes to this project will be documented in this file.
 - Import project
 - Add renovate config
 - Rename crate to rusty-fmp
-
-# Changelog
-
-All notable changes to this project will be documented in this file.
