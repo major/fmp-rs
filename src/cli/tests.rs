@@ -1035,7 +1035,7 @@ async fn execute_date_range_commands_use_endpoint_descriptors() {
         (
             "sec-filings-search/symbol",
             "IBM",
-            Command::Filings(FilingsCommand::Sec(symbol_date_range("IBM"))),
+            Command::Filings(FilingsCommand::SecFilings(symbol_date_range("IBM"))),
         ),
         (
             "historical-price-eod/full",
@@ -1082,4 +1082,54 @@ async fn execute_date_range_commands_use_endpoint_descriptors() {
     for mock in mocks {
         mock.assert_async().await;
     }
+}
+
+#[tokio::test]
+async fn sec_filings_defaults_from_when_omitted() {
+    let server = MockServer::start_async().await;
+    server
+        .mock_async(|when, then| {
+            when.method(GET)
+                .path("/sec-filings-search/symbol")
+                .query_param("symbol", "AAPL")
+                .query_param("apikey", "test-key");
+            then.status(200).json_body(json!([{ "ok": true }]));
+        })
+        .await;
+
+    let client = test_client(&server);
+    let command = Command::Filings(FilingsCommand::SecFilings(optional_symbol_date_range(
+        "AAPL",
+    )));
+    let payload = execute(&client, &command).await.unwrap();
+
+    assert!(
+        payload.query["from"].is_string(),
+        "from should be defaulted to 90 days ago"
+    );
+    assert!(payload.query["to"].is_null());
+}
+
+#[tokio::test]
+async fn sec_filings_legacy_alias_defaults_from_when_omitted() {
+    let server = MockServer::start_async().await;
+    server
+        .mock_async(|when, then| {
+            when.method(GET)
+                .path("/sec-filings-search/symbol")
+                .query_param("symbol", "TSLA")
+                .query_param("apikey", "test-key");
+            then.status(200).json_body(json!([{ "ok": true }]));
+        })
+        .await;
+
+    let client = test_client(&server);
+    let command = Command::SecFilings(optional_symbol_date_range("TSLA"));
+    let payload = execute(&client, &command).await.unwrap();
+
+    assert!(
+        payload.query["from"].is_string(),
+        "from should be defaulted to 90 days ago"
+    );
+    assert!(payload.query["to"].is_null());
 }

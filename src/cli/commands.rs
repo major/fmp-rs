@@ -16,7 +16,7 @@ use crate::error::{Error, Result};
 use super::args::{
     AnalystCommand, CalendarCommand, Command, CompanyCommand, CryptoCommand, FilingsCommand,
     ForexCommand, FundamentalsCommand, MarketCommand, NewsArgs, NewsCommand, RatesCommand,
-    TechnicalCommand,
+    SymbolDateRangeArgs, TechnicalCommand,
 };
 use super::dispatch::{
     run_annual, run_by_date_range, run_by_symbol, run_by_symbol_date_range, run_endpoint, run_news,
@@ -59,16 +59,7 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
             )
             .await
         }
-        Command::SecFilings(args) => {
-            run_by_symbol_date_range(
-                client,
-                SEC_FILINGS_SEARCH_SYMBOL,
-                &args.symbol,
-                &args.from,
-                &args.to,
-            )
-            .await
-        }
+        Command::SecFilings(args) => run_sec_filings(client, args).await,
         Command::EarningsCalendar(args) => {
             run_by_date_range(client, EARNINGS_CALENDAR, &args.from, &args.to).await
         }
@@ -275,17 +266,29 @@ async fn execute_technical(
 
 async fn execute_filings(client: &FmpClient, command: &FilingsCommand) -> Result<CommandPayload> {
     match command {
-        FilingsCommand::Sec(args) => {
-            run_by_symbol_date_range(
-                client,
-                SEC_FILINGS_SEARCH_SYMBOL,
-                &args.symbol,
-                &args.from,
-                &args.to,
-            )
-            .await
-        }
+        FilingsCommand::SecFilings(args) => run_sec_filings(client, args).await,
     }
+}
+
+/// Default lookback period for SEC filings when `--from` is omitted.
+const SEC_FILINGS_LOOKBACK_DAYS: i64 = 90;
+
+/// Dispatch SEC filings with a 90-day default for the `from` date.
+async fn run_sec_filings(client: &FmpClient, args: &SymbolDateRangeArgs) -> Result<CommandPayload> {
+    let from = args.from.clone().or_else(|| {
+        let ago = jiff::Zoned::now()
+            .checked_sub(jiff::Span::new().days(SEC_FILINGS_LOOKBACK_DAYS))
+            .expect("90-day subtraction from current date cannot fail");
+        Some(ago.date().to_string())
+    });
+    run_by_symbol_date_range(
+        client,
+        SEC_FILINGS_SEARCH_SYMBOL,
+        &args.symbol,
+        &from,
+        &args.to,
+    )
+    .await
 }
 
 async fn execute_crypto(client: &FmpClient, command: &CryptoCommand) -> Result<CommandPayload> {

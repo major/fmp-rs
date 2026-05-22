@@ -15,11 +15,12 @@ required-features = ["cli"]
 
 [features]
 default = ["cli"]
-cli = ["dep:clap", "dep:dotenvy"]
+cli = ["dep:clap", "dep:dotenvy", "dep:jiff"]
 
 [dependencies]
 clap = { version = "4.6", features = ["derive", "env"], optional = true }
 dotenvy = { version = "0.15", optional = true }
+jiff = { version = "0.2", optional = true }
 reqwest = { version = "0.13", default-features = false, features = ["json", "rustls"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
