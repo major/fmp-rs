@@ -20,6 +20,9 @@ async fn main() -> ExitCode {
         Err(error) => error.exit(),
     };
 
+    let level_filter = cli.verbose.log_level_filter();
+    env_logger::Builder::new().filter_level(level_filter).init();
+
     match run(cli).await {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {

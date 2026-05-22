@@ -14,7 +14,9 @@ fn bare_command_prints_help() {
         .assert()
         .success()
         .stderr(predicate::str::is_empty())
-        .stdout(predicate::str::contains("Usage: fmp-agent [OPTIONS] <COMMAND>"))
+        .stdout(predicate::str::contains(
+            "Usage: fmp-agent [OPTIONS] <COMMAND>",
+        ))
         .stdout(predicate::str::contains("Commands:"))
         .stdout(predicate::str::contains("requires a subcommand").not());
 }
