@@ -59,7 +59,7 @@ make machete
 
 Run a focused test with `cargo test <test_name>`, for example `cargo test search_sends_expected_query`.
 
-Releases use release-plz for release PRs and crates.io publishing, git-cliff for changelog generation, and cargo-dist for tagged binary releases. The first crates.io release still needs to be published manually; after that, configure crates.io Trusted Publishing for `.github/workflows/cd.yml`.
+Releases use a tag-push workflow: run `/make-release` in opencode to bump the version, regenerate the changelog with git-cliff, and push a signed tag. The tag triggers `release.yml`, which builds multi-platform binaries via cargo-dist and publishes to crates.io via OIDC trusted publishing - no stored API token required. Configure crates.io Trusted Publishing once in the crate settings, pointing to `release.yml`.
 
 ## Endpoint coverage
 

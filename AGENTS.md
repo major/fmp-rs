@@ -38,7 +38,7 @@ Keep `AGENTS.md`, `README.md`, and `SKILL.md` updated with code changes. Stale d
 - Security audit lives in `.github/workflows/audit.yml` and runs on `Cargo.toml`/`Cargo.lock` changes plus a daily schedule.
 - Unused-dependency check runs as the `machete` job in `.github/workflows/ci.yml` via `cargo machete`.
 - `Cargo.toml` has a `[lints.rust]` table that denies the `unused` lint group declaratively, so `cargo build` and `cargo check` also reject unused imports, unused variables, and dead code without needing `-D warnings`. Per-item `#[allow(...)]` still works because the group is set with `priority = -1`.
-- Release automation uses `release-plz.toml`, `cliff.toml`, `dist-workspace.toml`, `.github/workflows/cd.yml`, and `.github/workflows/release.yml`.
+- Release automation uses `cliff.toml` for changelog generation, `dist-workspace.toml` for cargo-dist artifact builds, `.github/workflows/release.yml` for CI (artifacts + crates.io OIDC publish), and the `/make-release` opencode command to bump, changelog, commit, and tag locally before pushing.
 - CodeRabbit uses `.coderabbit.yaml`. Keep its path instructions aligned with this repo's JSON CLI, library-only feature support, and endpoint inventory rules.
 - `rust-toolchain.toml` pins Rust 1.95 for local consistency with the MSRV workflow.
 
