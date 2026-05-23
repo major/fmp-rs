@@ -12,6 +12,13 @@
 //! - the HTTP request fails before producing a response,
 //! - the API returns a non-2xx status, or
 //! - the response body is not valid JSON.
+//!
+//! # Logging
+//!
+//! The client emits [`log`] crate traces at `DEBUG` level for each HTTP
+//! request (URL with API key redacted) and response status, and at `WARN`
+//! level for non-2xx API responses. Enable a log subscriber such as
+//! `env_logger` to surface these traces.
 
 use std::fmt;
 
@@ -216,14 +223,18 @@ impl FmpClient {
 
     async fn get(&self, endpoint: Endpoint, params: &[(&str, &str)]) -> Result<Value> {
         let url = self.build_url(endpoint.path(), params)?;
+        log::debug!("GET {}", self.redact_url(&url));
         let response = self.http.get(url).send().await?;
         let status = response.status();
+        log::debug!("response status: {status}");
         let body = response.text().await?;
 
         if !status.is_success() {
+            let summary = summarize_body(&body);
+            log::warn!("API error {}: {}", status, summary);
             return Err(Error::Api {
                 status: status.as_u16(),
-                message: summarize_body(&body),
+                message: summary,
             });
         }
 
@@ -243,6 +254,28 @@ impl FmpClient {
             query.append_pair("apikey", &self.api_key);
         }
         Ok(url)
+    }
+
+    fn redact_url(&self, url: &Url) -> Url {
+        let mut display = url.clone();
+        let pairs: Vec<(String, String)> = url
+            .query_pairs()
+            .map(|(k, v)| {
+                if k == "apikey" {
+                    (k.into_owned(), "***".to_owned())
+                } else {
+                    (k.into_owned(), v.into_owned())
+                }
+            })
+            .collect();
+        display.set_query(None);
+        {
+            let mut query = display.query_pairs_mut();
+            for (k, v) in &pairs {
+                query.append_pair(k, v);
+            }
+        }
+        display
     }
 }
 

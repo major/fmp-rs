@@ -1,5 +1,7 @@
 //! Error types for the FMP CLI.
 
+use std::process::ExitCode;
+
 /// Convenient result alias for this crate.
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -53,6 +55,25 @@ impl Error {
             Self::Api { .. } => "api_error",
             Self::Http(_) => "http_error",
             Self::Json(_) => "json_error",
+        }
+    }
+
+    /// Returns a process exit code for this error.
+    ///
+    /// Codes follow a simple convention:
+    /// - `2` - usage/argument error (aligns with clap convention)
+    /// - `3` - configuration error (missing API key, invalid base URL)
+    /// - `4` - network/HTTP error
+    /// - `5` - API error (server returned an error response)
+    /// - `6` - parse error (JSON deserialization failed)
+    #[must_use]
+    pub fn exit_code(&self) -> ExitCode {
+        match self {
+            Self::MissingArgument(_) => ExitCode::from(2),
+            Self::MissingApiKey | Self::InvalidBaseUrl(_) => ExitCode::from(3),
+            Self::Http(_) => ExitCode::from(4),
+            Self::Api { .. } => ExitCode::from(5),
+            Self::Json(_) => ExitCode::from(6),
         }
     }
 }

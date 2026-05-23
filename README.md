@@ -28,6 +28,10 @@ In the repo, use `cargo run -- <GROUP> <COMMAND>` with the same arguments before
 
 Successful command responses are the raw FMP JSON payload on one line for shell pipelines, and runtime errors are JSON on stderr. Help and version output are human-readable text. The CLI does not provide output formatting or filtering options.
 
+Pass `--verbose` / `-v` for INFO logs, `-vv` for DEBUG, or `-vvv` for TRACE. Log output goes to stderr and does not appear without the flag. The `RUST_LOG` environment variable can also control log level.
+
+After installation, `man fmp-agent` shows the man page. Build locally with `cargo build --all-features`, which writes `man/fmp-agent.1` (gitignored, not committed).
+
 Running `fmp-agent` without a command prints the generic help text.
 
 ## Using as a library
@@ -40,6 +44,17 @@ rusty-fmp = { version = "0.1", default-features = false }
 ```
 
 This excludes `clap` and `dotenvy` and exposes `FmpClient`, `Endpoint`, `Error`, and `Result`. The `cli` feature (enabled by default) adds the `Cli` parser and the `run` entry point used by the `fmp-agent` binary.
+
+## Exit codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success |
+| 2 | Usage error (bad flags or arguments) |
+| 3 | Configuration error (missing API key or invalid base URL) |
+| 4 | Network error (HTTP request failed) |
+| 5 | API error (server returned a non-2xx response) |
+| 6 | Parse error (JSON deserialization failed) |
 
 ## Development
 

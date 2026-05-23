@@ -6,6 +6,7 @@ use rusty_fmp::{Cli, run};
 
 #[tokio::main]
 async fn main() -> ExitCode {
+    human_panic::setup_panic!();
     dotenvy::dotenv().ok();
 
     let cli = match Cli::try_parse() {
@@ -18,6 +19,12 @@ async fn main() -> ExitCode {
         }
         Err(error) => error.exit(),
     };
+
+    let level_filter = cli.verbose.log_level_filter();
+    env_logger::Builder::from_env(
+        env_logger::Env::default().default_filter_or(level_filter.to_string()),
+    )
+    .init();
 
     match run(cli).await {
         Ok(()) => ExitCode::SUCCESS,
@@ -34,7 +41,7 @@ async fn main() -> ExitCode {
                 "{}",
                 serde_json::to_string(&body).unwrap_or_else(|_| body.to_string())
             );
-            ExitCode::FAILURE
+            error.exit_code()
         }
     }
 }
