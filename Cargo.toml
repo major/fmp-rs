@@ -32,8 +32,8 @@ tokio = { version = "1.52", features = ["macros", "rt-multi-thread"] }
 
 [dev-dependencies]
 httpmock = "=0.8.3"
-assert_cmd = "2.0"
-predicates = "3.1"
+assert_cmd = "=2.2.2"
+predicates = "=3.1.4"
 
 [build-dependencies]
 clap = { version = "4.6", features = ["derive", "env"] }
