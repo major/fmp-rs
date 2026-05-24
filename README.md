@@ -15,16 +15,16 @@ This project is unofficial and is not affiliated with, endorsed by, or sponsored
 Install a Rust toolchain with Rust 1.95 or newer, then provide an API key with either `FMP_API_KEY` in the environment or a local `.env` file.
 
 ```bash
-FMP_API_KEY=your-key cargo run -- market quote AAPL
+FMP_API_KEY=your-key cargo run -- market-quote AAPL
 ```
 
 `FMP_BASE_URL` can override the default `https://financialmodelingprep.com/stable/` base URL for proxies or tests.
 
 ## Commands
 
-See [`SKILL.md`](SKILL.md) for the full command reference and examples. Commands are grouped by domain, including `company`, `market`, `fundamentals`, `analyst`, `calendar`, `rates`, `technical`, `filings`, `crypto`, `forex`, and `news`. Legacy flat commands still parse for compatibility, but new usage should prefer the grouped form.
+See [`SKILL.md`](SKILL.md) for the full command reference and examples. Commands are flat, domain-prefixed verbs such as `company-profile`, `market-quote`, `fundamentals-income-statement`, and `news-stock`. Old grouped commands and legacy aliases are rejected.
 
-In the repo, use `cargo run -- <GROUP> <COMMAND>` with the same arguments before installing or after cleaning the build. After `cargo build`, run the built binary as `target/debug/fmp-agent`, for example `target/debug/fmp-agent market quote AAPL`.
+In the repo, use `cargo run -- <COMMAND>` with the same arguments before installing or after cleaning the build. After `cargo build`, run the built binary as `target/debug/fmp-agent`, for example `target/debug/fmp-agent market-quote AAPL`.
 
 Successful command responses are the raw FMP JSON payload on one line for shell pipelines, and runtime errors are JSON on stderr. Help and version output are human-readable text. The CLI does not provide output formatting or filtering options.
 

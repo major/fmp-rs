@@ -90,56 +90,56 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Group | Endpoint doc | Starter status | CLI priority | Notes |
 | --- | --- | --- | --- | --- |
 | Company/reference | [Company core information](https://site.financialmodelingprep.com/developer/docs/company-core-information-api) | confirmed | high | Tested `profile?symbol=AAPL`. |
-| Company/reference | [Company key stats](https://site.financialmodelingprep.com/developer/docs/companies-key-stats-free-api) | confirmed | high | Current stable docs map this legacy area to `profile?symbol=AAPL`; implemented as `company stats` aliasing the confirmed profile endpoint. |
-| Company/reference | [Key executives](https://site.financialmodelingprep.com/developer/docs/key-executives-api) | confirmed | medium | Tested `key-executives?symbol=AAPL`; implemented as `company executives`. |
+| Company/reference | [Company key stats](https://site.financialmodelingprep.com/developer/docs/companies-key-stats-free-api) | confirmed | high | Current stable docs map this legacy area to `profile?symbol=AAPL`; not exposed separately because `company-profile` already uses the confirmed profile endpoint. |
+| Company/reference | [Key executives](https://site.financialmodelingprep.com/developer/docs/key-executives-api) | confirmed | medium | Tested `key-executives?symbol=AAPL`; implemented as `company-executives`. |
 | Company/reference | [Company image](https://site.financialmodelingprep.com/developer/docs/company-image-api) | explicit | low | Useful metadata, not core CLI output. |
 | Company/reference | [Company outlook](https://site.financialmodelingprep.com/developer/docs/company-outlook-api) | inferred | high | Aggregated endpoint, confirm exact Starter behavior. |
-| Company/reference | [Stock peers](https://site.financialmodelingprep.com/developer/docs/stock-peers-api) | confirmed | medium | Tested `stock-peers?symbol=AAPL`; implemented as `company peers`. |
+| Company/reference | [Stock peers](https://site.financialmodelingprep.com/developer/docs/stock-peers-api) | confirmed | medium | Tested `stock-peers?symbol=AAPL`; implemented as `company-peers`. |
 | Company/reference | [Symbol lookup](https://site.financialmodelingprep.com/developer/docs/stock-ticker-symbol-lookup-api) | confirmed | high | Tested `search-symbol?query=AAPL`; needed for search/discovery commands. |
-| Company/reference | [Historical share float](https://site.financialmodelingprep.com/developer/docs/company-historical-share-float) | confirmed | medium | Tested `shares-float?symbol=AAPL`; implemented as `company share-float`. Historical depth likely capped at 5 years. |
+| Company/reference | [Historical share float](https://site.financialmodelingprep.com/developer/docs/company-historical-share-float) | confirmed | medium | Tested `shares-float?symbol=AAPL`; implemented as `company-share-float`. Historical depth likely capped at 5 years. |
 | Company/reference | [All countries](https://site.financialmodelingprep.com/developer/docs/all-countries-company-information) | excluded | low | Non-US/global coverage is not Starter-safe. |
 | Company/reference | [Euronext prices](https://site.financialmodelingprep.com/developer/docs/euronext-prices-api) | excluded | low | Non-US/global coverage is not Starter-safe. |
 | Quote/market | [Stock market quote](https://site.financialmodelingprep.com/developer/docs/stock-market-quote-free-api) | confirmed | high | Tested `quote?symbol=AAPL`. |
 | Quote/market | [Realtime stock quote](https://site.financialmodelingprep.com/developer/docs/realtime-stock-quote-api) | inferred | high | Confirm delay/real-time behavior for account. |
 | Quote/market | [Quote order](https://site.financialmodelingprep.com/developer/docs/quote-order-quote) | inferred | low | Candidate after basic quote works. |
 | Quote/market | [Aftermarket quote](https://site.financialmodelingprep.com/developer/docs/aftermarket-quote-quote) | unknown | low | Not clearly mapped to Starter. |
-| Quote/market | [Stock price change](https://site.financialmodelingprep.com/developer/docs/stock-price-change-api) | confirmed | high | Tested `stock-price-change?symbol=AAPL`; implemented as `market price-change`. |
+| Quote/market | [Stock price change](https://site.financialmodelingprep.com/developer/docs/stock-price-change-api) | confirmed | high | Tested `stock-price-change?symbol=AAPL`; implemented as `market-price-change`. |
 | Quote/market | [All realtime full prices](https://site.financialmodelingprep.com/developer/docs/all-realtime-full-prices-quote) | unknown | low | Could be broad/high-volume, confirm entitlement. |
 | Historical/charts | [Historical stock data](https://site.financialmodelingprep.com/developer/docs/historical-stock-data-free-api) | confirmed | high | Tested `historical-price-eod/full?symbol=AAPL` with a January 2025 date range. |
-| Historical/charts | [Daily chart](https://site.financialmodelingprep.com/developer/docs/daily-chart-charts) | confirmed | high | Current stable docs map daily EOD data to `historical-price-eod/full?symbol=AAPL`; implemented as `market daily-chart` aliasing the confirmed historical endpoint. |
-| Historical/charts | [Historical stock splits](https://site.financialmodelingprep.com/developer/docs/historical-stock-splits-api) | confirmed | medium | Tested `splits?symbol=AAPL`; implemented as `market splits`; date depth still needs boundary testing. |
-| Historical/charts | [Historical stock dividends](https://site.financialmodelingprep.com/developer/docs/historical-stock-dividends-api) | confirmed | medium | Tested `dividends?symbol=AAPL`; implemented as `market dividends`; date depth still needs boundary testing. |
+| Historical/charts | [Daily chart](https://site.financialmodelingprep.com/developer/docs/daily-chart-charts) | confirmed | high | Current stable docs map daily EOD data to `historical-price-eod/full?symbol=AAPL`; not exposed separately because `market-historical` already uses the confirmed historical endpoint. |
+| Historical/charts | [Historical stock splits](https://site.financialmodelingprep.com/developer/docs/historical-stock-splits-api) | confirmed | medium | Tested `splits?symbol=AAPL`; implemented as `market-splits`; date depth still needs boundary testing. |
+| Historical/charts | [Historical stock dividends](https://site.financialmodelingprep.com/developer/docs/historical-stock-dividends-api) | confirmed | medium | Tested `dividends?symbol=AAPL`; implemented as `market-dividends`; date depth still needs boundary testing. |
 | Fundamentals/statements | [Income statement](https://site.financialmodelingprep.com/developer/docs/financial-statement-free-api) | confirmed | high | Tested `income-statement?symbol=AAPL&period=annual&limit=5`. |
 | Fundamentals/statements | [Balance sheet](https://site.financialmodelingprep.com/developer/docs/balance-sheet-statements-financial-statements) | confirmed | high | Tested `balance-sheet-statement?symbol=AAPL&period=annual&limit=5`. |
 | Fundamentals/statements | [Cash flow](https://site.financialmodelingprep.com/developer/docs/cashflow-statements-financial-statements) | confirmed | high | Tested `cash-flow-statement?symbol=AAPL&period=annual&limit=5`. |
-| Fundamentals/statements | [Income statement as reported](https://site.financialmodelingprep.com/developer/docs/financial-statement-as-reported-api) | confirmed | medium | Tested `income-statement-as-reported?symbol=AAPL&period=annual&limit=5`; implemented as `fundamentals income-statement-as-reported`. |
-| Fundamentals/statements | [Financial report dates](https://site.financialmodelingprep.com/developer/docs/financial-reports-dates) | confirmed | medium | Tested `financial-reports-dates?symbol=AAPL`; implemented as `fundamentals report-dates`. |
+| Fundamentals/statements | [Income statement as reported](https://site.financialmodelingprep.com/developer/docs/financial-statement-as-reported-api) | confirmed | medium | Tested `income-statement-as-reported?symbol=AAPL&period=annual&limit=5`; implemented as `fundamentals-income-statement-as-reported`. |
+| Fundamentals/statements | [Financial report dates](https://site.financialmodelingprep.com/developer/docs/financial-reports-dates) | confirmed | medium | Tested `financial-reports-dates?symbol=AAPL`; implemented as `fundamentals-report-dates`. |
 | Fundamentals/statements | [Annual report form](https://site.financialmodelingprep.com/developer/docs/annual-report-form-api) | inferred | medium | Confirm entitlement and document/download shape. |
 | Ratios/metrics/growth | [Key metrics](https://site.financialmodelingprep.com/developer/docs/company-key-metrics-api) | confirmed | high | Tested `key-metrics?symbol=AAPL&period=annual&limit=5`. |
 | Ratios/metrics/growth | [Financial ratios](https://site.financialmodelingprep.com/developer/docs/financial-ratio-free-api) | confirmed | high | Tested `ratios?symbol=AAPL&period=annual&limit=5`. |
 | Ratios/metrics/growth | [Financial statement growth](https://site.financialmodelingprep.com/developer/docs/financial-statements-growth-api) | inferred | high | Growth family likely available from tested income statement growth endpoint. |
 | Ratios/metrics/growth | [Income statement growth](https://site.financialmodelingprep.com/developer/docs/income-statements-growth-api) | confirmed | medium | Tested `income-statement-growth?symbol=AAPL&period=annual&limit=5`. |
-| Ratios/metrics/growth | [Balance sheet growth](https://site.financialmodelingprep.com/developer/docs/balance-sheet-statements-growth-api) | confirmed | medium | Tested `balance-sheet-statement-growth?symbol=AAPL&period=annual&limit=5`; implemented as `fundamentals balance-sheet-growth`. |
-| Ratios/metrics/growth | [Cash flow statement growth](https://site.financialmodelingprep.com/developer/docs/company-financial-statement-growth-api) | confirmed | medium | Tested `cash-flow-statement-growth?symbol=AAPL&period=annual&limit=5`; implemented as `fundamentals cash-flow-growth`. |
+| Ratios/metrics/growth | [Balance sheet growth](https://site.financialmodelingprep.com/developer/docs/balance-sheet-statements-growth-api) | confirmed | medium | Tested `balance-sheet-statement-growth?symbol=AAPL&period=annual&limit=5`; implemented as `fundamentals-balance-sheet-growth`. |
+| Ratios/metrics/growth | [Cash flow statement growth](https://site.financialmodelingprep.com/developer/docs/company-financial-statement-growth-api) | confirmed | medium | Tested `cash-flow-statement-growth?symbol=AAPL&period=annual&limit=5`; implemented as `fundamentals-cash-flow-growth`. |
 | Ratios/metrics/growth | [Enterprise value](https://site.financialmodelingprep.com/developer/docs/company-enterprise-value-api) | confirmed | medium | Tested `enterprise-values?symbol=AAPL&period=annual&limit=5`. |
-| Ratios/metrics/growth | [Financial scores](https://site.financialmodelingprep.com/developer/docs/stock-financial-scores) | confirmed | medium | Tested `financial-scores?symbol=AAPL`; implemented as `company financial-scores`. |
-| News | [FMP articles](https://site.financialmodelingprep.com/developer/docs/fmp-articles-api) | confirmed | medium | Tested `fmp-articles?page=0&limit=1`; implemented as `news articles`. |
-| News | [General news](https://site.financialmodelingprep.com/developer/docs/general-news-api) | confirmed | medium | Tested `news/general-latest?page=0&limit=1`; implemented as `news general`. |
-| News | [Stock news](https://site.financialmodelingprep.com/developer/docs/stock-news-api) | confirmed | high | Tested `news/stock?symbols=AAPL&limit=5`; good first news command. |
-| News | [Forex news](https://site.financialmodelingprep.com/developer/docs/forex-news-api) | confirmed | low | Tested `news/forex-latest?page=0&limit=1`; implemented as `news forex`. |
-| News | [Crypto news](https://site.financialmodelingprep.com/developer/docs/crypto-news-api) | confirmed | low | Tested `news/crypto-latest?page=0&limit=1`; implemented as `news crypto`. |
+| Ratios/metrics/growth | [Financial scores](https://site.financialmodelingprep.com/developer/docs/stock-financial-scores) | confirmed | medium | Tested `financial-scores?symbol=AAPL`; implemented as `company-financial-scores`. |
+| News | [FMP articles](https://site.financialmodelingprep.com/developer/docs/fmp-articles-api) | confirmed | medium | Tested `fmp-articles?page=0&limit=1`; implemented as `news-articles`. |
+| News | [General news](https://site.financialmodelingprep.com/developer/docs/general-news-api) | confirmed | medium | Tested `news/general-latest?page=0&limit=1`; implemented as `news-general`. |
+| News | [Stock news](https://site.financialmodelingprep.com/developer/docs/stock-news-api) | confirmed | high | Tested `news/stock?symbols=AAPL&limit=5`; implemented as `news-stock`. |
+| News | [Forex news](https://site.financialmodelingprep.com/developer/docs/forex-news-api) | confirmed | low | Tested `news/forex-latest?page=0&limit=1`; implemented as `news-forex`. |
+| News | [Crypto news](https://site.financialmodelingprep.com/developer/docs/crypto-news-api) | confirmed | low | Tested `news/crypto-latest?page=0&limit=1`; implemented as `news-crypto`. |
 | News | [Press releases](https://site.financialmodelingprep.com/developer/docs/press-releases-api) | denied | medium | Tested `press-releases?symbol=AAPL&page=0&limit=1`, which returned HTTP 404 with an empty array; tested `news/press-releases-latest?page=0&limit=1`, which returned HTTP 402 subscription restriction. |
 | News | [Social sentiment](https://site.financialmodelingprep.com/developer/docs/social-sentiment-api) | unknown | low | Not clearly mapped to Starter. |
-| Crypto/forex/commodities | [Crypto quote/list](https://site.financialmodelingprep.com/developer/docs/crypto-currency-free-api) | confirmed | medium | Tested `cryptocurrency-list` and `quote?symbol=BTCUSD`; implemented as `crypto list` and `crypto quote`. |
+| Crypto/forex/commodities | [Crypto quote/list](https://site.financialmodelingprep.com/developer/docs/crypto-currency-free-api) | confirmed | medium | Tested `cryptocurrency-list` and `quote?symbol=BTCUSD`; implemented as `crypto-list` and `crypto-quote`. |
 | Crypto/forex/commodities | [Bitcoin price](https://site.financialmodelingprep.com/developer/docs/bitcoin-price-free-api) | explicit | low | Crypto category. |
-| Crypto/forex/commodities | [Crypto historical](https://site.financialmodelingprep.com/developer/docs/cryptocurrency-historical-data-api) | confirmed | medium | Tested `historical-price-eod/full?symbol=BTCUSD`; implemented as `crypto historical`. Historical depth may be capped. |
-| Crypto/forex/commodities | [Currency exchange rate](https://site.financialmodelingprep.com/developer/docs/currency-exchange-rate-free-api) | confirmed | medium | Tested `quote?symbol=EURUSD`; implemented as `forex quote`. |
-| Crypto/forex/commodities | [Forex historical](https://site.financialmodelingprep.com/developer/docs/forex-historical-data-api) | confirmed | medium | Tested `historical-price-eod/full?symbol=EURUSD`; implemented as `forex historical`. Historical depth may be capped. |
-| Crypto/forex/commodities | [Full quote forex](https://site.financialmodelingprep.com/developer/docs/full-quote-forex) | confirmed | low | Tested `quote?symbol=EURUSD`; implemented as `forex quote`. |
+| Crypto/forex/commodities | [Crypto historical](https://site.financialmodelingprep.com/developer/docs/cryptocurrency-historical-data-api) | confirmed | medium | Tested `historical-price-eod/full?symbol=BTCUSD`; implemented as `crypto-historical`. Historical depth may be capped. |
+| Crypto/forex/commodities | [Currency exchange rate](https://site.financialmodelingprep.com/developer/docs/currency-exchange-rate-free-api) | confirmed | medium | Tested `quote?symbol=EURUSD`; implemented as `forex-quote`. |
+| Crypto/forex/commodities | [Forex historical](https://site.financialmodelingprep.com/developer/docs/forex-historical-data-api) | confirmed | medium | Tested `historical-price-eod/full?symbol=EURUSD`; implemented as `forex-historical`. Historical depth may be capped. |
+| Crypto/forex/commodities | [Full quote forex](https://site.financialmodelingprep.com/developer/docs/full-quote-forex) | confirmed | low | Tested `quote?symbol=EURUSD`; implemented as `forex-quote`. |
 | Crypto/forex/commodities | [Commodities list](https://site.financialmodelingprep.com/developer/docs/commodities-list-commodities) | unknown | low | Commodities are not named in Starter summary. |
 | Crypto/forex/commodities | [Commodities prices](https://site.financialmodelingprep.com/developer/docs/commodities-prices-api) | unknown | low | Commodities are not named in Starter summary. |
 | Crypto/forex/commodities | [Commodity historical](https://site.financialmodelingprep.com/developer/docs/commodity-historical-price-api) | unknown | low | Commodities are not named in Starter summary. |
-| Calendars/corporate actions | [Earnings calendar](https://site.financialmodelingprep.com/developer/docs/earnings-calendar-api) | confirmed | low | Tested `earnings-calendar?from=2026-01-01&to=2026-01-31`; implemented as `calendar earnings`; account access differs from public-pricing inference. |
+| Calendars/corporate actions | [Earnings calendar](https://site.financialmodelingprep.com/developer/docs/earnings-calendar-api) | confirmed | low | Tested `earnings-calendar?from=2026-01-01&to=2026-01-31`; implemented as `earnings-calendar`; account access differs from public-pricing inference. |
 | Calendars/corporate actions | [Confirmed earnings calendar](https://site.financialmodelingprep.com/developer/docs/earnings-calendar-confirmed-api) | excluded | low | Corporate calendars are excluded by pricing. |
 | Calendars/corporate actions | [Earnings surprises](https://site.financialmodelingprep.com/developer/docs/earnings-surprises-api) | unknown | low | May not be calendar-only, verify. |
 | Calendars/corporate actions | [Historical earnings](https://site.financialmodelingprep.com/developer/docs/earnings-historical-earnings) | unknown | low | Verify before exposing. |
@@ -149,7 +149,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Calendars/corporate actions | [Stock split calendar](https://site.financialmodelingprep.com/developer/docs/stock-split-calendar-api) | excluded | low | Corporate calendars are excluded by pricing. |
 | Calendars/corporate actions | [IPO calendar](https://site.financialmodelingprep.com/developer/docs/ipo-calendar-api) | excluded | low | Corporate calendars are excluded by pricing. |
 | Calendars/corporate actions | [Market open](https://site.financialmodelingprep.com/developer/docs/is-the-market-open-api) | unknown | low | Utility endpoint, confirm entitlement. |
-| SEC/filings/insider | [SEC filings](https://site.financialmodelingprep.com/developer/docs/sec-filings-api) | confirmed | medium | Tested `sec-filings-search/symbol?symbol=AAPL&from=2024-01-01&to=2024-03-01`; implemented as `filings sec-filings`. |
+| SEC/filings/insider | [SEC filings](https://site.financialmodelingprep.com/developer/docs/sec-filings-api) | confirmed | medium | Tested `sec-filings-search/symbol?symbol=AAPL&from=2024-01-01&to=2024-03-01`; implemented as `sec-filings`. |
 | SEC/filings/insider | [SEC RSS feeds](https://site.financialmodelingprep.com/developer/docs/sec-rss-feeds-api) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [All SEC RSS feeds](https://site.financialmodelingprep.com/developer/docs/sec-all-rss-feeds-api) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [RSS feed 8-K](https://site.financialmodelingprep.com/developer/docs/rss-feed-8k-api) | unknown | low | Verify before exposing. |
@@ -173,14 +173,14 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | ETFs/funds/13F | [Form 13F](https://site.financialmodelingprep.com/developer/docs/form-13f-api) | excluded | low | 13F institutional holdings are excluded by pricing. |
 | Analyst/ratings/price targets | [Financial estimates](https://site.financialmodelingprep.com/developer/docs/stable/financial-estimates) | inferred | medium | Analyst estimate availability needs API Viewer confirmation. |
 | Analyst/ratings/price targets | [Analyst estimates](https://site.financialmodelingprep.com/developer/docs/analyst-estimates-api) | confirmed | medium | Tested `analyst-estimates?symbol=AAPL&period=annual&limit=5`. |
-| Analyst/ratings/price targets | [Analyst recommendations](https://site.financialmodelingprep.com/developer/docs/analyst-stock-recommendations-api) | confirmed | medium | Tested `grades?symbol=AAPL`; implemented as `analyst grades`. |
+| Analyst/ratings/price targets | [Analyst recommendations](https://site.financialmodelingprep.com/developer/docs/analyst-stock-recommendations-api) | confirmed | medium | Tested `grades?symbol=AAPL`; implemented as `analyst-grades`. |
 | Analyst/ratings/price targets | [Price target](https://site.financialmodelingprep.com/developer/docs/price-target-api) | inferred | medium | Verify before exposing. |
-| Analyst/ratings/price targets | [Price target summary](https://site.financialmodelingprep.com/developer/docs/price-target-summary-api) | confirmed | medium | Tested `price-target-summary?symbol=AAPL`; implemented as `analyst price-target-summary`. |
-| Analyst/ratings/price targets | [Price target consensus](https://site.financialmodelingprep.com/developer/docs/price-target-consensus-api) | confirmed | medium | Tested `price-target-consensus?symbol=AAPL`; implemented as `analyst price-target-consensus`. |
+| Analyst/ratings/price targets | [Price target summary](https://site.financialmodelingprep.com/developer/docs/price-target-summary-api) | confirmed | medium | Tested `price-target-summary?symbol=AAPL`; implemented as `analyst-price-target-summary`. |
+| Analyst/ratings/price targets | [Price target consensus](https://site.financialmodelingprep.com/developer/docs/price-target-consensus-api) | confirmed | medium | Tested `price-target-consensus?symbol=AAPL`; implemented as `analyst-price-target-consensus`. |
 | Analyst/ratings/price targets | [Upgrades and downgrades](https://site.financialmodelingprep.com/developer/docs/upgrades-and-downgrades-api) | inferred | medium | Verify before exposing. |
-| Analyst/ratings/price targets | [Company rating](https://site.financialmodelingprep.com/developer/docs/companies-rating-free-api) | confirmed | medium | Tested `grades-consensus?symbol=AAPL`; implemented as `company rating`. |
+| Analyst/ratings/price targets | [Company rating](https://site.financialmodelingprep.com/developer/docs/companies-rating-free-api) | confirmed | medium | Tested `grades-consensus?symbol=AAPL`; implemented as `company-rating`. |
 | Analyst/ratings/price targets | [Historical rating](https://site.financialmodelingprep.com/developer/docs/historical-rating-company-information) | inferred | low | Verify before exposing. |
-| Technicals | [Intraday SMA](https://site.financialmodelingprep.com/developer/docs/technical-intraday-sma) | confirmed | low | Tested daily `technical-indicators/sma?symbol=AAPL&periodLength=10&timeframe=1day`; implemented as `technical sma`; intraday access still needs testing. |
+| Technicals | [Intraday SMA](https://site.financialmodelingprep.com/developer/docs/technical-intraday-sma) | confirmed | low | Tested daily `technical-indicators/sma?symbol=AAPL&periodLength=10&timeframe=1day`; implemented as `technical-sma`; intraday access still needs testing. |
 | Technicals | [Intraday EMA](https://site.financialmodelingprep.com/developer/docs/technical-intraday-ema) | excluded | low | Technical indicators are excluded by pricing. |
 | Technicals | [Intraday RSI](https://site.financialmodelingprep.com/developer/docs/technical-intraday-rsi) | excluded | low | Technical indicators are excluded by pricing. |
 | Technicals | [Intraday ADX](https://site.financialmodelingprep.com/developer/docs/technical-intraday-adx) | excluded | low | Technical indicators are excluded by pricing. |
@@ -201,7 +201,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Bulk/batch/websocket | [Forex websocket](https://site.financialmodelingprep.com/developer/docs/forex-websocket) | unknown | low | Not clearly mapped to Starter. |
 | Economics | [Economic indicator](https://site.financialmodelingprep.com/developer/docs/economic-indicator-api) | unknown | low | Not clearly mapped to Starter. |
 | Economics | [Economic calendar](https://site.financialmodelingprep.com/developer/docs/economic-calendar-api) | excluded | low | Corporate/economic calendar access is not Starter-safe from public pricing. |
-| Economics | [Treasury rates](https://site.financialmodelingprep.com/developer/docs/treasury-rates-api) | confirmed | low | Tested `treasury-rates?from=2025-01-01&to=2025-01-31`; implemented as `rates treasury`. |
+| Economics | [Treasury rates](https://site.financialmodelingprep.com/developer/docs/treasury-rates-api) | confirmed | low | Tested `treasury-rates?from=2025-01-01&to=2025-01-31`; implemented as `treasury-rates`. |
 | Economics | [Market risk premium](https://site.financialmodelingprep.com/developer/docs/market-risk-premium-api) | unknown | low | Not clearly mapped to Starter. |
 
 ## Recommended first CLI surface
@@ -211,20 +211,20 @@ Start with endpoints marked `explicit` and `high` priority:
 | Command idea | Endpoint area | Why first |
 | --- | --- | --- |
 | `fmp-agent search <query>` | Symbol lookup | Needed for discovery. |
-| `fmp-agent company profile <symbol>` | Company core information | Simple reference data. |
-| `fmp-agent market quote <symbol>` | Stock market quote | Common CLI use case. |
-| `fmp-agent market historical <symbol>` | Historical stock data or daily chart | Explicit Starter category. |
-| `fmp-agent fundamentals income-statement <symbol>` | Income statement | Explicit annual fundamentals category. |
-| `fmp-agent fundamentals balance-sheet <symbol>` | Balance sheet | Explicit annual fundamentals category. |
-| `fmp-agent fundamentals cash-flow <symbol>` | Cash flow | Explicit annual fundamentals category. |
-| `fmp-agent fundamentals ratios <symbol>` | Financial ratios | Explicit annual ratios category. |
-| `fmp-agent fundamentals metrics <symbol>` | Key metrics | Explicit annual fundamentals category. |
-| `fmp-agent news stock <symbol>` | Stock news | Explicit news category. |
-| `fmp-agent crypto list` | Cryptocurrency list | Confirmed Starter crypto category and useful for symbol discovery. |
-| `fmp-agent crypto quote <symbol>` | Cryptocurrency quote | Confirmed crypto quote shape shares the stable `quote` endpoint. |
-| `fmp-agent crypto historical <symbol>` | Cryptocurrency historical EOD | Confirmed crypto EOD bars share the stable historical endpoint. |
-| `fmp-agent forex quote <symbol>` | Currency exchange rate | Confirmed forex quote shape shares the stable `quote` endpoint. |
-| `fmp-agent forex historical <symbol>` | Forex historical EOD | Confirmed forex EOD bars share the stable historical endpoint. |
+| `fmp-agent company-profile <symbol>` | Company core information | Simple reference data. |
+| `fmp-agent market-quote <symbol>` | Stock market quote | Common CLI use case. |
+| `fmp-agent market-historical <symbol>` | Historical stock data | Explicit Starter category. |
+| `fmp-agent fundamentals-income-statement <symbol>` | Income statement | Explicit annual fundamentals category. |
+| `fmp-agent fundamentals-balance-sheet <symbol>` | Balance sheet | Explicit annual fundamentals category. |
+| `fmp-agent fundamentals-cash-flow <symbol>` | Cash flow | Explicit annual fundamentals category. |
+| `fmp-agent fundamentals-ratios <symbol>` | Financial ratios | Explicit annual ratios category. |
+| `fmp-agent fundamentals-metrics <symbol>` | Key metrics | Explicit annual fundamentals category. |
+| `fmp-agent news-stock <symbol>` | Stock news | Explicit news category. |
+| `fmp-agent crypto-list` | Cryptocurrency list | Confirmed Starter crypto category and useful for symbol discovery. |
+| `fmp-agent crypto-quote <symbol>` | Cryptocurrency quote | Confirmed crypto quote shape shares the stable `quote` endpoint. |
+| `fmp-agent crypto-historical <symbol>` | Cryptocurrency historical EOD | Confirmed crypto EOD bars share the stable historical endpoint. |
+| `fmp-agent forex-quote <symbol>` | Currency exchange rate | Confirmed forex quote shape shares the stable `quote` endpoint. |
+| `fmp-agent forex-historical <symbol>` | Forex historical EOD | Confirmed forex EOD bars share the stable historical endpoint. |
 
 ## Verification plan
 

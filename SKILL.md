@@ -22,7 +22,7 @@ Successful command responses are the raw FMP JSON payload on one line. Normal co
 
 ## Commands
 
-The visible command surface is grouped by domain so agents and humans can scan the hierarchy quickly. Legacy flat commands such as `quote`, `historical`, and `income-statement` still parse for compatibility, but new usage should prefer the grouped form.
+The visible command surface is flat and domain-prefixed so agents and humans can use one command token per endpoint. Old grouped forms such as `market quote` and legacy aliases such as `quote` are rejected.
 
 ### Discovery
 
@@ -35,38 +35,36 @@ Search for a tradable symbol by ticker or company name.
 ### Company
 
 ```bash
-fmp-agent company profile <SYMBOL>
-fmp-agent company executives <SYMBOL>
-fmp-agent company peers <SYMBOL>
-fmp-agent company stats <SYMBOL>
-fmp-agent company financial-scores <SYMBOL>
-fmp-agent company share-float <SYMBOL>
-fmp-agent company rating <SYMBOL>
+fmp-agent company-profile <SYMBOL>
+fmp-agent company-executives <SYMBOL>
+fmp-agent company-peers <SYMBOL>
+fmp-agent company-financial-scores <SYMBOL>
+fmp-agent company-share-float <SYMBOL>
+fmp-agent company-rating <SYMBOL>
 ```
 
-Company commands cover profile/reference data, key executives, peer companies, profile-backed key statistics, financial scores, share float, and rating consensus.
+Company commands cover profile/reference data, key executives, peer companies, financial scores, share float, and rating consensus.
 
 ### Market
 
 ```bash
-fmp-agent market quote <SYMBOL>
-fmp-agent market historical <SYMBOL> [--from <FROM>] [--to <TO>]
-fmp-agent market daily-chart <SYMBOL> [--from <FROM>] [--to <TO>]
-fmp-agent market dividends <SYMBOL>
-fmp-agent market splits <SYMBOL>
-fmp-agent market price-change <SYMBOL>
+fmp-agent market-quote <SYMBOL>
+fmp-agent market-historical <SYMBOL> [--from <FROM>] [--to <TO>]
+fmp-agent market-dividends <SYMBOL>
+fmp-agent market-splits <SYMBOL>
+fmp-agent market-price-change <SYMBOL>
 ```
 
-Market commands cover quotes, end-of-day price bars, daily chart aliases, dividends, splits, and price change percentages. Date ranges use inclusive `YYYY-MM-DD` values.
+Market commands cover quotes, end-of-day price bars, dividends, splits, and price change percentages. Date ranges use inclusive `YYYY-MM-DD` values.
 
 ### Crypto and forex
 
 ```bash
-fmp-agent crypto list
-fmp-agent crypto quote <SYMBOL>
-fmp-agent crypto historical <SYMBOL> [--from <FROM>] [--to <TO>]
-fmp-agent forex quote <SYMBOL>
-fmp-agent forex historical <SYMBOL> [--from <FROM>] [--to <TO>]
+fmp-agent crypto-list
+fmp-agent crypto-quote <SYMBOL>
+fmp-agent crypto-historical <SYMBOL> [--from <FROM>] [--to <TO>]
+fmp-agent forex-quote <SYMBOL>
+fmp-agent forex-historical <SYMBOL> [--from <FROM>] [--to <TO>]
 ```
 
 Crypto and forex commands cover supported cryptocurrency symbols, full quotes, currency exchange quotes, and end-of-day price bars. Date ranges use inclusive `YYYY-MM-DD` values.
@@ -74,18 +72,18 @@ Crypto and forex commands cover supported cryptocurrency symbols, full quotes, c
 ### Fundamentals
 
 ```bash
-fmp-agent fundamentals income-statement <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals income-statement-as-reported <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals balance-sheet <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals cash-flow <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals ratios <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals metrics <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals income-statement-growth <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals balance-sheet-growth <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals cash-flow-growth <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals enterprise-values <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals analyst-estimates <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals report-dates <SYMBOL>
+fmp-agent fundamentals-income-statement <SYMBOL> [--limit <LIMIT>]
+fmp-agent fundamentals-income-statement-as-reported <SYMBOL> [--limit <LIMIT>]
+fmp-agent fundamentals-balance-sheet <SYMBOL> [--limit <LIMIT>]
+fmp-agent fundamentals-cash-flow <SYMBOL> [--limit <LIMIT>]
+fmp-agent fundamentals-ratios <SYMBOL> [--limit <LIMIT>]
+fmp-agent fundamentals-metrics <SYMBOL> [--limit <LIMIT>]
+fmp-agent fundamentals-income-statement-growth <SYMBOL> [--limit <LIMIT>]
+fmp-agent fundamentals-balance-sheet-growth <SYMBOL> [--limit <LIMIT>]
+fmp-agent fundamentals-cash-flow-growth <SYMBOL> [--limit <LIMIT>]
+fmp-agent fundamentals-enterprise-values <SYMBOL> [--limit <LIMIT>]
+fmp-agent fundamentals-analyst-estimates <SYMBOL> [--limit <LIMIT>]
+fmp-agent fundamentals-report-dates <SYMBOL>
 ```
 
 Fundamentals commands return annual statement, ratio, metric, growth, enterprise value, analyst estimate, and financial report date rows. `--limit` sets the maximum annual rows returned for statement-like endpoints.
@@ -93,9 +91,9 @@ Fundamentals commands return annual statement, ratio, metric, growth, enterprise
 ### Analyst
 
 ```bash
-fmp-agent analyst price-target-consensus <SYMBOL>
-fmp-agent analyst price-target-summary <SYMBOL>
-fmp-agent analyst grades <SYMBOL>
+fmp-agent analyst-price-target-consensus <SYMBOL>
+fmp-agent analyst-price-target-summary <SYMBOL>
+fmp-agent analyst-grades <SYMBOL>
 ```
 
 Analyst commands cover price target consensus, price target summary, and analyst grade actions for a symbol.
@@ -103,15 +101,15 @@ Analyst commands cover price target consensus, price target summary, and analyst
 ### Calendar, rates, technicals, filings, and news
 
 ```bash
-fmp-agent calendar earnings [--from <FROM>] [--to <TO>]
-fmp-agent rates treasury [--from <FROM>] [--to <TO>]
-fmp-agent technical sma <SYMBOL> [--period-length <PERIOD_LENGTH>] [--timeframe <TIMEFRAME>]
-fmp-agent filings sec-filings <SYMBOL> [--from <FROM>] [--to <TO>]
-fmp-agent news stock <SYMBOL> [--limit <LIMIT>]
-fmp-agent news general [--page <PAGE>] [--limit <LIMIT>]
-fmp-agent news articles [--page <PAGE>] [--limit <LIMIT>]
-fmp-agent news forex [--page <PAGE>] [--limit <LIMIT>]
-fmp-agent news crypto [--page <PAGE>] [--limit <LIMIT>]
+fmp-agent earnings-calendar [--from <FROM>] [--to <TO>]
+fmp-agent treasury-rates [--from <FROM>] [--to <TO>]
+fmp-agent technical-sma <SYMBOL> [--period-length <PERIOD_LENGTH>] [--timeframe <TIMEFRAME>]
+fmp-agent sec-filings <SYMBOL> [--from <FROM>] [--to <TO>]
+fmp-agent news-stock <SYMBOL> [--limit <LIMIT>]
+fmp-agent news-general [--page <PAGE>] [--limit <LIMIT>]
+fmp-agent news-articles [--page <PAGE>] [--limit <LIMIT>]
+fmp-agent news-forex [--page <PAGE>] [--limit <LIMIT>]
+fmp-agent news-crypto [--page <PAGE>] [--limit <LIMIT>]
 ```
 
 Technical SMA defaults are `--period-length 10` and `--timeframe 1day`. SEC filings default `--from` to 90 days ago when omitted. Stock news `--limit` sets the maximum news items returned. Paginated news commands default to page 0 and limit 10 when omitted.
@@ -119,45 +117,43 @@ Technical SMA defaults are `--period-length 10` and `--timeframe 1day`. SEC fili
 ## Examples
 
 ```bash
-FMP_API_KEY=your-key fmp-agent market quote AAPL
-fmp-agent market historical AAPL --from 2025-01-01 --to 2025-01-31
-fmp-agent market daily-chart AAPL --from 2025-01-01 --to 2025-01-31
-fmp-agent company executives AAPL
-fmp-agent company stats AAPL
-fmp-agent company peers AAPL
-fmp-agent market dividends AAPL
-fmp-agent market splits AAPL
-fmp-agent calendar earnings --from 2026-01-01 --to 2026-01-31
-fmp-agent rates treasury --from 2025-01-01 --to 2025-01-31
-fmp-agent crypto list
-fmp-agent crypto quote BTCUSD
-fmp-agent crypto historical BTCUSD --from 2025-01-01 --to 2025-01-03
-fmp-agent forex quote EURUSD
-fmp-agent forex historical EURUSD --from 2025-01-01 --to 2025-01-03
-fmp-agent technical sma AAPL --period-length 10 --timeframe 1day
-fmp-agent market price-change AAPL
-fmp-agent filings sec-filings AAPL --from 2024-01-01 --to 2024-03-01
-fmp-agent fundamentals income-statement AAPL --limit 5
-fmp-agent fundamentals income-statement-as-reported AAPL --limit 5
-fmp-agent fundamentals balance-sheet AAPL --limit 5
-fmp-agent fundamentals cash-flow AAPL --limit 5
-fmp-agent fundamentals income-statement-growth AAPL --limit 5
-fmp-agent fundamentals balance-sheet-growth AAPL --limit 5
-fmp-agent fundamentals cash-flow-growth AAPL --limit 5
-fmp-agent fundamentals enterprise-values AAPL --limit 5
-fmp-agent company financial-scores AAPL
-fmp-agent company share-float AAPL
-fmp-agent company rating AAPL
-fmp-agent fundamentals analyst-estimates AAPL --limit 5
-fmp-agent fundamentals report-dates AAPL
-fmp-agent analyst price-target-consensus AAPL
-fmp-agent analyst price-target-summary AAPL
-fmp-agent analyst grades AAPL
-fmp-agent news stock AAPL --limit 10
-fmp-agent news general --page 0 --limit 10
-fmp-agent news articles --page 0 --limit 10
-fmp-agent news forex --page 0 --limit 10
-fmp-agent news crypto --page 0 --limit 10
+FMP_API_KEY=your-key fmp-agent market-quote AAPL
+fmp-agent market-historical AAPL --from 2025-01-01 --to 2025-01-31
+fmp-agent company-executives AAPL
+fmp-agent company-peers AAPL
+fmp-agent market-dividends AAPL
+fmp-agent market-splits AAPL
+fmp-agent earnings-calendar --from 2026-01-01 --to 2026-01-31
+fmp-agent treasury-rates --from 2025-01-01 --to 2025-01-31
+fmp-agent crypto-list
+fmp-agent crypto-quote BTCUSD
+fmp-agent crypto-historical BTCUSD --from 2025-01-01 --to 2025-01-03
+fmp-agent forex-quote EURUSD
+fmp-agent forex-historical EURUSD --from 2025-01-01 --to 2025-01-03
+fmp-agent technical-sma AAPL --period-length 10 --timeframe 1day
+fmp-agent market-price-change AAPL
+fmp-agent sec-filings AAPL --from 2024-01-01 --to 2024-03-01
+fmp-agent fundamentals-income-statement AAPL --limit 5
+fmp-agent fundamentals-income-statement-as-reported AAPL --limit 5
+fmp-agent fundamentals-balance-sheet AAPL --limit 5
+fmp-agent fundamentals-cash-flow AAPL --limit 5
+fmp-agent fundamentals-income-statement-growth AAPL --limit 5
+fmp-agent fundamentals-balance-sheet-growth AAPL --limit 5
+fmp-agent fundamentals-cash-flow-growth AAPL --limit 5
+fmp-agent fundamentals-enterprise-values AAPL --limit 5
+fmp-agent company-financial-scores AAPL
+fmp-agent company-share-float AAPL
+fmp-agent company-rating AAPL
+fmp-agent fundamentals-analyst-estimates AAPL --limit 5
+fmp-agent fundamentals-report-dates AAPL
+fmp-agent analyst-price-target-consensus AAPL
+fmp-agent analyst-price-target-summary AAPL
+fmp-agent analyst-grades AAPL
+fmp-agent news-stock AAPL --limit 10
+fmp-agent news-general --page 0 --limit 10
+fmp-agent news-articles --page 0 --limit 10
+fmp-agent news-forex --page 0 --limit 10
+fmp-agent news-crypto --page 0 --limit 10
 ```
 
 In the repo, use `cargo run -- <COMMAND>` for the same arguments before installing or after cleaning the build.
@@ -166,8 +162,7 @@ In the repo, use `cargo run -- <COMMAND>` for the same arguments before installi
 
 ```bash
 fmp-agent --help
-fmp-agent <GROUP> --help
-fmp-agent <GROUP> <COMMAND> --help
+fmp-agent <COMMAND> --help
 ```
 
 ## Development
