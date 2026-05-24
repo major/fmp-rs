@@ -77,3 +77,70 @@ fn command_invocation_prints_compact_json() {
     let output: serde_json::Value = serde_json::from_str(stdout.trim_end()).unwrap();
     assert_eq!(output, json!([{ "symbol": "AAPL" }]));
 }
+
+#[test]
+fn flat_command_help_present() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .arg("--help")
+        .env("CLAP_COLOR", "never")
+        .env("NO_COLOR", "1")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("company-profile"))
+        .stdout(predicate::str::contains("market-quote"))
+        .stdout(predicate::str::contains("news-stock"))
+        .stdout(predicate::str::contains("sec-filings"))
+        .stdout(predicate::str::contains("earnings-calendar"))
+        .stdout(predicate::str::contains("treasury-rates"))
+        .stdout(predicate::str::contains("\n  company ").not());
+}
+
+#[test]
+fn no_old_domain_groups_in_help() {
+    let output = Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .arg("--help")
+        .env("CLAP_COLOR", "never")
+        .env("NO_COLOR", "1")
+        .output()
+        .unwrap();
+
+    assert!(output.status.success(), "help should exit successfully");
+
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    for command in [
+        "company",
+        "market",
+        "fundamentals",
+        "analyst",
+        "calendar",
+        "rates",
+        "technical",
+        "filings",
+        "crypto",
+        "forex",
+        "news",
+    ] {
+        assert!(
+            !stdout.contains(&format!("\n  {command} ")),
+            "old domain group should not appear as command entry: {command}"
+        );
+    }
+}
+
+#[test]
+fn flat_command_specific_help_present() {
+    for command in ["company-profile", "market-quote", "news-stock"] {
+        Command::cargo_bin("fmp-agent")
+            .unwrap()
+            .args([command, "--help"])
+            .env("CLAP_COLOR", "never")
+            .env("NO_COLOR", "1")
+            .assert()
+            .success()
+            .stdout(predicate::str::contains(format!(
+                "Usage: fmp-agent {command}"
+            )));
+    }
+}

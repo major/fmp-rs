@@ -67,8 +67,7 @@ fn parses_historical_command() {
         "fmp",
         "--api-key",
         "test-key",
-        "market",
-        "historical",
+        "market-historical",
         "AAPL",
         "--from",
         "2025-01-01",
@@ -76,10 +75,7 @@ fn parses_historical_command() {
         "2025-01-31",
     ]);
 
-    assert!(matches!(
-        cli.command,
-        Command::Market(MarketCommand::Historical(_))
-    ));
+    assert!(matches!(cli.command, Command::MarketHistorical(_)));
 }
 
 #[test]
@@ -103,8 +99,8 @@ fn render_output_returns_compact_json_payload() {
 }
 
 #[test]
-fn parses_legacy_historical_alias() {
-    let cli = Cli::parse_from([
+fn rejects_legacy_historical_alias() {
+    let result = Cli::try_parse_from([
         "fmp",
         "--api-key",
         "test-key",
@@ -116,14 +112,14 @@ fn parses_legacy_historical_alias() {
         "2025-01-31",
     ]);
 
-    assert!(matches!(cli.command, Command::Historical(_)));
+    assert!(result.is_err());
 }
 
 #[test]
 fn parses_technical_sma_defaults() {
-    let cli = Cli::parse_from(["fmp", "--api-key", "test-key", "technical", "sma", "AAPL"]);
+    let cli = Cli::parse_from(["fmp", "--api-key", "test-key", "technical-sma", "AAPL"]);
 
-    let Command::Technical(TechnicalCommand::Sma(args)) = cli.command else {
+    let Command::TechnicalSma(args) = cli.command else {
         panic!("expected technical SMA command");
     };
     assert_eq!(args.period_length, 10);
@@ -136,20 +132,14 @@ fn parses_grouped_news_command() {
         "fmp",
         "--api-key",
         "test-key",
-        "news",
-        "stock",
+        "news-stock",
         "AAPL",
         "--limit",
         "3",
     ]);
 
-    let Command::News(NewsArgs {
-        command: Some(NewsCommand::Stock(args)),
-        symbol: None,
-        limit: None,
-    }) = cli.command
-    else {
-        panic!("expected grouped news command");
+    let Command::NewsStock(args) = cli.command else {
+        panic!("expected stock news command");
     };
     assert_eq!(args.symbol, "AAPL");
     assert_eq!(args.limit, Some(3));
@@ -158,39 +148,29 @@ fn parses_grouped_news_command() {
 #[test]
 fn parses_paginated_news_commands() {
     let cases = [
-        ("general", "general"),
-        ("articles", "articles"),
-        ("forex", "forex"),
-        ("crypto", "crypto"),
+        ("news-general", "general"),
+        ("news-articles", "articles"),
+        ("news-forex", "forex"),
+        ("news-crypto", "crypto"),
     ];
 
-    for (subcommand, expected) in cases {
+    for (command, expected) in cases {
         let cli = Cli::parse_from([
             "fmp",
             "--api-key",
             "test-key",
-            "news",
-            subcommand,
+            command,
             "--page",
             "0",
             "--limit",
             "3",
         ]);
 
-        let Command::News(NewsArgs {
-            command: Some(command),
-            symbol: None,
-            limit: None,
-        }) = cli.command
-        else {
-            panic!("expected grouped news command");
-        };
-
-        let args = match command {
-            NewsCommand::General(args) if expected == "general" => args,
-            NewsCommand::Articles(args) if expected == "articles" => args,
-            NewsCommand::Forex(args) if expected == "forex" => args,
-            NewsCommand::Crypto(args) if expected == "crypto" => args,
+        let args = match cli.command {
+            Command::NewsGeneral(args) if expected == "general" => args,
+            Command::NewsArticles(args) if expected == "articles" => args,
+            Command::NewsForex(args) if expected == "forex" => args,
+            Command::NewsCrypto(args) if expected == "crypto" => args,
             _ => panic!("unexpected news command"),
         };
         assert_eq!(args.page, Some(0));
@@ -206,52 +186,48 @@ fn parses_new_symbol_commands() {
                 "fmp",
                 "--api-key",
                 "test-key",
-                "company",
-                "share-float",
+                "company-share-float",
                 "AAPL",
             ],
-            "company share-float",
+            "company-share-float",
         ),
         (
-            ["fmp", "--api-key", "test-key", "company", "rating", "AAPL"],
-            "company rating",
+            ["fmp", "--api-key", "test-key", "company-rating", "AAPL"],
+            "company-rating",
         ),
         (
             [
                 "fmp",
                 "--api-key",
                 "test-key",
-                "fundamentals",
-                "report-dates",
+                "fundamentals-report-dates",
                 "AAPL",
             ],
-            "fundamentals report-dates",
+            "fundamentals-report-dates",
         ),
         (
             [
                 "fmp",
                 "--api-key",
                 "test-key",
-                "analyst",
-                "price-target-consensus",
+                "analyst-price-target-consensus",
                 "AAPL",
             ],
-            "analyst price-target-consensus",
+            "analyst-price-target-consensus",
         ),
         (
             [
                 "fmp",
                 "--api-key",
                 "test-key",
-                "analyst",
-                "price-target-summary",
+                "analyst-price-target-summary",
                 "AAPL",
             ],
-            "analyst price-target-summary",
+            "analyst-price-target-summary",
         ),
         (
-            ["fmp", "--api-key", "test-key", "analyst", "grades", "AAPL"],
-            "analyst grades",
+            ["fmp", "--api-key", "test-key", "analyst-grades", "AAPL"],
+            "analyst-grades",
         ),
     ];
 
@@ -259,42 +235,21 @@ fn parses_new_symbol_commands() {
         let cli = Cli::parse_from(args);
 
         match expected {
-            "company share-float" => {
+            "company-share-float" => assert!(matches!(cli.command, Command::CompanyShareFloat(_))),
+            "company-rating" => assert!(matches!(cli.command, Command::CompanyRating(_))),
+            "fundamentals-report-dates" => {
+                assert!(matches!(cli.command, Command::FundamentalsReportDates(_)));
+            }
+            "analyst-price-target-consensus" => {
                 assert!(matches!(
                     cli.command,
-                    Command::Company(CompanyCommand::ShareFloat(_))
+                    Command::AnalystPriceTargetConsensus(_)
                 ));
             }
-            "company rating" => {
-                assert!(matches!(
-                    cli.command,
-                    Command::Company(CompanyCommand::Rating(_))
-                ));
+            "analyst-price-target-summary" => {
+                assert!(matches!(cli.command, Command::AnalystPriceTargetSummary(_)));
             }
-            "fundamentals report-dates" => {
-                assert!(matches!(
-                    cli.command,
-                    Command::Fundamentals(FundamentalsCommand::ReportDates(_))
-                ));
-            }
-            "analyst price-target-consensus" => {
-                assert!(matches!(
-                    cli.command,
-                    Command::Analyst(AnalystCommand::PriceTargetConsensus(_))
-                ));
-            }
-            "analyst price-target-summary" => {
-                assert!(matches!(
-                    cli.command,
-                    Command::Analyst(AnalystCommand::PriceTargetSummary(_))
-                ));
-            }
-            "analyst grades" => {
-                assert!(matches!(
-                    cli.command,
-                    Command::Analyst(AnalystCommand::Grades(_))
-                ));
-            }
+            "analyst-grades" => assert!(matches!(cli.command, Command::AnalystGrades(_))),
             _ => unreachable!(),
         }
     }
@@ -304,38 +259,30 @@ fn parses_new_symbol_commands() {
 fn parses_crypto_and_forex_commands() {
     let cases: &[(&[&str], &str)] = &[
         (
-            &["fmp", "--api-key", "test-key", "crypto", "list"],
-            "crypto list",
+            &["fmp", "--api-key", "test-key", "crypto-list"],
+            "crypto-list",
         ),
         (
-            &["fmp", "--api-key", "test-key", "crypto", "quote", "BTCUSD"],
-            "crypto quote",
+            &["fmp", "--api-key", "test-key", "crypto-quote", "BTCUSD"],
+            "crypto-quote",
         ),
         (
             &[
                 "fmp",
                 "--api-key",
                 "test-key",
-                "crypto",
-                "historical",
+                "crypto-historical",
                 "BTCUSD",
             ],
-            "crypto historical",
+            "crypto-historical",
         ),
         (
-            &["fmp", "--api-key", "test-key", "forex", "quote", "EURUSD"],
-            "forex quote",
+            &["fmp", "--api-key", "test-key", "forex-quote", "EURUSD"],
+            "forex-quote",
         ),
         (
-            &[
-                "fmp",
-                "--api-key",
-                "test-key",
-                "forex",
-                "historical",
-                "EURUSD",
-            ],
-            "forex historical",
+            &["fmp", "--api-key", "test-key", "forex-historical", "EURUSD"],
+            "forex-historical",
         ),
     ];
 
@@ -343,31 +290,19 @@ fn parses_crypto_and_forex_commands() {
         let cli = Cli::parse_from(*args);
 
         match *expected {
-            "crypto list" => assert!(matches!(cli.command, Command::Crypto(CryptoCommand::List))),
-            "crypto quote" => assert!(matches!(
-                cli.command,
-                Command::Crypto(CryptoCommand::Quote(_))
-            )),
-            "crypto historical" => assert!(matches!(
-                cli.command,
-                Command::Crypto(CryptoCommand::Historical(_))
-            )),
-            "forex quote" => assert!(matches!(
-                cli.command,
-                Command::Forex(ForexCommand::Quote(_))
-            )),
-            "forex historical" => assert!(matches!(
-                cli.command,
-                Command::Forex(ForexCommand::Historical(_))
-            )),
+            "crypto-list" => assert!(matches!(cli.command, Command::CryptoList)),
+            "crypto-quote" => assert!(matches!(cli.command, Command::CryptoQuote(_))),
+            "crypto-historical" => assert!(matches!(cli.command, Command::CryptoHistorical(_))),
+            "forex-quote" => assert!(matches!(cli.command, Command::ForexQuote(_))),
+            "forex-historical" => assert!(matches!(cli.command, Command::ForexHistorical(_))),
             _ => unreachable!(),
         }
     }
 }
 
 #[test]
-fn parses_legacy_news_alias() {
-    let cli = Cli::parse_from([
+fn rejects_legacy_news_alias() {
+    let result = Cli::try_parse_from([
         "fmp",
         "--api-key",
         "test-key",
@@ -377,16 +312,7 @@ fn parses_legacy_news_alias() {
         "3",
     ]);
 
-    let Command::News(NewsArgs {
-        command: None,
-        symbol: Some(symbol),
-        limit,
-    }) = cli.command
-    else {
-        panic!("expected legacy news command");
-    };
-    assert_eq!(symbol, "AAPL");
-    assert_eq!(limit, Some(3));
+    assert!(result.is_err());
 }
 
 #[tokio::test]
@@ -395,21 +321,19 @@ async fn execute_annual_command_uses_endpoint_descriptor() {
     let cases = [
         (
             "income-statement",
-            Command::Fundamentals(FundamentalsCommand::IncomeStatement(annual("AAPL"))),
+            Command::FundamentalsIncomeStatement(annual("AAPL")),
         ),
         (
             "income-statement-as-reported",
-            Command::Fundamentals(FundamentalsCommand::IncomeStatementAsReported(annual(
-                "AAPL",
-            ))),
+            Command::FundamentalsIncomeStatementAsReported(annual("AAPL")),
         ),
         (
             "balance-sheet-statement-growth",
-            Command::Fundamentals(FundamentalsCommand::BalanceSheetGrowth(annual("AAPL"))),
+            Command::FundamentalsBalanceSheetGrowth(annual("AAPL")),
         ),
         (
             "cash-flow-statement-growth",
-            Command::Fundamentals(FundamentalsCommand::CashFlowGrowth(annual("AAPL"))),
+            Command::FundamentalsCashFlowGrowth(annual("AAPL")),
         ),
     ];
     let mut mocks = Vec::new();
@@ -451,58 +375,34 @@ async fn execute_annual_command_uses_endpoint_descriptor() {
 async fn execute_symbol_commands_use_endpoint_descriptors() {
     let server = MockServer::start_async().await;
     let cases = [
-        (
-            "profile",
-            Command::Company(CompanyCommand::Stats(symbol("AAPL"))),
-        ),
-        (
-            "stock-peers",
-            Command::Company(CompanyCommand::Peers(symbol("AAPL"))),
-        ),
-        (
-            "key-executives",
-            Command::Company(CompanyCommand::Executives(symbol("AAPL"))),
-        ),
-        (
-            "dividends",
-            Command::Market(MarketCommand::Dividends(symbol("AAPL"))),
-        ),
-        (
-            "splits",
-            Command::Market(MarketCommand::Splits(symbol("AAPL"))),
-        ),
+        ("profile", Command::CompanyProfile(symbol("AAPL"))),
+        ("stock-peers", Command::CompanyPeers(symbol("AAPL"))),
+        ("key-executives", Command::CompanyExecutives(symbol("AAPL"))),
+        ("dividends", Command::MarketDividends(symbol("AAPL"))),
+        ("splits", Command::MarketSplits(symbol("AAPL"))),
         (
             "stock-price-change",
-            Command::Market(MarketCommand::PriceChange(symbol("AAPL"))),
+            Command::MarketPriceChange(symbol("AAPL")),
         ),
         (
             "financial-scores",
-            Command::Company(CompanyCommand::FinancialScores(symbol("AAPL"))),
+            Command::CompanyFinancialScores(symbol("AAPL")),
         ),
-        (
-            "shares-float",
-            Command::Company(CompanyCommand::ShareFloat(symbol("AAPL"))),
-        ),
-        (
-            "grades-consensus",
-            Command::Company(CompanyCommand::Rating(symbol("AAPL"))),
-        ),
+        ("shares-float", Command::CompanyShareFloat(symbol("AAPL"))),
+        ("grades-consensus", Command::CompanyRating(symbol("AAPL"))),
         (
             "financial-reports-dates",
-            Command::Fundamentals(FundamentalsCommand::ReportDates(symbol("AAPL"))),
+            Command::FundamentalsReportDates(symbol("AAPL")),
         ),
         (
             "price-target-consensus",
-            Command::Analyst(AnalystCommand::PriceTargetConsensus(symbol("AAPL"))),
+            Command::AnalystPriceTargetConsensus(symbol("AAPL")),
         ),
         (
             "price-target-summary",
-            Command::Analyst(AnalystCommand::PriceTargetSummary(symbol("AAPL"))),
+            Command::AnalystPriceTargetSummary(symbol("AAPL")),
         ),
-        (
-            "grades",
-            Command::Analyst(AnalystCommand::Grades(symbol("AAPL"))),
-        ),
+        ("grades", Command::AnalystGrades(symbol("AAPL"))),
     ];
     let mut mocks = Vec::new();
     for (path, _) in &cases {
@@ -545,27 +445,17 @@ async fn execute_crypto_and_forex_commands_use_endpoint_descriptors() {
         })
         .await;
     let quote_cases = [
-        (
-            "BTCUSD",
-            Command::Crypto(CryptoCommand::Quote(symbol("BTCUSD"))),
-        ),
-        (
-            "EURUSD",
-            Command::Forex(ForexCommand::Quote(symbol("EURUSD"))),
-        ),
+        ("BTCUSD", Command::CryptoQuote(symbol("BTCUSD"))),
+        ("EURUSD", Command::ForexQuote(symbol("EURUSD"))),
     ];
     let historical_cases = [
         (
             "BTCUSD",
-            Command::Crypto(CryptoCommand::Historical(optional_symbol_date_range(
-                "BTCUSD",
-            ))),
+            Command::CryptoHistorical(optional_symbol_date_range("BTCUSD")),
         ),
         (
             "EURUSD",
-            Command::Forex(ForexCommand::Historical(optional_symbol_date_range(
-                "EURUSD",
-            ))),
+            Command::ForexHistorical(optional_symbol_date_range("EURUSD")),
         ),
     ];
     let mut mocks = Vec::new();
@@ -598,9 +488,7 @@ async fn execute_crypto_and_forex_commands_use_endpoint_descriptors() {
     }
 
     let client = test_client(&server);
-    let payload = execute(&client, &Command::Crypto(CryptoCommand::List))
-        .await
-        .unwrap();
+    let payload = execute(&client, &Command::CryptoList).await.unwrap();
     assert_eq!(payload.endpoint, "cryptocurrency-list");
     assert_eq!(payload.query, json!({}));
     assert_eq!(payload.data[0]["symbol"], "BTCUSD");
@@ -652,8 +540,8 @@ async fn execute_date_range_only_commands_use_endpoint_descriptors() {
 
     let client = test_client(&server);
     let commands = [
-        Command::Calendar(CalendarCommand::Earnings(date_range())),
-        Command::Rates(RatesCommand::Treasury(date_range())),
+        Command::EarningsCalendar(date_range()),
+        Command::TreasuryRates(date_range()),
     ];
 
     for command in commands {
@@ -690,11 +578,11 @@ async fn execute_technical_sma_uses_endpoint_descriptor() {
                 .json_body(json!([{ "symbol": "AAPL", "sma": 200.0 }]));
         })
         .await;
-    let command = Command::Technical(TechnicalCommand::Sma(TechnicalSmaArgs {
+    let command = Command::TechnicalSma(TechnicalSmaArgs {
         symbol: "AAPL".to_owned(),
         period_length: 10,
         timeframe: "1day".to_owned(),
-    }));
+    });
 
     let payload = execute(&test_client(&server), &command).await.unwrap();
 
@@ -727,17 +615,12 @@ async fn execute_news_commands_use_endpoint_descriptor() {
 
     let client = test_client(&server);
     let commands = [
-        Command::News(NewsArgs {
-            command: Some(NewsCommand::Stock(StockNewsArgs {
-                limit: Some(3),
-                ..stock_news("AAPL")
-            })),
-            symbol: None,
-            limit: None,
+        Command::NewsStock(StockNewsArgs {
+            limit: Some(3),
+            ..stock_news("AAPL")
         }),
-        Command::News(NewsArgs {
-            command: None,
-            symbol: Some("MSFT".to_owned()),
+        Command::NewsStock(StockNewsArgs {
+            symbol: "MSFT".to_owned(),
             limit: Some(3),
         }),
     ];
@@ -754,56 +637,16 @@ async fn execute_news_commands_use_endpoint_descriptor() {
 async fn execute_paginated_news_commands_use_endpoint_descriptors() {
     let server = MockServer::start_async().await;
     let cases = [
-        (
-            "news/general-latest",
-            0,
-            3,
-            Command::News(NewsArgs {
-                command: Some(NewsCommand::General(paged())),
-                symbol: None,
-                limit: None,
-            }),
-        ),
-        (
-            "fmp-articles",
-            0,
-            3,
-            Command::News(NewsArgs {
-                command: Some(NewsCommand::Articles(paged())),
-                symbol: None,
-                limit: None,
-            }),
-        ),
-        (
-            "news/forex-latest",
-            0,
-            3,
-            Command::News(NewsArgs {
-                command: Some(NewsCommand::Forex(paged())),
-                symbol: None,
-                limit: None,
-            }),
-        ),
-        (
-            "news/crypto-latest",
-            0,
-            3,
-            Command::News(NewsArgs {
-                command: Some(NewsCommand::Crypto(paged())),
-                symbol: None,
-                limit: None,
-            }),
-        ),
+        ("news/general-latest", 0, 3, Command::NewsGeneral(paged())),
+        ("fmp-articles", 0, 3, Command::NewsArticles(paged())),
+        ("news/forex-latest", 0, 3, Command::NewsForex(paged())),
+        ("news/crypto-latest", 0, 3, Command::NewsCrypto(paged())),
         (
             "news/general-latest",
             0,
             10,
-            Command::News(NewsArgs {
-                command: Some(NewsCommand::General(PagedArgs {
-                    page: None,
-                    limit: None,
-                })),
-                symbol: None,
+            Command::NewsGeneral(PagedArgs {
+                page: None,
                 limit: None,
             }),
         ),
@@ -844,7 +687,7 @@ async fn execute_paginated_news_commands_use_endpoint_descriptors() {
 }
 
 #[tokio::test]
-async fn execute_legacy_aliases_use_endpoint_descriptors() {
+async fn execute_flat_commands_use_endpoint_descriptors() {
     let server = MockServer::start_async().await;
     let cases = vec![
         (
@@ -856,42 +699,37 @@ async fn execute_legacy_aliases_use_endpoint_descriptors() {
         ),
         (
             "profile",
-            Command::Profile(symbol("AAPL")),
+            Command::CompanyProfile(symbol("AAPL")),
             json!({ "symbol": "AAPL" }),
         ),
         (
             "key-executives",
-            Command::KeyExecutives(symbol("AAPL")),
+            Command::CompanyExecutives(symbol("AAPL")),
             json!({ "symbol": "AAPL" }),
         ),
         (
             "quote",
-            Command::Quote(symbol("AAPL")),
+            Command::MarketQuote(symbol("AAPL")),
             json!({ "symbol": "AAPL" }),
         ),
         (
             "historical-price-eod/full",
-            Command::Historical(symbol_date_range("AAPL")),
+            Command::MarketHistorical(symbol_date_range("AAPL")),
             json!({ "symbol": "AAPL", "from": "2025-01-01", "to": "2025-01-31" }),
         ),
         (
-            "historical-price-eod/full",
-            Command::DailyChart(symbol_date_range("MSFT")),
-            json!({ "symbol": "MSFT", "from": "2025-01-01", "to": "2025-01-31" }),
-        ),
-        (
             "stock-peers",
-            Command::StockPeers(symbol("AAPL")),
+            Command::CompanyPeers(symbol("AAPL")),
             json!({ "symbol": "AAPL" }),
         ),
         (
             "dividends",
-            Command::Dividends(symbol("AAPL")),
+            Command::MarketDividends(symbol("AAPL")),
             json!({ "symbol": "AAPL" }),
         ),
         (
             "splits",
-            Command::Splits(symbol("AAPL")),
+            Command::MarketSplits(symbol("AAPL")),
             json!({ "symbol": "AAPL" }),
         ),
         (
@@ -915,7 +753,7 @@ async fn execute_legacy_aliases_use_endpoint_descriptors() {
         ),
         (
             "stock-price-change",
-            Command::StockPriceChange(symbol("AAPL")),
+            Command::MarketPriceChange(symbol("AAPL")),
             json!({ "symbol": "AAPL" }),
         ),
         (
@@ -925,72 +763,67 @@ async fn execute_legacy_aliases_use_endpoint_descriptors() {
         ),
         (
             "income-statement",
-            Command::IncomeStatement(annual("AAPL")),
+            Command::FundamentalsIncomeStatement(annual("AAPL")),
             json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
         ),
         (
             "income-statement-as-reported",
-            Command::IncomeStatementAsReported(annual("AAPL")),
+            Command::FundamentalsIncomeStatementAsReported(annual("AAPL")),
             json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
         ),
         (
             "balance-sheet-statement",
-            Command::BalanceSheet(annual("AAPL")),
+            Command::FundamentalsBalanceSheet(annual("AAPL")),
             json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
         ),
         (
             "cash-flow-statement",
-            Command::CashFlow(annual("AAPL")),
+            Command::FundamentalsCashFlow(annual("AAPL")),
             json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
         ),
         (
             "ratios",
-            Command::Ratios(annual("AAPL")),
+            Command::FundamentalsRatios(annual("AAPL")),
             json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
         ),
         (
             "key-metrics",
-            Command::Metrics(annual("AAPL")),
+            Command::FundamentalsMetrics(annual("AAPL")),
             json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
         ),
         (
-            "profile",
-            Command::CompanyStats(symbol("MSFT")),
-            json!({ "symbol": "MSFT" }),
-        ),
-        (
             "income-statement-growth",
-            Command::IncomeStatementGrowth(annual("AAPL")),
+            Command::FundamentalsIncomeStatementGrowth(annual("AAPL")),
             json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
         ),
         (
             "balance-sheet-statement-growth",
-            Command::BalanceSheetGrowth(annual("AAPL")),
+            Command::FundamentalsBalanceSheetGrowth(annual("AAPL")),
             json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
         ),
         (
             "cash-flow-statement-growth",
-            Command::CashFlowGrowth(annual("AAPL")),
+            Command::FundamentalsCashFlowGrowth(annual("AAPL")),
             json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
         ),
         (
             "enterprise-values",
-            Command::EnterpriseValues(annual("AAPL")),
+            Command::FundamentalsEnterpriseValues(annual("AAPL")),
             json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
         ),
         (
             "financial-scores",
-            Command::FinancialScores(symbol("AAPL")),
+            Command::CompanyFinancialScores(symbol("AAPL")),
             json!({ "symbol": "AAPL" }),
         ),
         (
             "analyst-estimates",
-            Command::AnalystEstimates(annual("AAPL")),
+            Command::FundamentalsAnalystEstimates(annual("AAPL")),
             json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
         ),
         (
             "news/stock",
-            Command::StockNews(stock_news("AAPL")),
+            Command::NewsStock(stock_news("AAPL")),
             json!({ "symbol": "AAPL", "limit": null }),
         ),
     ];
@@ -1022,27 +855,27 @@ async fn execute_date_range_commands_use_endpoint_descriptors() {
         (
             "historical-price-eod/full",
             "AAPL",
-            Command::Market(MarketCommand::Historical(symbol_date_range("AAPL"))),
+            Command::MarketHistorical(symbol_date_range("AAPL")),
         ),
         (
             "historical-price-eod/full",
             "MSFT",
-            Command::Market(MarketCommand::DailyChart(symbol_date_range("MSFT"))),
+            Command::MarketHistorical(symbol_date_range("MSFT")),
         ),
         (
             "sec-filings-search/symbol",
             "IBM",
-            Command::Filings(FilingsCommand::SecFilings(symbol_date_range("IBM"))),
+            Command::SecFilings(symbol_date_range("IBM")),
         ),
         (
             "historical-price-eod/full",
             "BTCUSD",
-            Command::Crypto(CryptoCommand::Historical(symbol_date_range("BTCUSD"))),
+            Command::CryptoHistorical(symbol_date_range("BTCUSD")),
         ),
         (
             "historical-price-eod/full",
             "EURUSD",
-            Command::Forex(ForexCommand::Historical(symbol_date_range("EURUSD"))),
+            Command::ForexHistorical(symbol_date_range("EURUSD")),
         ),
     ];
     let mut mocks = Vec::new();
@@ -1095,9 +928,7 @@ async fn sec_filings_defaults_from_when_omitted() {
         .await;
 
     let client = test_client(&server);
-    let command = Command::Filings(FilingsCommand::SecFilings(optional_symbol_date_range(
-        "AAPL",
-    )));
+    let command = Command::SecFilings(optional_symbol_date_range("AAPL"));
     let payload = execute(&client, &command).await.unwrap();
 
     assert!(
@@ -1129,4 +960,255 @@ async fn sec_filings_legacy_alias_defaults_from_when_omitted() {
         "from should be defaulted to 90 days ago"
     );
     assert!(payload.query["to"].is_null());
+}
+
+#[test]
+fn parses_flat_commands() {
+    let cases: &[&[&str]] = &[
+        &["fmp", "--api-key", "test-key", "search", "Apple"],
+        &["fmp", "--api-key", "test-key", "company-profile", "AAPL"],
+        &["fmp", "--api-key", "test-key", "company-executives", "AAPL"],
+        &["fmp", "--api-key", "test-key", "company-peers", "AAPL"],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "company-financial-scores",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "company-share-float",
+            "AAPL",
+        ],
+        &["fmp", "--api-key", "test-key", "company-rating", "AAPL"],
+        &["fmp", "--api-key", "test-key", "market-quote", "AAPL"],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "market-historical",
+            "AAPL",
+            "--from",
+            "2025-01-01",
+            "--to",
+            "2025-01-31",
+        ],
+        &["fmp", "--api-key", "test-key", "market-dividends", "AAPL"],
+        &["fmp", "--api-key", "test-key", "market-splits", "AAPL"],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "market-price-change",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "fundamentals-income-statement",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "fundamentals-income-statement-as-reported",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "fundamentals-balance-sheet",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "fundamentals-cash-flow",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "fundamentals-ratios",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "fundamentals-metrics",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "fundamentals-income-statement-growth",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "fundamentals-balance-sheet-growth",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "fundamentals-cash-flow-growth",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "fundamentals-enterprise-values",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "fundamentals-analyst-estimates",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "fundamentals-report-dates",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "analyst-price-target-consensus",
+            "AAPL",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "analyst-price-target-summary",
+            "AAPL",
+        ],
+        &["fmp", "--api-key", "test-key", "analyst-grades", "AAPL"],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "earnings-calendar",
+            "--from",
+            "2025-01-01",
+            "--to",
+            "2025-01-31",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "treasury-rates",
+            "--from",
+            "2025-01-01",
+            "--to",
+            "2025-01-31",
+        ],
+        &["fmp", "--api-key", "test-key", "technical-sma", "AAPL"],
+        &["fmp", "--api-key", "test-key", "sec-filings", "AAPL"],
+        &["fmp", "--api-key", "test-key", "crypto-list"],
+        &["fmp", "--api-key", "test-key", "crypto-quote", "BTCUSD"],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "crypto-historical",
+            "BTCUSD",
+        ],
+        &["fmp", "--api-key", "test-key", "forex-quote", "EURUSD"],
+        &["fmp", "--api-key", "test-key", "forex-historical", "EURUSD"],
+        &["fmp", "--api-key", "test-key", "news-stock", "AAPL"],
+        &["fmp", "--api-key", "test-key", "news-general"],
+        &["fmp", "--api-key", "test-key", "news-articles"],
+        &["fmp", "--api-key", "test-key", "news-forex"],
+        &["fmp", "--api-key", "test-key", "news-crypto"],
+    ];
+
+    for args in cases {
+        let result = Cli::try_parse_from(*args);
+        assert!(
+            result.is_ok(),
+            "flat command should parse: {}",
+            args[3..].join(" ")
+        );
+    }
+}
+
+#[test]
+fn rejects_old_grouped_commands() {
+    let cases: &[&[&str]] = &[
+        &["fmp", "--api-key", "test-key", "company", "profile", "AAPL"],
+        &["fmp", "--api-key", "test-key", "market", "quote", "AAPL"],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "fundamentals",
+            "income-statement",
+            "AAPL",
+        ],
+        &["fmp", "--api-key", "test-key", "news", "stock", "AAPL"],
+        &["fmp", "--api-key", "test-key", "technical", "sma", "AAPL"],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "filings",
+            "sec-filings",
+            "AAPL",
+        ],
+        &["fmp", "--api-key", "test-key", "analyst", "grades", "AAPL"],
+    ];
+
+    for args in cases {
+        let result = Cli::try_parse_from(*args);
+        assert!(
+            result.is_err(),
+            "old grouped command should be rejected: {}",
+            args[3..].join(" ")
+        );
+    }
+}
+
+#[test]
+fn rejects_old_aliases() {
+    let cases: &[&[&str]] = &[
+        &["fmp", "--api-key", "test-key", "profile", "AAPL"],
+        &["fmp", "--api-key", "test-key", "quote", "AAPL"],
+        &["fmp", "--api-key", "test-key", "historical", "AAPL"],
+        &["fmp", "--api-key", "test-key", "daily-chart", "AAPL"],
+        &["fmp", "--api-key", "test-key", "company-stats", "AAPL"],
+        &["fmp", "--api-key", "test-key", "key-executives", "AAPL"],
+        &["fmp", "--api-key", "test-key", "news", "AAPL"],
+        &["fmp", "--api-key", "test-key", "stock-news", "AAPL"],
+    ];
+
+    for args in cases {
+        let result = Cli::try_parse_from(*args);
+        assert!(
+            result.is_err(),
+            "old alias should be rejected: {}",
+            args[3..].join(" ")
+        );
+    }
 }
