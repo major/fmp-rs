@@ -78,6 +78,11 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Forex news | `news/forex-latest?page=0&limit=1` | confirmed | Array with news fields such as `symbol`, `publishedDate`, `publisher`, `title`, `image`, `site`, `text`, and `url`. |
 | Crypto news | `news/crypto-latest?page=0&limit=1` | confirmed | Array with news fields such as `symbol`, `publishedDate`, `publisher`, `title`, `image`, `site`, `text`, and `url`. |
 | Analyst grades | `grades?symbol=AAPL` | confirmed | Array with grade action fields such as `symbol`, `date`, `gradingCompany`, `previousGrade`, `newGrade`, and `action`. |
+| Annual report form JSON | `financial-reports-json?symbol=AAPL&year=2022&period=FY` | confirmed | Object with annual report sections such as `Cover Page` plus `symbol`, `period`, and `year`. |
+| Historical rating | `ratings-historical?symbol=AAPL&limit=5` | confirmed | Array with rating fields such as `symbol`, `date`, `rating`, `overallScore`, and component scores. |
+| Stock list | `stock-list` | confirmed | Array with supported stock symbols and company metadata such as `symbol`, `companyName`, `price`, `exchange`, and `type`. |
+| Latest insider trading | `insider-trading/latest?page=0&limit=5` | confirmed | Array with insider trading fields such as `symbol`, `filingDate`, `transactionDate`, `transactionType`, and `reportingName`. |
+| Economic indicators | `economic-indicators?name=GDP&from=2025-01-01&to=2025-12-31` | confirmed | Array with macroeconomic indicator rows containing `name`, `date`, and `value`. |
 | ETF holdings | `etf/holdings?symbol=SPY` | denied | HTTP 402 subscription restriction. |
 | Earnings transcript | `earning-call-transcript?symbol=AAPL&year=2024&quarter=1` | denied | HTTP 402 subscription restriction. |
 | Transcript dates | `earning-call-transcript-dates?symbol=AAPL` | denied | HTTP 402 subscription restriction. |
@@ -96,6 +101,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Company/reference | [Company outlook](https://site.financialmodelingprep.com/developer/docs/company-outlook-api) | inferred | high | Aggregated endpoint, confirm exact Starter behavior. |
 | Company/reference | [Stock peers](https://site.financialmodelingprep.com/developer/docs/stock-peers-api) | confirmed | medium | Tested `stock-peers?symbol=AAPL`; implemented as `company-peers`. |
 | Company/reference | [Symbol lookup](https://site.financialmodelingprep.com/developer/docs/stock-ticker-symbol-lookup-api) | confirmed | high | Tested `search-symbol?query=AAPL`; needed for search/discovery commands. |
+| Company/reference | [Stock list](https://site.financialmodelingprep.com/developer/docs/stock-list-api) | confirmed | medium | Tested `stock-list`; implemented as `market-stock-list`. |
 | Company/reference | [Historical share float](https://site.financialmodelingprep.com/developer/docs/company-historical-share-float) | confirmed | medium | Tested `shares-float?symbol=AAPL`; implemented as `company-share-float`. Historical depth likely capped at 5 years. |
 | Company/reference | [All countries](https://site.financialmodelingprep.com/developer/docs/all-countries-company-information) | excluded | low | Non-US/global coverage is not Starter-safe. |
 | Company/reference | [Euronext prices](https://site.financialmodelingprep.com/developer/docs/euronext-prices-api) | excluded | low | Non-US/global coverage is not Starter-safe. |
@@ -114,7 +120,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Fundamentals/statements | [Cash flow](https://site.financialmodelingprep.com/developer/docs/cashflow-statements-financial-statements) | confirmed | high | Tested `cash-flow-statement?symbol=AAPL&period=annual&limit=5`. |
 | Fundamentals/statements | [Income statement as reported](https://site.financialmodelingprep.com/developer/docs/financial-statement-as-reported-api) | confirmed | medium | Tested `income-statement-as-reported?symbol=AAPL&period=annual&limit=5`; implemented as `fundamentals-income-statement-as-reported`. |
 | Fundamentals/statements | [Financial report dates](https://site.financialmodelingprep.com/developer/docs/financial-reports-dates) | confirmed | medium | Tested `financial-reports-dates?symbol=AAPL`; implemented as `fundamentals-report-dates`. |
-| Fundamentals/statements | [Annual report form](https://site.financialmodelingprep.com/developer/docs/annual-report-form-api) | inferred | medium | Confirm entitlement and document/download shape. |
+| Fundamentals/statements | [Annual report form](https://site.financialmodelingprep.com/developer/docs/annual-report-form-api) | confirmed | medium | Tested `financial-reports-json?symbol=AAPL&year=2022&period=FY`; implemented as `fundamentals-annual-report-form`. |
 | Ratios/metrics/growth | [Key metrics](https://site.financialmodelingprep.com/developer/docs/company-key-metrics-api) | confirmed | high | Tested `key-metrics?symbol=AAPL&period=annual&limit=5`. |
 | Ratios/metrics/growth | [Financial ratios](https://site.financialmodelingprep.com/developer/docs/financial-ratio-free-api) | confirmed | high | Tested `ratios?symbol=AAPL&period=annual&limit=5`. |
 | Ratios/metrics/growth | [Financial statement growth](https://site.financialmodelingprep.com/developer/docs/financial-statements-growth-api) | inferred | high | Growth family likely available from tested income statement growth endpoint. |
@@ -153,7 +159,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | SEC/filings/insider | [SEC RSS feeds](https://site.financialmodelingprep.com/developer/docs/sec-rss-feeds-api) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [All SEC RSS feeds](https://site.financialmodelingprep.com/developer/docs/sec-all-rss-feeds-api) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [RSS feed 8-K](https://site.financialmodelingprep.com/developer/docs/rss-feed-8k-api) | unknown | low | Verify before exposing. |
-| SEC/filings/insider | [Insider trading](https://site.financialmodelingprep.com/developer/docs/stock-insider-trading-api) | unknown | medium | Verify before exposing. |
+| SEC/filings/insider | [Insider trading](https://site.financialmodelingprep.com/developer/docs/stock-insider-trading-api) | confirmed | medium | Tested `insider-trading/latest?page=0&limit=5`; implemented as `insider-trading-latest`. Symbol-filtered `insider-trading?symbol=AAPL` returned HTTP 404 and remains unexposed. |
 | SEC/filings/insider | [Insider trading RSS](https://site.financialmodelingprep.com/developer/docs/insider-trading-rss-feed-api) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [Senate trading](https://site.financialmodelingprep.com/developer/docs/senate-trading-api) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [Senate disclosure](https://site.financialmodelingprep.com/developer/docs/senate-disclosure-api) | unknown | low | Verify before exposing. |
@@ -179,7 +185,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Analyst/ratings/price targets | [Price target consensus](https://site.financialmodelingprep.com/developer/docs/price-target-consensus-api) | confirmed | medium | Tested `price-target-consensus?symbol=AAPL`; implemented as `analyst-price-target-consensus`. |
 | Analyst/ratings/price targets | [Upgrades and downgrades](https://site.financialmodelingprep.com/developer/docs/upgrades-and-downgrades-api) | inferred | medium | Verify before exposing. |
 | Analyst/ratings/price targets | [Company rating](https://site.financialmodelingprep.com/developer/docs/companies-rating-free-api) | confirmed | medium | Tested `grades-consensus?symbol=AAPL`; implemented as `company-rating`. |
-| Analyst/ratings/price targets | [Historical rating](https://site.financialmodelingprep.com/developer/docs/historical-rating-company-information) | inferred | low | Verify before exposing. |
+| Analyst/ratings/price targets | [Historical rating](https://site.financialmodelingprep.com/developer/docs/historical-rating-company-information) | confirmed | low | Tested `ratings-historical?symbol=AAPL&limit=5`; implemented as `company-historical-rating`. |
 | Technicals | [Intraday SMA](https://site.financialmodelingprep.com/developer/docs/technical-intraday-sma) | confirmed | low | Tested daily `technical-indicators/sma?symbol=AAPL&periodLength=10&timeframe=1day`; implemented as `technical-sma`; intraday access still needs testing. |
 | Technicals | [Intraday EMA](https://site.financialmodelingprep.com/developer/docs/technical-intraday-ema) | excluded | low | Technical indicators are excluded by pricing. |
 | Technicals | [Intraday RSI](https://site.financialmodelingprep.com/developer/docs/technical-intraday-rsi) | excluded | low | Technical indicators are excluded by pricing. |
@@ -199,7 +205,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Bulk/batch/websocket | [Websocket](https://site.financialmodelingprep.com/developer/docs/websocket-api) | unknown | low | Not clearly mapped to Starter. |
 | Bulk/batch/websocket | [Crypto websocket](https://site.financialmodelingprep.com/developer/docs/crypto-websocket) | unknown | low | Not clearly mapped to Starter. |
 | Bulk/batch/websocket | [Forex websocket](https://site.financialmodelingprep.com/developer/docs/forex-websocket) | unknown | low | Not clearly mapped to Starter. |
-| Economics | [Economic indicator](https://site.financialmodelingprep.com/developer/docs/economic-indicator-api) | unknown | low | Not clearly mapped to Starter. |
+| Economics | [Economic indicator](https://site.financialmodelingprep.com/developer/docs/economic-indicator-api) | confirmed | low | Tested `economic-indicators?name=GDP&from=2025-01-01&to=2025-12-31`; implemented as `economic-indicators`. |
 | Economics | [Economic calendar](https://site.financialmodelingprep.com/developer/docs/economic-calendar-api) | excluded | low | Corporate/economic calendar access is not Starter-safe from public pricing. |
 | Economics | [Treasury rates](https://site.financialmodelingprep.com/developer/docs/treasury-rates-api) | confirmed | low | Tested `treasury-rates?from=2025-01-01&to=2025-01-31`; implemented as `treasury-rates`. |
 | Economics | [Market risk premium](https://site.financialmodelingprep.com/developer/docs/market-risk-premium-api) | unknown | low | Not clearly mapped to Starter. |

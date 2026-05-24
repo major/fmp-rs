@@ -17,6 +17,29 @@ fn symbol(symbol: &str) -> SymbolArgs {
     }
 }
 
+fn symbol_limit(symbol: &str) -> SymbolLimitArgs {
+    SymbolLimitArgs {
+        symbol: symbol.to_owned(),
+        limit: None,
+    }
+}
+
+fn annual_report(symbol: &str) -> AnnualReportFormArgs {
+    AnnualReportFormArgs {
+        symbol: symbol.to_owned(),
+        year: 2022,
+        period: "FY".to_owned(),
+    }
+}
+
+fn name_date_range(name: &str) -> NameDateRangeArgs {
+    NameDateRangeArgs {
+        name: name.to_owned(),
+        from: Some("2025-01-01".to_owned()),
+        to: Some("2025-12-31".to_owned()),
+    }
+}
+
 fn annual(symbol: &str) -> AnnualArgs {
     AnnualArgs {
         symbol: symbol.to_owned(),
@@ -176,6 +199,64 @@ fn parses_paginated_news_commands() {
         assert_eq!(args.page, Some(0));
         assert_eq!(args.limit, Some(3));
     }
+}
+
+#[test]
+fn parses_new_endpoint_commands() {
+    let stock_list = Cli::parse_from(["fmp", "--api-key", "test-key", "market-stock-list"]);
+    assert!(matches!(stock_list.command, Command::MarketStockList));
+
+    let rating = Cli::parse_from([
+        "fmp",
+        "--api-key",
+        "test-key",
+        "company-historical-rating",
+        "AAPL",
+        "--limit",
+        "3",
+    ]);
+    let Command::CompanyHistoricalRating(args) = rating.command else {
+        panic!("expected historical rating command");
+    };
+    assert_eq!(args.symbol, "AAPL");
+    assert_eq!(args.limit, Some(3));
+
+    let annual_report = Cli::parse_from([
+        "fmp",
+        "--api-key",
+        "test-key",
+        "fundamentals-annual-report-form",
+        "AAPL",
+        "--year",
+        "2022",
+    ]);
+    let Command::FundamentalsAnnualReportForm(args) = annual_report.command else {
+        panic!("expected annual report form command");
+    };
+    assert_eq!(args.period, "FY");
+
+    let insider = Cli::parse_from([
+        "fmp",
+        "--api-key",
+        "test-key",
+        "insider-trading-latest",
+        "--limit",
+        "3",
+    ]);
+    assert!(matches!(insider.command, Command::InsiderTradingLatest(_)));
+
+    let economics = Cli::parse_from([
+        "fmp",
+        "--api-key",
+        "test-key",
+        "economic-indicators",
+        "GDP",
+        "--from",
+        "2025-01-01",
+        "--to",
+        "2025-12-31",
+    ]);
+    assert!(matches!(economics.command, Command::EconomicIndicators(_)));
 }
 
 #[test]
@@ -377,6 +458,13 @@ async fn execute_symbol_commands_use_endpoint_descriptors() {
     let cases = [
         ("profile", Command::CompanyProfile(symbol("AAPL"))),
         ("stock-peers", Command::CompanyPeers(symbol("AAPL"))),
+        (
+            "ratings-historical",
+            Command::CompanyHistoricalRating(SymbolLimitArgs {
+                limit: Some(3),
+                ..symbol_limit("AAPL")
+            }),
+        ),
         ("key-executives", Command::CompanyExecutives(symbol("AAPL"))),
         ("dividends", Command::MarketDividends(symbol("AAPL"))),
         ("splits", Command::MarketSplits(symbol("AAPL"))),
@@ -424,7 +512,11 @@ async fn execute_symbol_commands_use_endpoint_descriptors() {
         let payload = execute(&client, &command).await.unwrap();
 
         assert_eq!(payload.endpoint, expected_path);
-        assert_eq!(payload.query, json!({ "symbol": "AAPL" }));
+        if expected_path == "ratings-historical" {
+            assert_eq!(payload.query, json!({ "symbol": "AAPL", "limit": 3 }));
+        } else {
+            assert_eq!(payload.query, json!({ "symbol": "AAPL" }));
+        }
         assert_eq!(payload.data[0]["symbol"], "AAPL");
     }
 
@@ -642,6 +734,12 @@ async fn execute_paginated_news_commands_use_endpoint_descriptors() {
         ("news/forex-latest", 0, 3, Command::NewsForex(paged())),
         ("news/crypto-latest", 0, 3, Command::NewsCrypto(paged())),
         (
+            "insider-trading/latest",
+            0,
+            3,
+            Command::InsiderTradingLatest(paged()),
+        ),
+        (
             "news/general-latest",
             0,
             10,
@@ -687,6 +785,75 @@ async fn execute_paginated_news_commands_use_endpoint_descriptors() {
 }
 
 #[tokio::test]
+async fn execute_new_endpoint_shapes_use_endpoint_descriptors() {
+    let server = MockServer::start_async().await;
+    let stock_list = server
+        .mock_async(|when, then| {
+            when.method(GET)
+                .path("/stock-list")
+                .query_param("apikey", "test-key");
+            then.status(200).json_body(json!([{ "symbol": "AAPL" }]));
+        })
+        .await;
+    let annual_report_mock = server
+        .mock_async(|when, then| {
+            when.method(GET)
+                .path("/financial-reports-json")
+                .query_param("symbol", "AAPL")
+                .query_param("year", "2022")
+                .query_param("period", "FY")
+                .query_param("apikey", "test-key");
+            then.status(200).json_body(json!({ "symbol": "AAPL" }));
+        })
+        .await;
+    let economics = server
+        .mock_async(|when, then| {
+            when.method(GET)
+                .path("/economic-indicators")
+                .query_param("name", "GDP")
+                .query_param("from", "2025-01-01")
+                .query_param("to", "2025-12-31")
+                .query_param("apikey", "test-key");
+            then.status(200).json_body(json!([{ "name": "GDP" }]));
+        })
+        .await;
+
+    let client = test_client(&server);
+    let stock_payload = execute(&client, &Command::MarketStockList).await.unwrap();
+    assert_eq!(stock_payload.endpoint, "stock-list");
+    assert_eq!(stock_payload.query, json!({}));
+    assert_eq!(stock_payload.data[0]["symbol"], "AAPL");
+
+    let report_payload = execute(
+        &client,
+        &Command::FundamentalsAnnualReportForm(annual_report("AAPL")),
+    )
+    .await
+    .unwrap();
+    assert_eq!(report_payload.endpoint, "financial-reports-json");
+    assert_eq!(
+        report_payload.query,
+        json!({ "symbol": "AAPL", "year": 2022, "period": "FY" })
+    );
+
+    let economics_payload = execute(
+        &client,
+        &Command::EconomicIndicators(name_date_range("GDP")),
+    )
+    .await
+    .unwrap();
+    assert_eq!(economics_payload.endpoint, "economic-indicators");
+    assert_eq!(
+        economics_payload.query,
+        json!({ "name": "GDP", "from": "2025-01-01", "to": "2025-12-31" })
+    );
+
+    stock_list.assert_async().await;
+    annual_report_mock.assert_async().await;
+    economics.assert_async().await;
+}
+
+#[tokio::test]
 async fn execute_flat_commands_use_endpoint_descriptors() {
     let server = MockServer::start_async().await;
     let cases = vec![
@@ -722,6 +889,7 @@ async fn execute_flat_commands_use_endpoint_descriptors() {
             Command::CompanyPeers(symbol("AAPL")),
             json!({ "symbol": "AAPL" }),
         ),
+        ("stock-list", Command::MarketStockList, json!({})),
         (
             "dividends",
             Command::MarketDividends(symbol("AAPL")),
@@ -812,9 +980,29 @@ async fn execute_flat_commands_use_endpoint_descriptors() {
             json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
         ),
         (
+            "financial-reports-json",
+            Command::FundamentalsAnnualReportForm(annual_report("AAPL")),
+            json!({ "symbol": "AAPL", "year": 2022, "period": "FY" }),
+        ),
+        (
             "financial-scores",
             Command::CompanyFinancialScores(symbol("AAPL")),
             json!({ "symbol": "AAPL" }),
+        ),
+        (
+            "ratings-historical",
+            Command::CompanyHistoricalRating(symbol_limit("AAPL")),
+            json!({ "symbol": "AAPL", "limit": null }),
+        ),
+        (
+            "insider-trading/latest",
+            Command::InsiderTradingLatest(paged()),
+            json!({ "page": 0, "limit": 3 }),
+        ),
+        (
+            "economic-indicators",
+            Command::EconomicIndicators(name_date_range("GDP")),
+            json!({ "name": "GDP", "from": "2025-01-01", "to": "2025-12-31" }),
         ),
         (
             "analyst-estimates",
@@ -969,6 +1157,7 @@ fn parses_flat_commands() {
         &["fmp", "--api-key", "test-key", "company-profile", "AAPL"],
         &["fmp", "--api-key", "test-key", "company-executives", "AAPL"],
         &["fmp", "--api-key", "test-key", "company-peers", "AAPL"],
+        &["fmp", "--api-key", "test-key", "market-stock-list"],
         &[
             "fmp",
             "--api-key",
@@ -984,6 +1173,13 @@ fn parses_flat_commands() {
             "AAPL",
         ],
         &["fmp", "--api-key", "test-key", "company-rating", "AAPL"],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
+            "company-historical-rating",
+            "AAPL",
+        ],
         &["fmp", "--api-key", "test-key", "market-quote", "AAPL"],
         &[
             "fmp",
@@ -1093,6 +1289,15 @@ fn parses_flat_commands() {
             "fmp",
             "--api-key",
             "test-key",
+            "fundamentals-annual-report-form",
+            "AAPL",
+            "--year",
+            "2022",
+        ],
+        &[
+            "fmp",
+            "--api-key",
+            "test-key",
             "analyst-price-target-consensus",
             "AAPL",
         ],
@@ -1104,6 +1309,8 @@ fn parses_flat_commands() {
             "AAPL",
         ],
         &["fmp", "--api-key", "test-key", "analyst-grades", "AAPL"],
+        &["fmp", "--api-key", "test-key", "insider-trading-latest"],
+        &["fmp", "--api-key", "test-key", "economic-indicators", "GDP"],
         &[
             "fmp",
             "--api-key",

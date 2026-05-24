@@ -39,6 +39,20 @@ pub(super) async fn run_by_symbol(
     ))
 }
 
+pub(super) async fn run_by_symbol_limit(
+    client: &FmpClient,
+    endpoint: Endpoint,
+    symbol: &str,
+    limit: Option<u16>,
+) -> Result<CommandPayload> {
+    let data = client.by_symbol_limit(endpoint, symbol, limit).await?;
+    Ok(CommandPayload::new(
+        endpoint.path(),
+        json!({ "symbol": symbol, "limit": limit }),
+        data,
+    ))
+}
+
 pub(super) async fn run_by_symbol_date_range(
     client: &FmpClient,
     endpoint: Endpoint,
@@ -72,6 +86,23 @@ pub(super) async fn run_by_date_range(
     ))
 }
 
+pub(super) async fn run_by_name_date_range(
+    client: &FmpClient,
+    endpoint: Endpoint,
+    name: &str,
+    from: &Option<String>,
+    to: &Option<String>,
+) -> Result<CommandPayload> {
+    let data = client
+        .by_name_date_range(endpoint, name, from.as_deref(), to.as_deref())
+        .await?;
+    Ok(CommandPayload::new(
+        endpoint.path(),
+        json!({ "name": name, "from": from, "to": to }),
+        data,
+    ))
+}
+
 pub(super) async fn run_annual(
     client: &FmpClient,
     endpoint: Endpoint,
@@ -82,6 +113,23 @@ pub(super) async fn run_annual(
     Ok(CommandPayload::new(
         endpoint.path(),
         json!({ "symbol": symbol, "period": ANNUAL_PERIOD, "limit": limit }),
+        data,
+    ))
+}
+
+pub(super) async fn run_annual_report_form(
+    client: &FmpClient,
+    endpoint: Endpoint,
+    symbol: &str,
+    year: u16,
+    period: &str,
+) -> Result<CommandPayload> {
+    let data = client
+        .annual_report_form(endpoint, symbol, year, period)
+        .await?;
+    Ok(CommandPayload::new(
+        endpoint.path(),
+        json!({ "symbol": symbol, "year": year, "period": period }),
         data,
     ))
 }

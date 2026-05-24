@@ -30,7 +30,7 @@ FMP_API_KEY=your-key cargo run -- market-quote AAPL
 
 ## Commands
 
-See [`SKILL.md`](SKILL.md) for the full command reference and examples. Commands are flat, domain-prefixed verbs such as `company-profile`, `market-quote`, `fundamentals-income-statement`, and `news-stock`. Old grouped commands and legacy aliases are rejected.
+See [`SKILL.md`](SKILL.md) for the full command reference and examples. Commands are flat, domain-prefixed verbs such as `company-profile`, `market-quote`, `fundamentals-income-statement`, `economic-indicators`, and `news-stock`. Old grouped commands and legacy aliases are rejected.
 
 In the repo, use `cargo run -- <COMMAND>` with the same arguments before installing or after cleaning the build. After `cargo build`, run the built binary as `target/debug/fmp-agent`, for example `target/debug/fmp-agent market-quote AAPL`.
 
@@ -88,4 +88,4 @@ Releases use a tag-push workflow: run `/make-release` in opencode to bump the ve
 
 Before adding a new CLI endpoint, check `docs/api-inventory.md`. The CLI should expose endpoints only after account access is confirmed there, and the inventory should be updated when new probes are performed.
 
-New endpoints are added by registering an `Endpoint` constant in `src/endpoint.rs` and dispatching through the shape-based methods on `FmpClient` (`endpoint`, `query`, `by_symbol`, `by_symbol_date_range`, `by_date_range`, `annual`, `technical`, `news`, `paged`) and the matching `run_*` helper in `src/cli/dispatch.rs`. There are no per-endpoint client wrappers.
+New endpoints are added by registering an `Endpoint` constant in `src/endpoint.rs` and dispatching through the shape-based methods on `FmpClient` (`endpoint`, `query`, `by_symbol`, `by_symbol_limit`, `by_symbol_date_range`, `by_date_range`, `by_name_date_range`, `annual`, `annual_report_form`, `technical`, `news`, `paged`) and the matching `run_*` helper in `src/cli/dispatch.rs`. There are no per-endpoint client wrappers.
