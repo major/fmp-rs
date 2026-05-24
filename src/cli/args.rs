@@ -29,7 +29,7 @@ pub struct Cli {
     pub command: Command,
 }
 
-/// Supported FMP endpoint command groups.
+/// Supported FMP endpoint commands.
 #[derive(Debug, Subcommand)]
 pub enum Command {
     /// Search for a tradable symbol by ticker or company name.
@@ -38,326 +38,125 @@ pub enum Command {
         query: String,
     },
 
-    /// Company profile, peers, executives, and scores.
-    #[command(subcommand)]
-    Company(CompanyCommand),
-
-    /// Quotes, price history, distributions, and price changes.
-    #[command(subcommand)]
-    Market(MarketCommand),
-
-    /// Annual statements, ratios, metrics, growth, and estimates.
-    #[command(subcommand)]
-    Fundamentals(FundamentalsCommand),
-
-    /// Analyst ratings and price target endpoints.
-    #[command(subcommand)]
-    Analyst(AnalystCommand),
-
-    /// Date-based market calendars.
-    #[command(subcommand)]
-    Calendar(CalendarCommand),
-
-    /// Macro rates and yield data.
-    #[command(subcommand)]
-    Rates(RatesCommand),
-
-    /// Technical indicators.
-    #[command(subcommand)]
-    Technical(TechnicalCommand),
-
-    /// SEC filing lookups.
-    #[command(subcommand)]
-    Filings(FilingsCommand),
-
-    /// Cryptocurrency quotes and historical prices.
-    #[command(subcommand)]
-    Crypto(CryptoCommand),
-
-    /// Forex quotes and historical prices.
-    #[command(subcommand)]
-    Forex(ForexCommand),
-
-    /// News endpoints.
-    News(NewsArgs),
-
-    /// Hidden compatibility alias for `company profile`.
-    #[command(hide = true)]
-    Profile(SymbolArgs),
-
-    /// Hidden compatibility alias for `company executives`.
-    #[command(hide = true)]
-    KeyExecutives(SymbolArgs),
-
-    /// Hidden compatibility alias for `market quote`.
-    #[command(hide = true)]
-    Quote(SymbolArgs),
-
-    /// Hidden compatibility alias for `market historical`.
-    #[command(hide = true)]
-    Historical(SymbolDateRangeArgs),
-
-    /// Hidden compatibility alias for `market daily-chart`.
-    #[command(hide = true)]
-    DailyChart(SymbolDateRangeArgs),
-
-    /// Hidden compatibility alias for `company peers`.
-    #[command(hide = true)]
-    StockPeers(SymbolArgs),
-
-    /// Hidden compatibility alias for `market dividends`.
-    #[command(hide = true)]
-    Dividends(SymbolArgs),
-
-    /// Hidden compatibility alias for `market splits`.
-    #[command(hide = true)]
-    Splits(SymbolArgs),
-
-    /// Hidden compatibility alias for `calendar earnings`.
-    #[command(hide = true)]
-    EarningsCalendar(DateRangeArgs),
-
-    /// Hidden compatibility alias for `rates treasury`.
-    #[command(hide = true)]
-    TreasuryRates(DateRangeArgs),
-
-    /// Hidden compatibility alias for `technical sma`.
-    #[command(hide = true)]
-    TechnicalSma(TechnicalSmaArgs),
-
-    /// Hidden compatibility alias for `market price-change`.
-    #[command(hide = true)]
-    StockPriceChange(SymbolArgs),
-
-    /// Hidden compatibility alias for `filings sec-filings`.
-    #[command(hide = true)]
-    SecFilings(SymbolDateRangeArgs),
-
-    /// Hidden compatibility alias for `fundamentals income-statement`.
-    #[command(hide = true)]
-    IncomeStatement(AnnualArgs),
-
-    /// Hidden compatibility alias for `fundamentals income-statement-as-reported`.
-    #[command(hide = true)]
-    IncomeStatementAsReported(AnnualArgs),
-
-    /// Hidden compatibility alias for `fundamentals balance-sheet`.
-    #[command(hide = true)]
-    BalanceSheet(AnnualArgs),
-
-    /// Hidden compatibility alias for `fundamentals cash-flow`.
-    #[command(hide = true)]
-    CashFlow(AnnualArgs),
-
-    /// Hidden compatibility alias for `fundamentals ratios`.
-    #[command(hide = true)]
-    Ratios(AnnualArgs),
-
-    /// Hidden compatibility alias for `fundamentals metrics`.
-    #[command(hide = true)]
-    Metrics(AnnualArgs),
-
-    /// Hidden compatibility alias for `company profile`.
-    #[command(hide = true)]
-    CompanyStats(SymbolArgs),
-
-    /// Hidden compatibility alias for `fundamentals income-statement-growth`.
-    #[command(hide = true)]
-    IncomeStatementGrowth(AnnualArgs),
-
-    /// Hidden compatibility alias for `fundamentals balance-sheet-growth`.
-    #[command(hide = true)]
-    BalanceSheetGrowth(AnnualArgs),
-
-    /// Hidden compatibility alias for `fundamentals cash-flow-growth`.
-    #[command(hide = true)]
-    CashFlowGrowth(AnnualArgs),
-
-    /// Hidden compatibility alias for `fundamentals enterprise-values`.
-    #[command(hide = true)]
-    EnterpriseValues(AnnualArgs),
-
-    /// Hidden compatibility alias for `company financial-scores`.
-    #[command(hide = true)]
-    FinancialScores(SymbolArgs),
-
-    /// Hidden compatibility alias for `fundamentals analyst-estimates`.
-    #[command(hide = true)]
-    AnalystEstimates(AnnualArgs),
-
-    /// Hidden compatibility alias for `news stock`.
-    #[command(hide = true)]
-    StockNews(StockNewsArgs),
-}
-
-/// Company-focused commands.
-#[derive(Debug, Subcommand)]
-pub enum CompanyCommand {
     /// Get company profile/reference data for a symbol.
-    Profile(SymbolArgs),
+    CompanyProfile(SymbolArgs),
 
     /// Get key executives for a symbol.
-    Executives(SymbolArgs),
+    CompanyExecutives(SymbolArgs),
 
     /// Get peer companies for a symbol.
-    Peers(SymbolArgs),
-
-    /// Get company key statistics for a symbol.
-    Stats(SymbolArgs),
+    CompanyPeers(SymbolArgs),
 
     /// Get financial scores for a symbol.
-    FinancialScores(SymbolArgs),
+    CompanyFinancialScores(SymbolArgs),
 
     /// Get share float data for a symbol.
-    ShareFloat(SymbolArgs),
+    CompanyShareFloat(SymbolArgs),
 
     /// Get analyst rating consensus for a symbol.
-    Rating(SymbolArgs),
-}
+    CompanyRating(SymbolArgs),
 
-/// Market data commands.
-#[derive(Debug, Subcommand)]
-pub enum MarketCommand {
     /// Get the latest quote for a symbol.
-    Quote(SymbolArgs),
+    MarketQuote(SymbolArgs),
 
     /// Get historical end-of-day price bars for a symbol.
-    Historical(SymbolDateRangeArgs),
-
-    /// Get daily chart bars for a symbol.
-    DailyChart(SymbolDateRangeArgs),
+    MarketHistorical(SymbolDateRangeArgs),
 
     /// Get historical dividends for a symbol.
-    Dividends(SymbolArgs),
+    MarketDividends(SymbolArgs),
 
     /// Get historical stock splits for a symbol.
-    Splits(SymbolArgs),
+    MarketSplits(SymbolArgs),
 
     /// Get price change percentages for a symbol.
-    PriceChange(SymbolArgs),
-}
+    MarketPriceChange(SymbolArgs),
 
-/// Fundamental analysis commands.
-#[derive(Debug, Subcommand)]
-pub enum FundamentalsCommand {
     /// Get annual income statements for a symbol.
-    IncomeStatement(AnnualArgs),
+    FundamentalsIncomeStatement(AnnualArgs),
 
     /// Get annual income statements as reported for a symbol.
-    IncomeStatementAsReported(AnnualArgs),
+    FundamentalsIncomeStatementAsReported(AnnualArgs),
 
     /// Get annual balance sheets for a symbol.
-    BalanceSheet(AnnualArgs),
+    FundamentalsBalanceSheet(AnnualArgs),
 
     /// Get annual cash flow statements for a symbol.
-    CashFlow(AnnualArgs),
+    FundamentalsCashFlow(AnnualArgs),
 
     /// Get annual financial ratios for a symbol.
-    Ratios(AnnualArgs),
+    FundamentalsRatios(AnnualArgs),
 
     /// Get annual key metrics for a symbol.
-    Metrics(AnnualArgs),
+    FundamentalsMetrics(AnnualArgs),
 
     /// Get annual income statement growth for a symbol.
-    IncomeStatementGrowth(AnnualArgs),
+    FundamentalsIncomeStatementGrowth(AnnualArgs),
 
     /// Get annual balance sheet growth for a symbol.
-    BalanceSheetGrowth(AnnualArgs),
+    FundamentalsBalanceSheetGrowth(AnnualArgs),
 
     /// Get annual cash flow growth for a symbol.
-    CashFlowGrowth(AnnualArgs),
+    FundamentalsCashFlowGrowth(AnnualArgs),
 
     /// Get annual enterprise values for a symbol.
-    EnterpriseValues(AnnualArgs),
+    FundamentalsEnterpriseValues(AnnualArgs),
 
     /// Get annual analyst estimates for a symbol.
-    AnalystEstimates(AnnualArgs),
+    FundamentalsAnalystEstimates(AnnualArgs),
 
     /// Get available financial report dates for a symbol.
-    ReportDates(SymbolArgs),
-}
+    FundamentalsReportDates(SymbolArgs),
 
-/// Analyst-focused commands.
-#[derive(Debug, Subcommand)]
-pub enum AnalystCommand {
     /// Get price target consensus for a symbol.
-    PriceTargetConsensus(SymbolArgs),
+    AnalystPriceTargetConsensus(SymbolArgs),
 
     /// Get price target summary for a symbol.
-    PriceTargetSummary(SymbolArgs),
+    AnalystPriceTargetSummary(SymbolArgs),
 
     /// Get analyst grade actions for a symbol.
-    Grades(SymbolArgs),
-}
+    AnalystGrades(SymbolArgs),
 
-/// Calendar commands.
-#[derive(Debug, Subcommand)]
-pub enum CalendarCommand {
     /// Get earnings calendar rows for a date range.
-    Earnings(DateRangeArgs),
-}
+    EarningsCalendar(DateRangeArgs),
 
-/// Rates commands.
-#[derive(Debug, Subcommand)]
-pub enum RatesCommand {
     /// Get treasury rates for a date range.
-    Treasury(DateRangeArgs),
-}
+    TreasuryRates(DateRangeArgs),
 
-/// Technical indicator commands.
-#[derive(Debug, Subcommand)]
-pub enum TechnicalCommand {
     /// Get simple moving average technical indicator rows for a symbol.
-    Sma(TechnicalSmaArgs),
-}
+    TechnicalSma(TechnicalSmaArgs),
 
-/// Filing commands.
-#[derive(Debug, Subcommand)]
-pub enum FilingsCommand {
     /// Get SEC filings for a symbol.
     SecFilings(SymbolDateRangeArgs),
-}
 
-/// Cryptocurrency commands.
-#[derive(Debug, Subcommand)]
-pub enum CryptoCommand {
     /// List supported cryptocurrency symbols.
-    List,
+    CryptoList,
 
     /// Get the latest quote for a cryptocurrency pair.
-    Quote(SymbolArgs),
+    CryptoQuote(SymbolArgs),
 
     /// Get historical end-of-day price bars for a cryptocurrency pair.
-    Historical(SymbolDateRangeArgs),
-}
+    CryptoHistorical(SymbolDateRangeArgs),
 
-/// Forex commands.
-#[derive(Debug, Subcommand)]
-pub enum ForexCommand {
     /// Get the latest quote for a forex pair.
-    Quote(SymbolArgs),
+    ForexQuote(SymbolArgs),
 
     /// Get historical end-of-day price bars for a forex pair.
-    Historical(SymbolDateRangeArgs),
-}
+    ForexHistorical(SymbolDateRangeArgs),
 
-/// News commands.
-#[derive(Debug, Subcommand)]
-pub enum NewsCommand {
     /// Get recent stock news for a symbol.
-    Stock(StockNewsArgs),
+    NewsStock(StockNewsArgs),
 
     /// Get latest general market news.
-    General(PagedArgs),
+    NewsGeneral(PagedArgs),
 
     /// Get latest FMP articles.
-    Articles(PagedArgs),
+    NewsArticles(PagedArgs),
 
     /// Get latest forex news.
-    Forex(PagedArgs),
+    NewsForex(PagedArgs),
 
     /// Get latest crypto news.
-    Crypto(PagedArgs),
+    NewsCrypto(PagedArgs),
 }
 
 /// Shared symbol argument.
@@ -418,22 +217,6 @@ pub struct TechnicalSmaArgs {
     /// FMP timeframe, for example `1day`.
     #[arg(long, default_value = "1day")]
     pub timeframe: String,
-}
-
-/// News command arguments.
-#[derive(Debug, Args)]
-pub struct NewsArgs {
-    /// Grouped news command.
-    #[command(subcommand)]
-    pub command: Option<NewsCommand>,
-
-    /// Legacy ticker symbol for `news <SYMBOL>`.
-    #[arg(hide = true)]
-    pub symbol: Option<String>,
-
-    /// Maximum number of news items to return with the legacy `news <SYMBOL>` form.
-    #[arg(long, hide = true)]
-    pub limit: Option<u16>,
 }
 
 /// Stock news arguments.

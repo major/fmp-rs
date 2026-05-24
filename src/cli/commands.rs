@@ -11,13 +11,9 @@ use crate::endpoint::{
     SEARCH_SYMBOL, SEC_FILINGS_SEARCH_SYMBOL, SHARES_FLOAT, SPLITS, STOCK_NEWS, STOCK_PEERS,
     STOCK_PRICE_CHANGE, TECHNICAL_SMA, TREASURY_RATES,
 };
-use crate::error::{Error, Result};
+use crate::error::Result;
 
-use super::args::{
-    AnalystCommand, CalendarCommand, Command, CompanyCommand, CryptoCommand, FilingsCommand,
-    ForexCommand, FundamentalsCommand, MarketCommand, NewsArgs, NewsCommand, RatesCommand,
-    SymbolDateRangeArgs, TechnicalCommand,
-};
+use super::args::{Command, SymbolDateRangeArgs};
 use super::dispatch::{
     run_annual, run_by_date_range, run_by_symbol, run_by_symbol_date_range, run_endpoint, run_news,
     run_paged, run_query, run_technical_sma,
@@ -27,29 +23,18 @@ use super::output::CommandPayload;
 pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<CommandPayload> {
     match command {
         Command::Search { query } => run_query(client, SEARCH_SYMBOL, query).await,
-        Command::Company(command) => execute_company(client, command).await,
-        Command::Market(command) => execute_market(client, command).await,
-        Command::Fundamentals(command) => execute_fundamentals(client, command).await,
-        Command::Analyst(command) => execute_analyst(client, command).await,
-        Command::Calendar(command) => execute_calendar(client, command).await,
-        Command::Rates(command) => execute_rates(client, command).await,
-        Command::Technical(command) => execute_technical(client, command).await,
-        Command::Filings(command) => execute_filings(client, command).await,
-        Command::Crypto(command) => execute_crypto(client, command).await,
-        Command::Forex(command) => execute_forex(client, command).await,
-        Command::News(args) => execute_news(client, args).await,
-        Command::Profile(args) | Command::CompanyStats(args) => {
-            run_by_symbol(client, PROFILE, &args.symbol).await
+        Command::CompanyProfile(args) => run_by_symbol(client, PROFILE, &args.symbol).await,
+        Command::CompanyExecutives(args) => {
+            run_by_symbol(client, KEY_EXECUTIVES, &args.symbol).await
         }
-        Command::KeyExecutives(args) => run_by_symbol(client, KEY_EXECUTIVES, &args.symbol).await,
-        Command::Quote(args) => run_by_symbol(client, QUOTE, &args.symbol).await,
-        Command::StockPeers(args) => run_by_symbol(client, STOCK_PEERS, &args.symbol).await,
-        Command::Dividends(args) => run_by_symbol(client, DIVIDENDS, &args.symbol).await,
-        Command::Splits(args) => run_by_symbol(client, SPLITS, &args.symbol).await,
-        Command::StockPriceChange(args) => {
-            run_by_symbol(client, STOCK_PRICE_CHANGE, &args.symbol).await
+        Command::CompanyPeers(args) => run_by_symbol(client, STOCK_PEERS, &args.symbol).await,
+        Command::CompanyFinancialScores(args) => {
+            run_by_symbol(client, FINANCIAL_SCORES, &args.symbol).await
         }
-        Command::Historical(args) | Command::DailyChart(args) => {
+        Command::CompanyShareFloat(args) => run_by_symbol(client, SHARES_FLOAT, &args.symbol).await,
+        Command::CompanyRating(args) => run_by_symbol(client, GRADES_CONSENSUS, &args.symbol).await,
+        Command::MarketQuote(args) => run_by_symbol(client, QUOTE, &args.symbol).await,
+        Command::MarketHistorical(args) => {
             run_by_symbol_date_range(
                 client,
                 HISTORICAL_PRICE_EOD_FULL,
@@ -59,7 +44,66 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
             )
             .await
         }
-        Command::SecFilings(args) => run_sec_filings(client, args).await,
+        Command::MarketDividends(args) => run_by_symbol(client, DIVIDENDS, &args.symbol).await,
+        Command::MarketSplits(args) => run_by_symbol(client, SPLITS, &args.symbol).await,
+        Command::MarketPriceChange(args) => {
+            run_by_symbol(client, STOCK_PRICE_CHANGE, &args.symbol).await
+        }
+        Command::FundamentalsIncomeStatement(args) => {
+            run_annual(client, INCOME_STATEMENT, &args.symbol, args.limit).await
+        }
+        Command::FundamentalsIncomeStatementAsReported(args) => {
+            run_annual(
+                client,
+                INCOME_STATEMENT_AS_REPORTED,
+                &args.symbol,
+                args.limit,
+            )
+            .await
+        }
+        Command::FundamentalsBalanceSheet(args) => {
+            run_annual(client, BALANCE_SHEET_STATEMENT, &args.symbol, args.limit).await
+        }
+        Command::FundamentalsCashFlow(args) => {
+            run_annual(client, CASH_FLOW_STATEMENT, &args.symbol, args.limit).await
+        }
+        Command::FundamentalsRatios(args) => {
+            run_annual(client, RATIOS, &args.symbol, args.limit).await
+        }
+        Command::FundamentalsMetrics(args) => {
+            run_annual(client, KEY_METRICS, &args.symbol, args.limit).await
+        }
+        Command::FundamentalsIncomeStatementGrowth(args) => {
+            run_annual(client, INCOME_STATEMENT_GROWTH, &args.symbol, args.limit).await
+        }
+        Command::FundamentalsBalanceSheetGrowth(args) => {
+            run_annual(
+                client,
+                BALANCE_SHEET_STATEMENT_GROWTH,
+                &args.symbol,
+                args.limit,
+            )
+            .await
+        }
+        Command::FundamentalsCashFlowGrowth(args) => {
+            run_annual(client, CASH_FLOW_STATEMENT_GROWTH, &args.symbol, args.limit).await
+        }
+        Command::FundamentalsEnterpriseValues(args) => {
+            run_annual(client, ENTERPRISE_VALUES, &args.symbol, args.limit).await
+        }
+        Command::FundamentalsAnalystEstimates(args) => {
+            run_annual(client, ANALYST_ESTIMATES, &args.symbol, args.limit).await
+        }
+        Command::FundamentalsReportDates(args) => {
+            run_by_symbol(client, FINANCIAL_REPORTS_DATES, &args.symbol).await
+        }
+        Command::AnalystPriceTargetConsensus(args) => {
+            run_by_symbol(client, PRICE_TARGET_CONSENSUS, &args.symbol).await
+        }
+        Command::AnalystPriceTargetSummary(args) => {
+            run_by_symbol(client, PRICE_TARGET_SUMMARY, &args.symbol).await
+        }
+        Command::AnalystGrades(args) => run_by_symbol(client, GRADES, &args.symbol).await,
         Command::EarningsCalendar(args) => {
             run_by_date_range(client, EARNINGS_CALENDAR, &args.from, &args.to).await
         }
@@ -76,75 +120,10 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
             )
             .await
         }
-        Command::IncomeStatement(args) => {
-            run_annual(client, INCOME_STATEMENT, &args.symbol, args.limit).await
-        }
-        Command::IncomeStatementAsReported(args) => {
-            run_annual(
-                client,
-                INCOME_STATEMENT_AS_REPORTED,
-                &args.symbol,
-                args.limit,
-            )
-            .await
-        }
-        Command::BalanceSheet(args) => {
-            run_annual(client, BALANCE_SHEET_STATEMENT, &args.symbol, args.limit).await
-        }
-        Command::CashFlow(args) => {
-            run_annual(client, CASH_FLOW_STATEMENT, &args.symbol, args.limit).await
-        }
-        Command::Ratios(args) => run_annual(client, RATIOS, &args.symbol, args.limit).await,
-        Command::Metrics(args) => run_annual(client, KEY_METRICS, &args.symbol, args.limit).await,
-        Command::IncomeStatementGrowth(args) => {
-            run_annual(client, INCOME_STATEMENT_GROWTH, &args.symbol, args.limit).await
-        }
-        Command::BalanceSheetGrowth(args) => {
-            run_annual(
-                client,
-                BALANCE_SHEET_STATEMENT_GROWTH,
-                &args.symbol,
-                args.limit,
-            )
-            .await
-        }
-        Command::CashFlowGrowth(args) => {
-            run_annual(client, CASH_FLOW_STATEMENT_GROWTH, &args.symbol, args.limit).await
-        }
-        Command::EnterpriseValues(args) => {
-            run_annual(client, ENTERPRISE_VALUES, &args.symbol, args.limit).await
-        }
-        Command::FinancialScores(args) => {
-            run_by_symbol(client, FINANCIAL_SCORES, &args.symbol).await
-        }
-        Command::AnalystEstimates(args) => {
-            run_annual(client, ANALYST_ESTIMATES, &args.symbol, args.limit).await
-        }
-        Command::StockNews(args) => run_news(client, STOCK_NEWS, &args.symbol, args.limit).await,
-    }
-}
-
-async fn execute_company(client: &FmpClient, command: &CompanyCommand) -> Result<CommandPayload> {
-    match command {
-        CompanyCommand::Profile(args) | CompanyCommand::Stats(args) => {
-            run_by_symbol(client, PROFILE, &args.symbol).await
-        }
-        CompanyCommand::Executives(args) => {
-            run_by_symbol(client, KEY_EXECUTIVES, &args.symbol).await
-        }
-        CompanyCommand::Peers(args) => run_by_symbol(client, STOCK_PEERS, &args.symbol).await,
-        CompanyCommand::FinancialScores(args) => {
-            run_by_symbol(client, FINANCIAL_SCORES, &args.symbol).await
-        }
-        CompanyCommand::ShareFloat(args) => run_by_symbol(client, SHARES_FLOAT, &args.symbol).await,
-        CompanyCommand::Rating(args) => run_by_symbol(client, GRADES_CONSENSUS, &args.symbol).await,
-    }
-}
-
-async fn execute_market(client: &FmpClient, command: &MarketCommand) -> Result<CommandPayload> {
-    match command {
-        MarketCommand::Quote(args) => run_by_symbol(client, QUOTE, &args.symbol).await,
-        MarketCommand::Historical(args) | MarketCommand::DailyChart(args) => {
+        Command::SecFilings(args) => run_sec_filings(client, args).await,
+        Command::CryptoList => run_endpoint(client, CRYPTOCURRENCY_LIST).await,
+        Command::CryptoQuote(args) => run_by_symbol(client, QUOTE, &args.symbol).await,
+        Command::CryptoHistorical(args) | Command::ForexHistorical(args) => {
             run_by_symbol_date_range(
                 client,
                 HISTORICAL_PRICE_EOD_FULL,
@@ -154,119 +133,12 @@ async fn execute_market(client: &FmpClient, command: &MarketCommand) -> Result<C
             )
             .await
         }
-        MarketCommand::Dividends(args) => run_by_symbol(client, DIVIDENDS, &args.symbol).await,
-        MarketCommand::Splits(args) => run_by_symbol(client, SPLITS, &args.symbol).await,
-        MarketCommand::PriceChange(args) => {
-            run_by_symbol(client, STOCK_PRICE_CHANGE, &args.symbol).await
-        }
-    }
-}
-
-async fn execute_fundamentals(
-    client: &FmpClient,
-    command: &FundamentalsCommand,
-) -> Result<CommandPayload> {
-    match command {
-        FundamentalsCommand::IncomeStatement(args) => {
-            run_annual(client, INCOME_STATEMENT, &args.symbol, args.limit).await
-        }
-        FundamentalsCommand::IncomeStatementAsReported(args) => {
-            run_annual(
-                client,
-                INCOME_STATEMENT_AS_REPORTED,
-                &args.symbol,
-                args.limit,
-            )
-            .await
-        }
-        FundamentalsCommand::BalanceSheet(args) => {
-            run_annual(client, BALANCE_SHEET_STATEMENT, &args.symbol, args.limit).await
-        }
-        FundamentalsCommand::CashFlow(args) => {
-            run_annual(client, CASH_FLOW_STATEMENT, &args.symbol, args.limit).await
-        }
-        FundamentalsCommand::Ratios(args) => {
-            run_annual(client, RATIOS, &args.symbol, args.limit).await
-        }
-        FundamentalsCommand::Metrics(args) => {
-            run_annual(client, KEY_METRICS, &args.symbol, args.limit).await
-        }
-        FundamentalsCommand::IncomeStatementGrowth(args) => {
-            run_annual(client, INCOME_STATEMENT_GROWTH, &args.symbol, args.limit).await
-        }
-        FundamentalsCommand::BalanceSheetGrowth(args) => {
-            run_annual(
-                client,
-                BALANCE_SHEET_STATEMENT_GROWTH,
-                &args.symbol,
-                args.limit,
-            )
-            .await
-        }
-        FundamentalsCommand::CashFlowGrowth(args) => {
-            run_annual(client, CASH_FLOW_STATEMENT_GROWTH, &args.symbol, args.limit).await
-        }
-        FundamentalsCommand::EnterpriseValues(args) => {
-            run_annual(client, ENTERPRISE_VALUES, &args.symbol, args.limit).await
-        }
-        FundamentalsCommand::AnalystEstimates(args) => {
-            run_annual(client, ANALYST_ESTIMATES, &args.symbol, args.limit).await
-        }
-        FundamentalsCommand::ReportDates(args) => {
-            run_by_symbol(client, FINANCIAL_REPORTS_DATES, &args.symbol).await
-        }
-    }
-}
-
-async fn execute_analyst(client: &FmpClient, command: &AnalystCommand) -> Result<CommandPayload> {
-    match command {
-        AnalystCommand::PriceTargetConsensus(args) => {
-            run_by_symbol(client, PRICE_TARGET_CONSENSUS, &args.symbol).await
-        }
-        AnalystCommand::PriceTargetSummary(args) => {
-            run_by_symbol(client, PRICE_TARGET_SUMMARY, &args.symbol).await
-        }
-        AnalystCommand::Grades(args) => run_by_symbol(client, GRADES, &args.symbol).await,
-    }
-}
-
-async fn execute_calendar(client: &FmpClient, command: &CalendarCommand) -> Result<CommandPayload> {
-    match command {
-        CalendarCommand::Earnings(args) => {
-            run_by_date_range(client, EARNINGS_CALENDAR, &args.from, &args.to).await
-        }
-    }
-}
-
-async fn execute_rates(client: &FmpClient, command: &RatesCommand) -> Result<CommandPayload> {
-    match command {
-        RatesCommand::Treasury(args) => {
-            run_by_date_range(client, TREASURY_RATES, &args.from, &args.to).await
-        }
-    }
-}
-
-async fn execute_technical(
-    client: &FmpClient,
-    command: &TechnicalCommand,
-) -> Result<CommandPayload> {
-    match command {
-        TechnicalCommand::Sma(args) => {
-            run_technical_sma(
-                client,
-                TECHNICAL_SMA,
-                &args.symbol,
-                args.period_length,
-                &args.timeframe,
-            )
-            .await
-        }
-    }
-}
-
-async fn execute_filings(client: &FmpClient, command: &FilingsCommand) -> Result<CommandPayload> {
-    match command {
-        FilingsCommand::SecFilings(args) => run_sec_filings(client, args).await,
+        Command::ForexQuote(args) => run_by_symbol(client, QUOTE, &args.symbol).await,
+        Command::NewsStock(args) => run_news(client, STOCK_NEWS, &args.symbol, args.limit).await,
+        Command::NewsGeneral(args) => run_paged(client, GENERAL_NEWS, args.page, args.limit).await,
+        Command::NewsArticles(args) => run_paged(client, FMP_ARTICLES, args.page, args.limit).await,
+        Command::NewsForex(args) => run_paged(client, FOREX_NEWS, args.page, args.limit).await,
+        Command::NewsCrypto(args) => run_paged(client, CRYPTO_NEWS, args.page, args.limit).await,
     }
 }
 
@@ -289,64 +161,4 @@ async fn run_sec_filings(client: &FmpClient, args: &SymbolDateRangeArgs) -> Resu
         &args.to,
     )
     .await
-}
-
-async fn execute_crypto(client: &FmpClient, command: &CryptoCommand) -> Result<CommandPayload> {
-    match command {
-        CryptoCommand::List => run_endpoint(client, CRYPTOCURRENCY_LIST).await,
-        CryptoCommand::Quote(args) => run_by_symbol(client, QUOTE, &args.symbol).await,
-        CryptoCommand::Historical(args) => {
-            run_by_symbol_date_range(
-                client,
-                HISTORICAL_PRICE_EOD_FULL,
-                &args.symbol,
-                &args.from,
-                &args.to,
-            )
-            .await
-        }
-    }
-}
-
-async fn execute_forex(client: &FmpClient, command: &ForexCommand) -> Result<CommandPayload> {
-    match command {
-        ForexCommand::Quote(args) => run_by_symbol(client, QUOTE, &args.symbol).await,
-        ForexCommand::Historical(args) => {
-            run_by_symbol_date_range(
-                client,
-                HISTORICAL_PRICE_EOD_FULL,
-                &args.symbol,
-                &args.from,
-                &args.to,
-            )
-            .await
-        }
-    }
-}
-
-async fn execute_news(client: &FmpClient, args: &NewsArgs) -> Result<CommandPayload> {
-    match &args.command {
-        Some(NewsCommand::Stock(args)) => {
-            run_news(client, STOCK_NEWS, &args.symbol, args.limit).await
-        }
-        Some(NewsCommand::General(args)) => {
-            run_paged(client, GENERAL_NEWS, args.page, args.limit).await
-        }
-        Some(NewsCommand::Articles(args)) => {
-            run_paged(client, FMP_ARTICLES, args.page, args.limit).await
-        }
-        Some(NewsCommand::Forex(args)) => {
-            run_paged(client, FOREX_NEWS, args.page, args.limit).await
-        }
-        Some(NewsCommand::Crypto(args)) => {
-            run_paged(client, CRYPTO_NEWS, args.page, args.limit).await
-        }
-        None => {
-            let symbol = args.symbol.as_deref().ok_or(Error::MissingArgument(
-                "symbol; use `news stock <SYMBOL>` or legacy `news <SYMBOL>`",
-            ))?;
-
-            run_news(client, STOCK_NEWS, symbol, args.limit).await
-        }
-    }
 }
