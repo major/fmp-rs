@@ -10,9 +10,17 @@
 
 This project is unofficial and is not affiliated with, endorsed by, or sponsored by Financial Modeling Prep.
 
-## Setup
+## Install and setup
 
-Install a Rust toolchain with Rust 1.95 or newer, then provide an API key with either `FMP_API_KEY` in the environment or a local `.env` file.
+Install the CLI from crates.io with Cargo:
+
+```bash
+cargo install rusty-fmp --locked
+```
+
+GitHub releases also provide cargo-dist archives and shell or PowerShell installers for supported platforms.
+
+For local development, install a Rust toolchain with Rust 1.95 or newer, then provide an API key with either `FMP_API_KEY` in the environment or a local `.env` file.
 
 ```bash
 FMP_API_KEY=your-key cargo run -- market-quote AAPL
@@ -40,7 +48,7 @@ Other Rust projects (for example an MCP server) can depend on `rusty-fmp` as an 
 
 ```toml
 [dependencies]
-rusty-fmp = { version = "0.1", default-features = false }
+rusty-fmp = { version = "0.3.0", default-features = false }
 ```
 
 This excludes `clap` and `dotenvy` and exposes `FmpClient`, `Endpoint`, `Error`, and `Result`. The `cli` feature (enabled by default) adds the `Cli` parser and the `run` entry point used by the `fmp-agent` binary.
@@ -66,7 +74,7 @@ make audit
 make machete
 ```
 
-`make check` runs formatting, clippy, tests, and docs for the supported feature shapes: the default CLI build and the library-only `--no-default-features` build. The GitHub CI workflow mirrors those checks across Linux, macOS, and Windows, with an MSRV job pinned to Rust 1.95.
+`make check` runs formatting, clippy, tests, and docs for the supported feature shapes: the default CLI build and the library-only `--no-default-features` build. The GitHub CI workflow mirrors those checks across Linux, macOS, and Windows, with an MSRV job pinned to Rust 1.95. The integration tests also check that the library dependency example above matches the package version in `Cargo.toml`, so release bumps do not leave stale copy-paste instructions behind.
 
 `make machete` runs [`cargo machete`](https://github.com/bnjbvr/cargo-machete) to catch unused entries in `Cargo.toml`. Install it once with `cargo install cargo-machete --locked`. The same check runs as the `machete` job in CI. The `[lints.rust]` table in `Cargo.toml` separately denies the `unused` lint group so dead code and unused imports fail `cargo build` even without the `-D warnings` flag.
 

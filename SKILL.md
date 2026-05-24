@@ -2,6 +2,14 @@
 
 Use this as a compact command reference for the unofficial `fmp-agent` CLI. The project is not affiliated with, endorsed by, or sponsored by Financial Modeling Prep.
 
+## Install
+
+```bash
+cargo install rusty-fmp --locked
+```
+
+GitHub releases also provide cargo-dist archives and shell or PowerShell installers for supported platforms.
+
 ## Global form
 
 ```bash
@@ -174,6 +182,6 @@ make patch-coverage
 make audit
 ```
 
-`make check` runs formatting, clippy, tests, and docs for both supported feature shapes: the default CLI build and the library-only `--no-default-features` build. GitHub CI mirrors these checks and verifies MSRV 1.95.
+`make check` runs formatting, clippy, tests, and docs for both supported feature shapes: the default CLI build and the library-only `--no-default-features` build. GitHub CI mirrors these checks and verifies MSRV 1.95. The integration tests check that the README library dependency example stays aligned with `Cargo.toml`.
 
 `make coverage` enforces 90 percent line coverage with `cargo llvm-cov`. Before opening a PR, run `make patch-coverage` to generate `lcov.info` and verify changed lines against `main` with `diff-cover`, matching the Codecov patch gate. Use `PATCH_COVERAGE_BASE=<branch>` for non-main bases or `DIFF_COVER='uvx diff-cover'` when needed.

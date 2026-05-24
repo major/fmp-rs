@@ -57,4 +57,5 @@ Keep `AGENTS.md`, `README.md`, and `SKILL.md` updated with code changes. Stale d
 - The `cli` feature adds `--verbose` / `-v` (INFO), `-vv` (DEBUG), `-vvv` (TRACE) via `clap-verbosity-flag`. `env_logger` is initialized in `main.rs` after CLI parsing using `cli.verbose.log_level_filter()`. Log output goes to stderr. Do not log API key values in any log statement.
 - `human_panic::setup_panic!()` is the first call in `main()` to catch panics before `dotenvy` or Clap run.
 - Integration tests in `tests/` use `assert_cmd::Command::cargo_bin("fmp-agent")` and `predicates` for assertions; `httpmock` provides mock HTTP servers.
+- `tests/readme.rs` guards documentation drift by checking that the README library dependency example uses the current `Cargo.toml` package version.
 - Run `cargo build --all-features` to generate `man/fmp-agent.1` from `build.rs`. Do NOT commit the generated `man/` directory; it is gitignored.
