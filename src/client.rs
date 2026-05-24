@@ -102,6 +102,23 @@ impl FmpClient {
         self.get(endpoint, &[("symbol", symbol)]).await
     }
 
+    /// Calls `endpoint` with `?symbol=...&limit=...` (limit defaults to
+    /// [`NEWS_LIMIT`]).
+    ///
+    /// # Errors
+    ///
+    /// See [module-level errors](self#errors).
+    pub async fn by_symbol_limit(
+        &self,
+        endpoint: Endpoint,
+        symbol: &str,
+        limit: Option<u16>,
+    ) -> Result<Value> {
+        let limit = limit.unwrap_or(NEWS_LIMIT).to_string();
+        self.get(endpoint, &[("symbol", symbol), ("limit", &limit)])
+            .await
+    }
+
     /// Calls `endpoint` with `?symbol=...` plus optional `from` and `to` dates.
     ///
     /// # Errors
@@ -137,6 +154,24 @@ impl FmpClient {
         self.get(endpoint, &params).await
     }
 
+    /// Calls `endpoint` with a required `name` plus optional `from` and `to` dates.
+    ///
+    /// # Errors
+    ///
+    /// See [module-level errors](self#errors).
+    pub async fn by_name_date_range(
+        &self,
+        endpoint: Endpoint,
+        name: &str,
+        from: Option<&str>,
+        to: Option<&str>,
+    ) -> Result<Value> {
+        let mut params = vec![("name", name)];
+        push_opt(&mut params, "from", from);
+        push_opt(&mut params, "to", to);
+        self.get(endpoint, &params).await
+    }
+
     /// Calls a statement-style `endpoint` with `symbol`, fixed `period=annual`,
     /// and `limit` (defaulting to [`ANNUAL_LIMIT`]).
     ///
@@ -157,6 +192,26 @@ impl FmpClient {
                 ("period", ANNUAL_PERIOD),
                 ("limit", &limit),
             ],
+        )
+        .await
+    }
+
+    /// Calls an annual report form `endpoint` with `symbol`, `year`, and fiscal `period`.
+    ///
+    /// # Errors
+    ///
+    /// See [module-level errors](self#errors).
+    pub async fn annual_report_form(
+        &self,
+        endpoint: Endpoint,
+        symbol: &str,
+        year: u16,
+        period: &str,
+    ) -> Result<Value> {
+        let year = year.to_string();
+        self.get(
+            endpoint,
+            &[("symbol", symbol), ("year", &year), ("period", period)],
         )
         .await
     }
@@ -307,12 +362,14 @@ mod tests {
     use crate::endpoint::{
         ANALYST_ESTIMATES, BALANCE_SHEET_STATEMENT, BALANCE_SHEET_STATEMENT_GROWTH,
         CASH_FLOW_STATEMENT, CASH_FLOW_STATEMENT_GROWTH, CRYPTO_NEWS, CRYPTOCURRENCY_LIST,
-        DIVIDENDS, EARNINGS_CALENDAR, ENTERPRISE_VALUES, FINANCIAL_REPORTS_DATES, FINANCIAL_SCORES,
-        FMP_ARTICLES, FOREX_NEWS, GENERAL_NEWS, GRADES, GRADES_CONSENSUS,
-        HISTORICAL_PRICE_EOD_FULL, INCOME_STATEMENT, INCOME_STATEMENT_AS_REPORTED,
-        INCOME_STATEMENT_GROWTH, KEY_EXECUTIVES, KEY_METRICS, PRICE_TARGET_CONSENSUS,
-        PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATIOS, SEARCH_SYMBOL, SEC_FILINGS_SEARCH_SYMBOL,
-        SHARES_FLOAT, SPLITS, STOCK_PEERS, STOCK_PRICE_CHANGE, TECHNICAL_SMA, TREASURY_RATES,
+        DIVIDENDS, EARNINGS_CALENDAR, ECONOMIC_INDICATORS, ENTERPRISE_VALUES,
+        FINANCIAL_REPORTS_DATES, FINANCIAL_REPORTS_JSON, FINANCIAL_SCORES, FMP_ARTICLES,
+        FOREX_NEWS, GENERAL_NEWS, GRADES, GRADES_CONSENSUS, HISTORICAL_PRICE_EOD_FULL,
+        INCOME_STATEMENT, INCOME_STATEMENT_AS_REPORTED, INCOME_STATEMENT_GROWTH,
+        INSIDER_TRADING_LATEST, KEY_EXECUTIVES, KEY_METRICS, PRICE_TARGET_CONSENSUS,
+        PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATINGS_HISTORICAL, RATIOS, SEARCH_SYMBOL,
+        SEC_FILINGS_SEARCH_SYMBOL, SHARES_FLOAT, SPLITS, STOCK_LIST, STOCK_PEERS,
+        STOCK_PRICE_CHANGE, TECHNICAL_SMA, TREASURY_RATES,
     };
 
     /// Returns a client wired to `server`'s base URL with `api_key=test-key`.
@@ -333,22 +390,31 @@ mod tests {
     #[tokio::test]
     async fn endpoint_sends_expected_request() {
         let server = MockServer::start_async().await;
-        let mock = server
-            .mock_async(|when, then| {
-                when.method(GET)
-                    .path("/cryptocurrency-list")
-                    .query_param("apikey", "test-key");
-                then.status(200).json_body(json!([{ "symbol": "BTCUSD" }]));
-            })
-            .await;
+        let endpoints = [CRYPTOCURRENCY_LIST, STOCK_LIST];
+        let mut mocks = Vec::new();
 
-        let value = test_client(&server)
-            .endpoint(CRYPTOCURRENCY_LIST)
-            .await
-            .unwrap();
+        for endpoint in endpoints {
+            mocks.push(
+                server
+                    .mock_async(|when, then| {
+                        when.method(GET)
+                            .path(format!("/{}", endpoint.path()))
+                            .query_param("apikey", "test-key");
+                        then.status(200).json_body(json!([{ "ok": true }]));
+                    })
+                    .await,
+            );
+        }
 
-        mock.assert_async().await;
-        assert_eq!(value[0]["symbol"], "BTCUSD");
+        let client = test_client(&server);
+        for endpoint in endpoints {
+            let value = client.endpoint(endpoint).await.unwrap();
+            assert_eq!(value[0]["ok"], true);
+        }
+
+        for mock in mocks {
+            mock.assert_async().await;
+        }
     }
 
     #[tokio::test]
@@ -420,6 +486,29 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn by_symbol_limit_sends_expected_request() {
+        let server = MockServer::start_async().await;
+        let mock = server
+            .mock_async(|when, then| {
+                when.method(GET)
+                    .path("/ratings-historical")
+                    .query_param("symbol", "AAPL")
+                    .query_param("limit", "10")
+                    .query_param("apikey", "test-key");
+                then.status(200).json_body(json!([{ "symbol": "AAPL" }]));
+            })
+            .await;
+
+        let value = test_client(&server)
+            .by_symbol_limit(RATINGS_HISTORICAL, "AAPL", None)
+            .await
+            .unwrap();
+
+        mock.assert_async().await;
+        assert_eq!(value[0]["symbol"], "AAPL");
+    }
+
+    #[tokio::test]
     async fn by_date_range_sends_expected_requests() {
         let server = MockServer::start_async().await;
         let endpoints = [EARNINGS_CALENDAR, TREASURY_RATES];
@@ -452,6 +541,35 @@ mod tests {
         for mock in mocks {
             mock.assert_async().await;
         }
+    }
+
+    #[tokio::test]
+    async fn by_name_date_range_sends_expected_request() {
+        let server = MockServer::start_async().await;
+        let mock = server
+            .mock_async(|when, then| {
+                when.method(GET)
+                    .path("/economic-indicators")
+                    .query_param("name", "GDP")
+                    .query_param("from", "2025-01-01")
+                    .query_param("to", "2025-12-31")
+                    .query_param("apikey", "test-key");
+                then.status(200).json_body(json!([{ "name": "GDP" }]));
+            })
+            .await;
+
+        let value = test_client(&server)
+            .by_name_date_range(
+                ECONOMIC_INDICATORS,
+                "GDP",
+                Some("2025-01-01"),
+                Some("2025-12-31"),
+            )
+            .await
+            .unwrap();
+
+        mock.assert_async().await;
+        assert_eq!(value[0]["name"], "GDP");
     }
 
     #[tokio::test]
@@ -559,9 +677,39 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn annual_report_form_sends_expected_request() {
+        let server = MockServer::start_async().await;
+        let mock = server
+            .mock_async(|when, then| {
+                when.method(GET)
+                    .path("/financial-reports-json")
+                    .query_param("symbol", "AAPL")
+                    .query_param("year", "2022")
+                    .query_param("period", "FY")
+                    .query_param("apikey", "test-key");
+                then.status(200).json_body(json!({ "symbol": "AAPL" }));
+            })
+            .await;
+
+        let value = test_client(&server)
+            .annual_report_form(FINANCIAL_REPORTS_JSON, "AAPL", 2022, "FY")
+            .await
+            .unwrap();
+
+        mock.assert_async().await;
+        assert_eq!(value["symbol"], "AAPL");
+    }
+
+    #[tokio::test]
     async fn paged_endpoints_send_expected_requests() {
         let server = MockServer::start_async().await;
-        let endpoints = [GENERAL_NEWS, FMP_ARTICLES, FOREX_NEWS, CRYPTO_NEWS];
+        let endpoints = [
+            GENERAL_NEWS,
+            FMP_ARTICLES,
+            FOREX_NEWS,
+            CRYPTO_NEWS,
+            INSIDER_TRADING_LATEST,
+        ];
         let mut mocks = Vec::new();
 
         for endpoint in endpoints {

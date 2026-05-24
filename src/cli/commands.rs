@@ -4,19 +4,21 @@ use crate::client::FmpClient;
 use crate::endpoint::{
     ANALYST_ESTIMATES, BALANCE_SHEET_STATEMENT, BALANCE_SHEET_STATEMENT_GROWTH,
     CASH_FLOW_STATEMENT, CASH_FLOW_STATEMENT_GROWTH, CRYPTO_NEWS, CRYPTOCURRENCY_LIST, DIVIDENDS,
-    EARNINGS_CALENDAR, ENTERPRISE_VALUES, FINANCIAL_REPORTS_DATES, FINANCIAL_SCORES, FMP_ARTICLES,
-    FOREX_NEWS, GENERAL_NEWS, GRADES, GRADES_CONSENSUS, HISTORICAL_PRICE_EOD_FULL,
-    INCOME_STATEMENT, INCOME_STATEMENT_AS_REPORTED, INCOME_STATEMENT_GROWTH, KEY_EXECUTIVES,
-    KEY_METRICS, PRICE_TARGET_CONSENSUS, PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATIOS,
-    SEARCH_SYMBOL, SEC_FILINGS_SEARCH_SYMBOL, SHARES_FLOAT, SPLITS, STOCK_NEWS, STOCK_PEERS,
-    STOCK_PRICE_CHANGE, TECHNICAL_SMA, TREASURY_RATES,
+    EARNINGS_CALENDAR, ECONOMIC_INDICATORS, ENTERPRISE_VALUES, FINANCIAL_REPORTS_DATES,
+    FINANCIAL_REPORTS_JSON, FINANCIAL_SCORES, FMP_ARTICLES, FOREX_NEWS, GENERAL_NEWS, GRADES,
+    GRADES_CONSENSUS, HISTORICAL_PRICE_EOD_FULL, INCOME_STATEMENT, INCOME_STATEMENT_AS_REPORTED,
+    INCOME_STATEMENT_GROWTH, INSIDER_TRADING_LATEST, KEY_EXECUTIVES, KEY_METRICS,
+    PRICE_TARGET_CONSENSUS, PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATINGS_HISTORICAL, RATIOS,
+    SEARCH_SYMBOL, SEC_FILINGS_SEARCH_SYMBOL, SHARES_FLOAT, SPLITS, STOCK_LIST, STOCK_NEWS,
+    STOCK_PEERS, STOCK_PRICE_CHANGE, TECHNICAL_SMA, TREASURY_RATES,
 };
 use crate::error::Result;
 
 use super::args::{Command, SymbolDateRangeArgs};
 use super::dispatch::{
-    run_annual, run_by_date_range, run_by_symbol, run_by_symbol_date_range, run_endpoint, run_news,
-    run_paged, run_query, run_technical_sma,
+    run_annual, run_annual_report_form, run_by_date_range, run_by_name_date_range, run_by_symbol,
+    run_by_symbol_date_range, run_by_symbol_limit, run_endpoint, run_news, run_paged, run_query,
+    run_technical_sma,
 };
 use super::output::CommandPayload;
 
@@ -28,11 +30,15 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
             run_by_symbol(client, KEY_EXECUTIVES, &args.symbol).await
         }
         Command::CompanyPeers(args) => run_by_symbol(client, STOCK_PEERS, &args.symbol).await,
+        Command::MarketStockList => run_endpoint(client, STOCK_LIST).await,
         Command::CompanyFinancialScores(args) => {
             run_by_symbol(client, FINANCIAL_SCORES, &args.symbol).await
         }
         Command::CompanyShareFloat(args) => run_by_symbol(client, SHARES_FLOAT, &args.symbol).await,
         Command::CompanyRating(args) => run_by_symbol(client, GRADES_CONSENSUS, &args.symbol).await,
+        Command::CompanyHistoricalRating(args) => {
+            run_by_symbol_limit(client, RATINGS_HISTORICAL, &args.symbol, args.limit).await
+        }
         Command::MarketQuote(args) => run_by_symbol(client, QUOTE, &args.symbol).await,
         Command::MarketHistorical(args) => {
             run_by_symbol_date_range(
@@ -97,6 +103,16 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
         Command::FundamentalsReportDates(args) => {
             run_by_symbol(client, FINANCIAL_REPORTS_DATES, &args.symbol).await
         }
+        Command::FundamentalsAnnualReportForm(args) => {
+            run_annual_report_form(
+                client,
+                FINANCIAL_REPORTS_JSON,
+                &args.symbol,
+                args.year,
+                &args.period,
+            )
+            .await
+        }
         Command::AnalystPriceTargetConsensus(args) => {
             run_by_symbol(client, PRICE_TARGET_CONSENSUS, &args.symbol).await
         }
@@ -104,11 +120,24 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
             run_by_symbol(client, PRICE_TARGET_SUMMARY, &args.symbol).await
         }
         Command::AnalystGrades(args) => run_by_symbol(client, GRADES, &args.symbol).await,
+        Command::InsiderTradingLatest(args) => {
+            run_paged(client, INSIDER_TRADING_LATEST, args.page, args.limit).await
+        }
         Command::EarningsCalendar(args) => {
             run_by_date_range(client, EARNINGS_CALENDAR, &args.from, &args.to).await
         }
         Command::TreasuryRates(args) => {
             run_by_date_range(client, TREASURY_RATES, &args.from, &args.to).await
+        }
+        Command::EconomicIndicators(args) => {
+            run_by_name_date_range(
+                client,
+                ECONOMIC_INDICATORS,
+                &args.name,
+                &args.from,
+                &args.to,
+            )
+            .await
         }
         Command::TechnicalSma(args) => {
             run_technical_sma(

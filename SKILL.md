@@ -49,9 +49,10 @@ fmp-agent company-peers <SYMBOL>
 fmp-agent company-financial-scores <SYMBOL>
 fmp-agent company-share-float <SYMBOL>
 fmp-agent company-rating <SYMBOL>
+fmp-agent company-historical-rating <SYMBOL> [--limit <LIMIT>]
 ```
 
-Company commands cover profile/reference data, key executives, peer companies, financial scores, share float, and rating consensus.
+Company commands cover profile/reference data, key executives, peer companies, financial scores, share float, rating consensus, and historical ratings.
 
 ### Market
 
@@ -61,9 +62,10 @@ fmp-agent market-historical <SYMBOL> [--from <FROM>] [--to <TO>]
 fmp-agent market-dividends <SYMBOL>
 fmp-agent market-splits <SYMBOL>
 fmp-agent market-price-change <SYMBOL>
+fmp-agent market-stock-list
 ```
 
-Market commands cover quotes, end-of-day price bars, dividends, splits, and price change percentages. Date ranges use inclusive `YYYY-MM-DD` values.
+Market commands cover quotes, end-of-day price bars, dividends, splits, price change percentages, and supported stock symbols. Date ranges use inclusive `YYYY-MM-DD` values.
 
 ### Crypto and forex
 
@@ -92,9 +94,10 @@ fmp-agent fundamentals-cash-flow-growth <SYMBOL> [--limit <LIMIT>]
 fmp-agent fundamentals-enterprise-values <SYMBOL> [--limit <LIMIT>]
 fmp-agent fundamentals-analyst-estimates <SYMBOL> [--limit <LIMIT>]
 fmp-agent fundamentals-report-dates <SYMBOL>
+fmp-agent fundamentals-annual-report-form <SYMBOL> --year <YEAR> [--period <PERIOD>]
 ```
 
-Fundamentals commands return annual statement, ratio, metric, growth, enterprise value, analyst estimate, and financial report date rows. `--limit` sets the maximum annual rows returned for statement-like endpoints.
+Fundamentals commands return annual statement, ratio, metric, growth, enterprise value, analyst estimate, financial report date, and annual report form JSON. `--limit` sets the maximum annual rows returned for statement-like endpoints. Annual report forms default `--period` to `FY`.
 
 ### Analyst
 
@@ -111,8 +114,10 @@ Analyst commands cover price target consensus, price target summary, and analyst
 ```bash
 fmp-agent earnings-calendar [--from <FROM>] [--to <TO>]
 fmp-agent treasury-rates [--from <FROM>] [--to <TO>]
+fmp-agent economic-indicators <NAME> [--from <FROM>] [--to <TO>]
 fmp-agent technical-sma <SYMBOL> [--period-length <PERIOD_LENGTH>] [--timeframe <TIMEFRAME>]
 fmp-agent sec-filings <SYMBOL> [--from <FROM>] [--to <TO>]
+fmp-agent insider-trading-latest [--page <PAGE>] [--limit <LIMIT>]
 fmp-agent news-stock <SYMBOL> [--limit <LIMIT>]
 fmp-agent news-general [--page <PAGE>] [--limit <LIMIT>]
 fmp-agent news-articles [--page <PAGE>] [--limit <LIMIT>]
@@ -120,7 +125,7 @@ fmp-agent news-forex [--page <PAGE>] [--limit <LIMIT>]
 fmp-agent news-crypto [--page <PAGE>] [--limit <LIMIT>]
 ```
 
-Technical SMA defaults are `--period-length 10` and `--timeframe 1day`. SEC filings default `--from` to 90 days ago when omitted. Stock news `--limit` sets the maximum news items returned. Paginated news commands default to page 0 and limit 10 when omitted.
+Technical SMA defaults are `--period-length 10` and `--timeframe 1day`. SEC filings default `--from` to 90 days ago when omitted. Economic indicators use FMP indicator names such as `GDP`. Stock news `--limit` sets the maximum news items returned. Paginated news and insider trading commands default to page 0 and limit 10 when omitted.
 
 ## Examples
 
@@ -129,6 +134,7 @@ FMP_API_KEY=your-key fmp-agent market-quote AAPL
 fmp-agent market-historical AAPL --from 2025-01-01 --to 2025-01-31
 fmp-agent company-executives AAPL
 fmp-agent company-peers AAPL
+fmp-agent market-stock-list
 fmp-agent market-dividends AAPL
 fmp-agent market-splits AAPL
 fmp-agent earnings-calendar --from 2026-01-01 --to 2026-01-31
@@ -141,6 +147,7 @@ fmp-agent forex-historical EURUSD --from 2025-01-01 --to 2025-01-03
 fmp-agent technical-sma AAPL --period-length 10 --timeframe 1day
 fmp-agent market-price-change AAPL
 fmp-agent sec-filings AAPL --from 2024-01-01 --to 2024-03-01
+fmp-agent economic-indicators GDP --from 2025-01-01 --to 2025-12-31
 fmp-agent fundamentals-income-statement AAPL --limit 5
 fmp-agent fundamentals-income-statement-as-reported AAPL --limit 5
 fmp-agent fundamentals-balance-sheet AAPL --limit 5
@@ -152,11 +159,14 @@ fmp-agent fundamentals-enterprise-values AAPL --limit 5
 fmp-agent company-financial-scores AAPL
 fmp-agent company-share-float AAPL
 fmp-agent company-rating AAPL
+fmp-agent company-historical-rating AAPL --limit 5
 fmp-agent fundamentals-analyst-estimates AAPL --limit 5
 fmp-agent fundamentals-report-dates AAPL
+fmp-agent fundamentals-annual-report-form AAPL --year 2022
 fmp-agent analyst-price-target-consensus AAPL
 fmp-agent analyst-price-target-summary AAPL
 fmp-agent analyst-grades AAPL
+fmp-agent insider-trading-latest --page 0 --limit 10
 fmp-agent news-stock AAPL --limit 10
 fmp-agent news-general --page 0 --limit 10
 fmp-agent news-articles --page 0 --limit 10

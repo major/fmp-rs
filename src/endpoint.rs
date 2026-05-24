@@ -10,7 +10,7 @@ pub const ANNUAL_PERIOD: &str = "annual";
 /// Default row limit for annual statement-style endpoints.
 pub const ANNUAL_LIMIT: u16 = 5;
 
-/// Default item limit for news endpoints.
+/// Default item limit for news and other limited list endpoints.
 pub const NEWS_LIMIT: u16 = 10;
 
 /// Default page for paginated endpoints.
@@ -50,6 +50,8 @@ pub const HISTORICAL_PRICE_EOD_FULL: Endpoint = Endpoint::new("historical-price-
 pub const CRYPTOCURRENCY_LIST: Endpoint = Endpoint::new("cryptocurrency-list");
 /// Stock peers endpoint.
 pub const STOCK_PEERS: Endpoint = Endpoint::new("stock-peers");
+/// Stock list endpoint.
+pub const STOCK_LIST: Endpoint = Endpoint::new("stock-list");
 /// Historical dividends endpoint.
 pub const DIVIDENDS: Endpoint = Endpoint::new("dividends");
 /// Historical stock splits endpoint.
@@ -68,6 +70,8 @@ pub const STOCK_PRICE_CHANGE: Endpoint = Endpoint::new("stock-price-change");
 pub const SHARES_FLOAT: Endpoint = Endpoint::new("shares-float");
 /// Financial report dates endpoint.
 pub const FINANCIAL_REPORTS_DATES: Endpoint = Endpoint::new("financial-reports-dates");
+/// Annual report form JSON endpoint.
+pub const FINANCIAL_REPORTS_JSON: Endpoint = Endpoint::new("financial-reports-json");
 /// Annual income statement endpoint.
 pub const INCOME_STATEMENT: Endpoint = Endpoint::new("income-statement");
 /// Annual income statement as reported endpoint.
@@ -101,6 +105,12 @@ pub const PRICE_TARGET_CONSENSUS: Endpoint = Endpoint::new("price-target-consens
 pub const PRICE_TARGET_SUMMARY: Endpoint = Endpoint::new("price-target-summary");
 /// Analyst grades consensus endpoint.
 pub const GRADES_CONSENSUS: Endpoint = Endpoint::new("grades-consensus");
+/// Historical company rating endpoint.
+pub const RATINGS_HISTORICAL: Endpoint = Endpoint::new("ratings-historical");
+/// Latest insider trading endpoint.
+pub const INSIDER_TRADING_LATEST: Endpoint = Endpoint::new("insider-trading/latest");
+/// Economic indicators endpoint.
+pub const ECONOMIC_INDICATORS: Endpoint = Endpoint::new("economic-indicators");
 /// Stock news endpoint.
 pub const STOCK_NEWS: Endpoint = Endpoint::new("news/stock");
 /// General news endpoint.

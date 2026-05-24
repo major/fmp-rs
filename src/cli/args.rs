@@ -47,6 +47,9 @@ pub enum Command {
     /// Get peer companies for a symbol.
     CompanyPeers(SymbolArgs),
 
+    /// List supported stock symbols.
+    MarketStockList,
+
     /// Get financial scores for a symbol.
     CompanyFinancialScores(SymbolArgs),
 
@@ -55,6 +58,9 @@ pub enum Command {
 
     /// Get analyst rating consensus for a symbol.
     CompanyRating(SymbolArgs),
+
+    /// Get historical company rating rows for a symbol.
+    CompanyHistoricalRating(SymbolLimitArgs),
 
     /// Get the latest quote for a symbol.
     MarketQuote(SymbolArgs),
@@ -107,6 +113,9 @@ pub enum Command {
     /// Get available financial report dates for a symbol.
     FundamentalsReportDates(SymbolArgs),
 
+    /// Get annual report form JSON for a symbol and fiscal year.
+    FundamentalsAnnualReportForm(AnnualReportFormArgs),
+
     /// Get price target consensus for a symbol.
     AnalystPriceTargetConsensus(SymbolArgs),
 
@@ -116,11 +125,17 @@ pub enum Command {
     /// Get analyst grade actions for a symbol.
     AnalystGrades(SymbolArgs),
 
+    /// Get latest insider trading rows.
+    InsiderTradingLatest(PagedArgs),
+
     /// Get earnings calendar rows for a date range.
     EarningsCalendar(DateRangeArgs),
 
     /// Get treasury rates for a date range.
     TreasuryRates(DateRangeArgs),
+
+    /// Get economic indicator rows by indicator name and optional date range.
+    EconomicIndicators(NameDateRangeArgs),
 
     /// Get simple moving average technical indicator rows for a symbol.
     TechnicalSma(TechnicalSmaArgs),
@@ -166,6 +181,32 @@ pub struct SymbolArgs {
     pub symbol: String,
 }
 
+/// Shared symbol plus row limit arguments.
+#[derive(Debug, Args)]
+pub struct SymbolLimitArgs {
+    /// Ticker symbol.
+    pub symbol: String,
+
+    /// Maximum number of rows to return.
+    #[arg(long)]
+    pub limit: Option<u16>,
+}
+
+/// Annual report form arguments.
+#[derive(Debug, Args)]
+pub struct AnnualReportFormArgs {
+    /// Ticker symbol.
+    pub symbol: String,
+
+    /// Fiscal year.
+    #[arg(long)]
+    pub year: u16,
+
+    /// Fiscal period, usually `FY`.
+    #[arg(long, default_value = "FY")]
+    pub period: String,
+}
+
 /// Shared symbol and date range arguments.
 #[derive(Debug, Args)]
 pub struct SymbolDateRangeArgs {
@@ -184,6 +225,21 @@ pub struct SymbolDateRangeArgs {
 /// Shared date range arguments.
 #[derive(Debug, Args)]
 pub struct DateRangeArgs {
+    /// Inclusive start date in `YYYY-MM-DD` format.
+    #[arg(long)]
+    pub from: Option<String>,
+
+    /// Inclusive end date in `YYYY-MM-DD` format.
+    #[arg(long)]
+    pub to: Option<String>,
+}
+
+/// Shared indicator name and date range arguments.
+#[derive(Debug, Args)]
+pub struct NameDateRangeArgs {
+    /// Indicator name, for example `GDP`.
+    pub name: String,
+
     /// Inclusive start date in `YYYY-MM-DD` format.
     #[arg(long)]
     pub from: Option<String>,
