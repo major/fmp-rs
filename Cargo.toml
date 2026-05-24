@@ -6,7 +6,11 @@ rust-version = "1.95"
 description = "JSON CLI and client library for Financial Modeling Prep"
 license = "MIT"
 repository = "https://github.com/major/fmp-rs"
+homepage = "https://github.com/major/fmp-rs"
+documentation = "https://docs.rs/rusty-fmp"
 readme = "README.md"
+keywords = ["fmp", "finance", "stocks", "cli", "api"]
+categories = ["api-bindings", "command-line-utilities"]
 
 [[bin]]
 name = "fmp-agent"
