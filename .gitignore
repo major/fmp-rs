@@ -3,3 +3,4 @@
 /target/
 .sisyphus/
 /man/
+lcov.info
