@@ -13,19 +13,26 @@ pub(crate) const SEARCH_ABOUT: &str =
 pub(crate) const SEARCH_QUERY: &str = "Ticker fragment or company name to search for.";
 pub(crate) const COMPANY_PROFILE_ABOUT: &str =
     "Get company profile and reference data for a stock ticker.";
+pub(crate) const COMPANY_PROFILE_LONG: &str = "Get company profile and reference data including sector, industry, description, and headquarters for a stock ticker.\n\nExamples:\n  fmp-agent company-profile AAPL\n  fmp-agent company-profile MSFT";
 pub(crate) const COMPANY_EXECUTIVES_ABOUT: &str = "Get key executives for a stock ticker.";
+pub(crate) const COMPANY_EXECUTIVES_LONG: &str = "Get key executives for a company including name, title, and compensation data.\n\nExamples:\n  fmp-agent company-executives AAPL";
 pub(crate) const COMPANY_PEERS_ABOUT: &str = "Get peer company tickers for a stock ticker.";
+pub(crate) const COMPANY_PEERS_LONG: &str = "Get a list of peer company tickers that trade in the same sector and industry.\n\nExamples:\n  fmp-agent company-peers AAPL";
 pub(crate) const MARKET_STOCK_LIST_ABOUT: &str = "List supported stock symbols.";
 pub(crate) const ETF_HOLDINGS_ABOUT: &str =
     "Get ETF holdings for a fund symbol; Starter accounts return an API error.";
 pub(crate) const COMPANY_FINANCIAL_SCORES_ABOUT: &str =
     "Get financial quality scores for a stock ticker.";
+pub(crate) const COMPANY_FINANCIAL_SCORES_LONG: &str = "Get financial quality scores for a company including Piotroski score and intrinsic value rating.\n\nExamples:\n  fmp-agent company-financial-scores AAPL";
 pub(crate) const COMPANY_SHARE_FLOAT_ABOUT: &str =
     "Get share float and outstanding share data for a stock ticker.";
+pub(crate) const COMPANY_SHARE_FLOAT_LONG: &str = "Get share float and outstanding share counts for a stock ticker.\n\nExamples:\n  fmp-agent company-share-float AAPL";
 pub(crate) const COMPANY_RATING_ABOUT: &str =
     "Get current analyst rating consensus for a stock ticker.";
+pub(crate) const COMPANY_RATING_LONG: &str = "Get the current analyst rating consensus (buy/hold/sell) for a stock ticker.\n\nExamples:\n  fmp-agent company-rating AAPL";
 pub(crate) const COMPANY_HISTORICAL_RATING_ABOUT: &str =
     "Get historical company rating rows for a stock ticker.";
+pub(crate) const COMPANY_HISTORICAL_RATING_LONG: &str = "Get historical company rating rows for a stock ticker. Returns up to the limit of most-recent rating snapshots.\n\nExamples:\n  fmp-agent company-historical-rating AAPL\n  fmp-agent company-historical-rating AAPL --limit 20";
 pub(crate) const MARKET_QUOTE_ABOUT: &str = "Get the latest market quote for a stock ticker.";
 pub(crate) const MARKET_HISTORICAL_ABOUT: &str =
     "Get historical end-of-day price bars for a stock ticker.";

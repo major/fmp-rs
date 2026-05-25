@@ -39,15 +39,15 @@ pub enum Command {
     },
 
     /// Company profile command.
-    #[command(about = help::COMPANY_PROFILE_ABOUT)]
+    #[command(about = help::COMPANY_PROFILE_ABOUT, long_about = help::COMPANY_PROFILE_LONG)]
     CompanyProfile(SymbolArgs),
 
     /// Company executives command.
-    #[command(about = help::COMPANY_EXECUTIVES_ABOUT)]
+    #[command(about = help::COMPANY_EXECUTIVES_ABOUT, long_about = help::COMPANY_EXECUTIVES_LONG)]
     CompanyExecutives(SymbolArgs),
 
     /// Company peers command.
-    #[command(about = help::COMPANY_PEERS_ABOUT)]
+    #[command(about = help::COMPANY_PEERS_ABOUT, long_about = help::COMPANY_PEERS_LONG)]
     CompanyPeers(SymbolArgs),
 
     /// Stock list command.
@@ -59,19 +59,19 @@ pub enum Command {
     EtfHoldings(SymbolArgs),
 
     /// Company financial scores command.
-    #[command(about = help::COMPANY_FINANCIAL_SCORES_ABOUT)]
+    #[command(about = help::COMPANY_FINANCIAL_SCORES_ABOUT, long_about = help::COMPANY_FINANCIAL_SCORES_LONG)]
     CompanyFinancialScores(SymbolArgs),
 
     /// Company share float command.
-    #[command(about = help::COMPANY_SHARE_FLOAT_ABOUT)]
+    #[command(about = help::COMPANY_SHARE_FLOAT_ABOUT, long_about = help::COMPANY_SHARE_FLOAT_LONG)]
     CompanyShareFloat(SymbolArgs),
 
     /// Company rating command.
-    #[command(about = help::COMPANY_RATING_ABOUT)]
+    #[command(about = help::COMPANY_RATING_ABOUT, long_about = help::COMPANY_RATING_LONG)]
     CompanyRating(SymbolArgs),
 
     /// Company historical rating command.
-    #[command(about = help::COMPANY_HISTORICAL_RATING_ABOUT)]
+    #[command(about = help::COMPANY_HISTORICAL_RATING_ABOUT, long_about = help::COMPANY_HISTORICAL_RATING_LONG)]
     CompanyHistoricalRating(SymbolLimitArgs),
 
     /// Market quote command.
