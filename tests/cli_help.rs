@@ -231,3 +231,15 @@ fn news_help_explains_limit_and_paging_defaults() {
             "Maximum number of items to return.",
         ));
 }
+
+#[test]
+fn stock_news_help_explains_limit_default() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .args(["news-stock", "--help"])
+        .env("CLAP_COLOR", "never")
+        .env("NO_COLOR", "1")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("[default: 10]"));
+}

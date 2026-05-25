@@ -116,7 +116,5 @@ pub(crate) const ANNUAL_LIMIT: &str =
     "Maximum number of annual rows to return. Defaults to 5 when omitted.";
 pub(crate) const PERIOD_LENGTH: &str = "Number of periods in the moving average window.";
 pub(crate) const TIMEFRAME: &str = "FMP candle timeframe, for example 1day.";
-pub(crate) const NEWS_LIMIT: &str =
-    "Maximum number of news items to return. Defaults to 10 when omitted.";
 pub(crate) const PAGE: &str = "Zero-based result page.";
 pub(crate) const PAGE_LIMIT: &str = "Maximum number of items to return.";

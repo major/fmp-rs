@@ -159,9 +159,9 @@ pub(super) async fn run_news(
     client: &FmpClient,
     endpoint: Endpoint,
     symbol: &str,
-    limit: Option<u16>,
+    limit: u16,
 ) -> Result<CommandPayload> {
-    let data = client.news(endpoint, symbol, limit).await?;
+    let data = client.news(endpoint, symbol, Some(limit)).await?;
     Ok(CommandPayload::new(
         endpoint.path(),
         json!({ "symbol": symbol, "limit": limit }),

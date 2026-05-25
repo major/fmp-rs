@@ -78,7 +78,7 @@ fn optional_symbol_date_range(symbol: &str) -> SymbolDateRangeArgs {
 fn stock_news(symbol: &str) -> StockNewsArgs {
     StockNewsArgs {
         symbol: symbol.to_owned(),
-        limit: None,
+        limit: 10,
     }
 }
 
@@ -167,7 +167,7 @@ fn parses_grouped_news_command() {
         panic!("expected stock news command");
     };
     assert_eq!(args.symbol, "AAPL");
-    assert_eq!(args.limit, Some(3));
+    assert_eq!(args.limit, 3);
 }
 
 #[test]
@@ -716,12 +716,12 @@ async fn execute_news_commands_use_endpoint_descriptor() {
     let client = test_client(&server);
     let commands = [
         Command::NewsStock(StockNewsArgs {
-            limit: Some(3),
+            limit: 3,
             ..stock_news("AAPL")
         }),
         Command::NewsStock(StockNewsArgs {
             symbol: "MSFT".to_owned(),
-            limit: Some(3),
+            limit: 3,
         }),
     ];
 
@@ -1022,7 +1022,7 @@ async fn execute_flat_commands_use_endpoint_descriptors() {
         (
             "news/stock",
             Command::NewsStock(stock_news("AAPL")),
-            json!({ "symbol": "AAPL", "limit": null }),
+            json!({ "symbol": "AAPL", "limit": 10 }),
         ),
     ];
     for (path, _, _) in &cases {

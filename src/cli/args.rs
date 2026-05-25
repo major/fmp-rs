@@ -339,8 +339,8 @@ pub struct StockNewsArgs {
     pub symbol: String,
 
     /// Maximum number of news items to return.
-    #[arg(long, help = help::NEWS_LIMIT)]
-    pub limit: Option<u16>,
+    #[arg(long, default_value_t = 10, help = help::LIMIT_ROWS)]
+    pub limit: u16,
 }
 
 /// Shared paginated endpoint arguments.
