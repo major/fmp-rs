@@ -90,9 +90,7 @@ fn introspected_subcommands_match_array() {
     assert_eq!(introspected, listed);
 }
 
-/// Stays ignored until Wave 3 (T10-T21) adds Examples: blocks to every command. T26 removes this #[ignore].
 #[test]
-#[ignore]
 fn every_command_help_contains_examples() {
     for command in COMMANDS {
         Command::cargo_bin("fmp-agent")
