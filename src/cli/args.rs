@@ -167,11 +167,11 @@ pub enum Command {
     EarningsCalendar(DateRangeArgs),
 
     /// Treasury rates command.
-    #[command(about = help::TREASURY_RATES_ABOUT)]
+    #[command(about = help::TREASURY_RATES_ABOUT, long_about = help::TREASURY_RATES_LONG)]
     TreasuryRates(DateRangeArgs),
 
     /// Economic indicators command.
-    #[command(about = help::ECONOMIC_INDICATORS_ABOUT)]
+    #[command(about = help::ECONOMIC_INDICATORS_ABOUT, long_about = help::ECONOMIC_INDICATORS_LONG)]
     EconomicIndicators(NameDateRangeArgs),
 
     /// Technical SMA command.

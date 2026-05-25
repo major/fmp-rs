@@ -102,8 +102,10 @@ pub(crate) const INSIDER_TRADING_LATEST_LONG: &str =
 pub(crate) const EARNINGS_CALENDAR_ABOUT: &str =
     "Get earnings calendar rows for an optional announcement date range.";
 pub(crate) const TREASURY_RATES_ABOUT: &str = "Get treasury rate rows for an optional date range.";
+pub(crate) const TREASURY_RATES_LONG: &str = "Get treasury rate rows for an optional date range. Returns yields for standard maturities (1M, 2M, 3M, 6M, 1Y, 2Y, 3Y, 5Y, 7Y, 10Y, 20Y, 30Y).\n\nExamples:\n  fmp-agent treasury-rates\n  fmp-agent treasury-rates --from 2024-01-01 --to 2024-12-31";
 pub(crate) const ECONOMIC_INDICATORS_ABOUT: &str =
     "Get economic indicator rows by indicator name and optional date range.";
+pub(crate) const ECONOMIC_INDICATORS_LONG: &str = "Get economic indicator rows by indicator name and optional date range. The indicator name is a positional argument.\n\nExamples:\n  fmp-agent economic-indicators GDP\n  fmp-agent economic-indicators GDP --from 2024-01-01 --to 2024-12-31";
 pub(crate) const TECHNICAL_SMA_ABOUT: &str =
     "Get simple moving average technical indicator rows for a stock ticker.";
 pub(crate) const TECHNICAL_SMA_LONG: &str = "Get simple moving average technical indicator rows for a stock ticker. Defaults to a 10-period SMA on the 1day timeframe.";
