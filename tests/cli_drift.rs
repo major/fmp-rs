@@ -52,6 +52,7 @@ const COMMANDS: &[&str] = &[
     "forex-historical",
     "etf-holdings",
     "earnings-calendar",
+    "schema",
 ];
 
 #[test]

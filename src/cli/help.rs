@@ -136,6 +136,8 @@ pub(crate) const NEWS_FOREX_ABOUT: &str = "Get latest forex news.";
 pub(crate) const NEWS_FOREX_LONG: &str = "Get latest forex news. Uses zero-based paging.\n\nExamples:\n  fmp-agent news-forex\n  fmp-agent news-forex --page 0 --limit 10";
 pub(crate) const NEWS_CRYPTO_ABOUT: &str = "Get latest crypto news.";
 pub(crate) const NEWS_CRYPTO_LONG: &str = "Get latest crypto news. Uses zero-based paging.\n\nExamples:\n  fmp-agent news-crypto\n  fmp-agent news-crypto --page 0 --limit 10";
+pub(crate) const SCHEMA_ABOUT: &str = "Dump the CLI surface as machine-readable JSON.";
+pub(crate) const SCHEMA_LONG: &str = "Dump the CLI surface as machine-readable JSON. The output format is experimental and may change between versions. schema_version 1 is the initial format.\n\nThis command does not require FMP_API_KEY and does not make any network requests.\n\nExamples:\n  fmp-agent schema\n  fmp-agent schema | jq '.commands | length'";
 
 pub(crate) const SYMBOL: &str =
     "Symbol accepted by this command, such as a stock ticker, forex pair, or crypto pair.";

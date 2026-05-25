@@ -169,6 +169,7 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
         Command::NewsArticles(args) => run_paged(client, FMP_ARTICLES, args.page, args.limit).await,
         Command::NewsForex(args) => run_paged(client, FOREX_NEWS, args.page, args.limit).await,
         Command::NewsCrypto(args) => run_paged(client, CRYPTO_NEWS, args.page, args.limit).await,
+        Command::Schema => unreachable!("Schema command is handled before execute() in run()"),
     }
 }
 

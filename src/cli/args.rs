@@ -221,6 +221,10 @@ pub enum Command {
     /// Crypto news command.
     #[command(about = help::NEWS_CRYPTO_ABOUT, long_about = help::NEWS_CRYPTO_LONG)]
     NewsCrypto(PagedArgs),
+
+    /// Schema dump command.
+    #[command(about = help::SCHEMA_ABOUT, long_about = help::SCHEMA_LONG)]
+    Schema,
 }
 
 /// Shared command symbol argument.
