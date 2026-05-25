@@ -55,3 +55,31 @@ fn schema_emits_valid_json_with_required_fields() {
         "at least one command long_about must contain Examples:"
     );
 }
+
+#[test]
+fn schema_works_without_api_key() {
+    let output = Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env_remove("FMP_API_KEY")
+        .arg("schema")
+        .assert()
+        .success()
+        .get_output()
+        .stdout
+        .clone();
+
+    let body: Value =
+        serde_json::from_slice(&output).expect("schema output without key should be valid JSON");
+    assert_eq!(body["schema_version"], 1);
+}
+
+#[test]
+fn other_commands_still_require_api_key() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env_remove("FMP_API_KEY")
+        .args(["market-quote", "AAPL"])
+        .assert()
+        .failure()
+        .code(3);
+}
