@@ -63,10 +63,11 @@ impl FmpClient {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::InvalidBaseUrl`] if `base_url` cannot be parsed.
+    /// Returns [`Error::InvalidBaseUrl`] if `base_url` cannot be parsed, uses
+    /// an unsupported scheme, contains credentials, or contains query or
+    /// fragment components.
     pub fn with_base_url(api_key: impl Into<String>, base_url: impl AsRef<str>) -> Result<Self> {
-        let base_url = Url::parse(base_url.as_ref())
-            .map_err(|_| Error::InvalidBaseUrl(base_url.as_ref().to_owned()))?;
+        let base_url = normalize_base_url(base_url.as_ref())?;
 
         Ok(Self {
             http: reqwest::Client::new(),
@@ -340,6 +341,39 @@ fn push_opt<'a>(params: &mut Vec<(&'a str, &'a str)>, key: &'a str, value: Optio
     }
 }
 
+fn normalize_base_url(base_url: &str) -> Result<Url> {
+    let mut url =
+        Url::parse(base_url).map_err(|_| Error::InvalidBaseUrl("<invalid URL>".to_owned()))?;
+
+    if !matches!(url.scheme(), "http" | "https")
+        || !url.username().is_empty()
+        || url.password().is_some()
+    {
+        return Err(Error::InvalidBaseUrl(sanitize_base_url(&url)));
+    }
+
+    if url.query().is_some() || url.fragment().is_some() {
+        return Err(Error::InvalidBaseUrl(sanitize_base_url(&url)));
+    }
+
+    if !url.path().ends_with('/') {
+        let mut path = url.path().to_owned();
+        path.push('/');
+        url.set_path(&path);
+    }
+
+    Ok(url)
+}
+
+fn sanitize_base_url(url: &Url) -> String {
+    let mut sanitized = url.clone();
+    let _ = sanitized.set_username("");
+    let _ = sanitized.set_password(None);
+    sanitized.set_query(None);
+    sanitized.set_fragment(None);
+    sanitized.to_string()
+}
+
 fn summarize_body(body: &str) -> String {
     let trimmed = body.trim();
     if trimmed.is_empty() {
@@ -385,6 +419,62 @@ mod tests {
 
         assert!(output.contains("<redacted>"));
         assert!(!output.contains("secret-key"));
+    }
+
+    #[test]
+    fn with_base_url_adds_trailing_slash() {
+        let client = FmpClient::with_base_url("test-key", "https://example.com/stable").unwrap();
+        let url = client.build_url("quote", &[]).unwrap();
+
+        assert_eq!(
+            url.as_str(),
+            "https://example.com/stable/quote?apikey=test-key"
+        );
+    }
+
+    #[test]
+    fn with_base_url_preserves_existing_trailing_slash() {
+        let client = FmpClient::with_base_url("test-key", "https://example.com/stable/").unwrap();
+        let url = client.build_url("quote", &[]).unwrap();
+
+        assert_eq!(
+            url.as_str(),
+            "https://example.com/stable/quote?apikey=test-key"
+        );
+    }
+
+    #[test]
+    fn with_base_url_rejects_query_and_fragment() {
+        let query_error =
+            FmpClient::with_base_url("test-key", "https://example.com/stable?token=secret-token")
+                .unwrap_err()
+                .to_string();
+        assert!(query_error.contains("https://example.com/stable"));
+        assert!(!query_error.contains("secret-token"));
+
+        let fragment_error =
+            FmpClient::with_base_url("test-key", "https://example.com/stable#secret-fragment")
+                .unwrap_err()
+                .to_string();
+        assert!(fragment_error.contains("https://example.com/stable"));
+        assert!(!fragment_error.contains("secret-fragment"));
+    }
+
+    #[test]
+    fn with_base_url_rejects_credentials_and_unsupported_schemes() {
+        let credentials_error = FmpClient::with_base_url(
+            "test-key",
+            "https://user:secret-password@example.com/stable",
+        )
+        .unwrap_err()
+        .to_string();
+        assert!(credentials_error.contains("https://example.com/stable"));
+        assert!(!credentials_error.contains("secret-password"));
+
+        assert!(matches!(
+            FmpClient::with_base_url("test-key", "ftp://example.com/stable"),
+            Err(Error::InvalidBaseUrl(_))
+        ));
     }
 
     #[tokio::test]
