@@ -3,9 +3,14 @@ use httpmock::Method::GET;
 use httpmock::MockServer;
 use serde_json::{Value, json};
 
+use crate::client::FmpClient;
+
+use super::args::{
+    AnnualArgs, AnnualReportFormArgs, Cli, Command, DateRangeArgs, NameDateRangeArgs, PagedArgs,
+    StockNewsArgs, SymbolArgs, SymbolDateRangeArgs, SymbolLimitArgs, TechnicalSmaArgs,
+};
 use super::commands::execute;
 use super::output::{CommandPayload, render_output};
-use super::*;
 
 fn test_client(server: &MockServer) -> FmpClient {
     FmpClient::with_base_url("test-key", format!("{}/", server.base_url())).unwrap()

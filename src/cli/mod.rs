@@ -9,7 +9,7 @@ mod output;
 #[cfg(test)]
 mod tests;
 
-pub use args::*;
+pub use args::Cli;
 
 use commands::execute;
 use output::render_output;
