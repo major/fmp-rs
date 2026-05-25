@@ -120,16 +120,16 @@ pub(crate) const FOREX_HISTORICAL_ABOUT: &str =
     "Get historical end-of-day price bars for a forex pair.";
 pub(crate) const NEWS_STOCK_ABOUT: &str = "Get recent stock news for a stock ticker.";
 pub(crate) const NEWS_STOCK_LONG: &str =
-    "Get recent stock news for a stock ticker.";
+    "Get recent stock news for a stock ticker.\n\nExamples:\n  fmp-agent news-stock AAPL\n  fmp-agent news-stock AAPL --limit 20";
 pub(crate) const NEWS_GENERAL_ABOUT: &str = "Get latest general market news.";
 pub(crate) const NEWS_GENERAL_LONG: &str =
-    "Get latest general market news. Uses zero-based paging.";
+    "Get latest general market news. Uses zero-based paging.\n\nExamples:\n  fmp-agent news-general\n  fmp-agent news-general --page 1 --limit 20";
 pub(crate) const NEWS_ARTICLES_ABOUT: &str = "Get latest FMP articles.";
-pub(crate) const NEWS_ARTICLES_LONG: &str = "Get latest FMP articles. Uses zero-based paging.";
+pub(crate) const NEWS_ARTICLES_LONG: &str = "Get latest FMP articles. Uses zero-based paging.\n\nExamples:\n  fmp-agent news-articles\n  fmp-agent news-articles --page 1 --limit 20";
 pub(crate) const NEWS_FOREX_ABOUT: &str = "Get latest forex news.";
-pub(crate) const NEWS_FOREX_LONG: &str = "Get latest forex news. Uses zero-based paging.";
+pub(crate) const NEWS_FOREX_LONG: &str = "Get latest forex news. Uses zero-based paging.\n\nExamples:\n  fmp-agent news-forex\n  fmp-agent news-forex --page 0 --limit 10";
 pub(crate) const NEWS_CRYPTO_ABOUT: &str = "Get latest crypto news.";
-pub(crate) const NEWS_CRYPTO_LONG: &str = "Get latest crypto news. Uses zero-based paging.";
+pub(crate) const NEWS_CRYPTO_LONG: &str = "Get latest crypto news. Uses zero-based paging.\n\nExamples:\n  fmp-agent news-crypto\n  fmp-agent news-crypto --page 0 --limit 10";
 
 pub(crate) const SYMBOL: &str =
     "Symbol accepted by this command, such as a stock ticker, forex pair, or crypto pair.";
