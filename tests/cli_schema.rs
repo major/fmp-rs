@@ -54,6 +54,26 @@ fn schema_emits_valid_json_with_required_fields() {
         has_examples,
         "at least one command long_about must contain Examples:"
     );
+
+    // Schema classifies args into positional, option, and flag kinds
+    let all_kinds: Vec<&str> = commands
+        .iter()
+        .flat_map(|cmd| {
+            cmd["args"]
+                .as_array()
+                .into_iter()
+                .flatten()
+                .filter_map(|a| a["kind"].as_str())
+        })
+        .collect();
+    assert!(
+        all_kinds.contains(&"option"),
+        "at least one arg should have kind 'option'"
+    );
+    assert!(
+        all_kinds.contains(&"positional"),
+        "at least one arg should have kind 'positional'"
+    );
 }
 
 #[test]

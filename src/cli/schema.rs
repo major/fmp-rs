@@ -22,10 +22,8 @@ pub(super) fn schema_payload() -> Value {
                 .map(|a| {
                     let kind = if a.is_positional() {
                         "positional"
-                    } else if a.get_num_args().is_some_and(|r| r.max_values() > 0) {
-                        "option"
                     } else {
-                        "flag"
+                        "option"
                     };
                     let default_val = a
                         .get_default_values()
