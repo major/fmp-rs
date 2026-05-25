@@ -52,6 +52,8 @@ pub const CRYPTOCURRENCY_LIST: Endpoint = Endpoint::new("cryptocurrency-list");
 pub const STOCK_PEERS: Endpoint = Endpoint::new("stock-peers");
 /// Stock list endpoint.
 pub const STOCK_LIST: Endpoint = Endpoint::new("stock-list");
+/// ETF holdings endpoint.
+pub const ETF_HOLDINGS: Endpoint = Endpoint::new("etf/holdings");
 /// Historical dividends endpoint.
 pub const DIVIDENDS: Endpoint = Endpoint::new("dividends");
 /// Historical stock splits endpoint.

@@ -88,6 +88,7 @@ fn flat_command_help_present() {
         .assert()
         .success()
         .stdout(predicate::str::contains("company-profile"))
+        .stdout(predicate::str::contains("etf-holdings"))
         .stdout(predicate::str::contains("market-quote"))
         .stdout(predicate::str::contains("market-stock-list"))
         .stdout(predicate::str::contains("economic-indicators"))

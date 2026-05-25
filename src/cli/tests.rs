@@ -277,6 +277,10 @@ fn parses_new_symbol_commands() {
             "company-rating",
         ),
         (
+            ["fmp", "--api-key", "test-key", "etf-holdings", "SPY"],
+            "etf-holdings",
+        ),
+        (
             [
                 "fmp",
                 "--api-key",
@@ -318,6 +322,7 @@ fn parses_new_symbol_commands() {
         match expected {
             "company-share-float" => assert!(matches!(cli.command, Command::CompanyShareFloat(_))),
             "company-rating" => assert!(matches!(cli.command, Command::CompanyRating(_))),
+            "etf-holdings" => assert!(matches!(cli.command, Command::EtfHoldings(_))),
             "fundamentals-report-dates" => {
                 assert!(matches!(cli.command, Command::FundamentalsReportDates(_)));
             }
@@ -466,6 +471,7 @@ async fn execute_symbol_commands_use_endpoint_descriptors() {
             }),
         ),
         ("key-executives", Command::CompanyExecutives(symbol("AAPL"))),
+        ("etf/holdings", Command::EtfHoldings(symbol("AAPL"))),
         ("dividends", Command::MarketDividends(symbol("AAPL"))),
         ("splits", Command::MarketSplits(symbol("AAPL"))),
         (
@@ -891,6 +897,11 @@ async fn execute_flat_commands_use_endpoint_descriptors() {
         ),
         ("stock-list", Command::MarketStockList, json!({})),
         (
+            "etf/holdings",
+            Command::EtfHoldings(symbol("SPY")),
+            json!({ "symbol": "SPY" }),
+        ),
+        (
             "dividends",
             Command::MarketDividends(symbol("AAPL")),
             json!({ "symbol": "AAPL" }),
@@ -1158,6 +1169,7 @@ fn parses_flat_commands() {
         &["fmp", "--api-key", "test-key", "company-executives", "AAPL"],
         &["fmp", "--api-key", "test-key", "company-peers", "AAPL"],
         &["fmp", "--api-key", "test-key", "market-stock-list"],
+        &["fmp", "--api-key", "test-key", "etf-holdings", "SPY"],
         &[
             "fmp",
             "--api-key",

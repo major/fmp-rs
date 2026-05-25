@@ -54,6 +54,10 @@ pub enum Command {
     #[command(about = help::MARKET_STOCK_LIST_ABOUT)]
     MarketStockList,
 
+    /// ETF holdings command.
+    #[command(about = help::ETF_HOLDINGS_ABOUT)]
+    EtfHoldings(SymbolArgs),
+
     /// Company financial scores command.
     #[command(about = help::COMPANY_FINANCIAL_SCORES_ABOUT)]
     CompanyFinancialScores(SymbolArgs),

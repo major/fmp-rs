@@ -1,7 +1,7 @@
 use assert_cmd::Command;
 use httpmock::Method::GET;
 use httpmock::MockServer;
-use serde_json::json;
+use serde_json::{Value, json};
 
 #[test]
 fn missing_api_key_returns_exit_code_3() {
@@ -62,6 +62,42 @@ fn api_error_returns_exit_code_5() {
         .args(["market-quote", "AAPL"])
         .assert()
         .code(5);
+}
+
+#[test]
+fn etf_holdings_subscription_error_is_structured() {
+    let server = MockServer::start();
+    let mock = server.mock(|when, then| {
+        when.method(GET)
+            .path("/etf/holdings")
+            .query_param("symbol", "SPY")
+            .query_param("apikey", "test-key");
+        then.status(402)
+            .body("Restricted Endpoint: upgrade required");
+    });
+
+    let output = Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env("FMP_API_KEY", "test-key")
+        .env("FMP_BASE_URL", format!("{}/", server.base_url()))
+        .args(["etf-holdings", "SPY"])
+        .output()
+        .unwrap();
+
+    mock.assert();
+    assert_eq!(output.status.code(), Some(5));
+    assert!(output.stdout.is_empty());
+
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    assert!(!stderr.contains("test-key"));
+
+    let body: Value = serde_json::from_str(stderr.trim_end()).unwrap();
+    assert_eq!(body["ok"], false);
+    assert_eq!(body["error"]["kind"], "api_error");
+
+    let message = body["error"]["message"].as_str().unwrap();
+    assert!(message.contains("HTTP 402"));
+    assert!(message.contains("Restricted Endpoint"));
 }
 
 #[test]
