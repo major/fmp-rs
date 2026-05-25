@@ -56,7 +56,7 @@ const COMMANDS: &[&str] = &[
 ];
 
 #[test]
-fn root_help_includes_every_command() {
+fn root_help_lists_every_command() {
     let output = Command::cargo_bin("fmp-agent")
         .unwrap()
         .arg("--help")
