@@ -216,7 +216,7 @@ fn sec_filings_help_explains_required_default_date() {
 }
 
 #[test]
-fn annual_help_explains_limit_default_without_parser_default() {
+fn annual_help_explains_limit_default_via_clap_marker() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
         .args(["fundamentals-income-statement", "--help"])
@@ -239,9 +239,7 @@ fn news_help_explains_limit_and_paging_defaults() {
         .stdout(predicate::str::contains("[default: 0]"))
         .stdout(predicate::str::contains("[default: 10]"))
         .stdout(predicate::str::contains("Zero-based result page."))
-        .stdout(predicate::str::contains(
-            "Maximum number of items to return.",
-        ));
+        .stdout(predicate::str::contains("Maximum number of items to return."));
 }
 
 #[test]

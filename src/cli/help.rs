@@ -89,7 +89,7 @@ pub(crate) const FOREX_HISTORICAL_ABOUT: &str =
     "Get historical end-of-day price bars for a forex pair.";
 pub(crate) const NEWS_STOCK_ABOUT: &str = "Get recent stock news for a stock ticker.";
 pub(crate) const NEWS_STOCK_LONG: &str =
-    "Get recent stock news for a stock ticker. Defaults to 10 news items when --limit is omitted.";
+    "Get recent stock news for a stock ticker.";
 pub(crate) const NEWS_GENERAL_ABOUT: &str = "Get latest general market news.";
 pub(crate) const NEWS_GENERAL_LONG: &str =
     "Get latest general market news. Uses zero-based paging.";
@@ -104,7 +104,7 @@ pub(crate) const SYMBOL: &str =
     "Symbol accepted by this command, such as a stock ticker, forex pair, or crypto pair.";
 pub(crate) const STOCK_SYMBOL: &str = "Stock ticker symbol, for example AAPL.";
 pub(crate) const LIMIT_ROWS: &str =
-    "Maximum number of rows to return. Defaults to 10 when omitted.";
+    "Maximum number of rows to return.";
 pub(crate) const YEAR: &str = "Fiscal year, for example 2024.";
 pub(crate) const PERIOD: &str = "Fiscal period, usually FY.";
 pub(crate) const FROM: &str =
@@ -113,7 +113,7 @@ pub(crate) const TO: &str =
     "Inclusive end date in YYYY-MM-DD format. Omit for an open-ended end when supported.";
 pub(crate) const ECONOMIC_INDICATOR_NAME: &str = "Economic indicator name, for example GDP.";
 pub(crate) const ANNUAL_LIMIT: &str =
-    "Maximum number of annual rows to return. Defaults to 5 when omitted.";
+    "Maximum number of annual rows to return.";
 pub(crate) const PERIOD_LENGTH: &str = "Number of periods in the moving average window.";
 pub(crate) const TIMEFRAME: &str = "FMP candle timeframe, for example 1day.";
 pub(crate) const PAGE: &str = "Zero-based result page.";
