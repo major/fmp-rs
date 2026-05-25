@@ -239,7 +239,9 @@ fn news_help_explains_limit_and_paging_defaults() {
         .stdout(predicate::str::contains("[default: 0]"))
         .stdout(predicate::str::contains("[default: 10]"))
         .stdout(predicate::str::contains("Zero-based result page."))
-        .stdout(predicate::str::contains("Maximum number of items to return."));
+        .stdout(predicate::str::contains(
+            "Maximum number of items to return.",
+        ));
 }
 
 #[test]

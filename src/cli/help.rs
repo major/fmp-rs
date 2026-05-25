@@ -99,8 +99,7 @@ pub(crate) const ANALYST_GRADES_ABOUT: &str =
     "Get analyst grade action history for a stock ticker.";
 pub(crate) const ANALYST_GRADES_LONG: &str = "Get analyst grade action history for a stock ticker showing upgrades, downgrades, and initiations.\n\nExamples:\n  fmp-agent analyst-grades AAPL";
 pub(crate) const INSIDER_TRADING_LATEST_ABOUT: &str = "Get latest insider trading rows.";
-pub(crate) const INSIDER_TRADING_LATEST_LONG: &str =
-    "Get latest insider trading rows. Uses zero-based paging.\n\nExamples:\n  fmp-agent insider-trading-latest\n  fmp-agent insider-trading-latest --page 1 --limit 20";
+pub(crate) const INSIDER_TRADING_LATEST_LONG: &str = "Get latest insider trading rows. Uses zero-based paging.\n\nExamples:\n  fmp-agent insider-trading-latest\n  fmp-agent insider-trading-latest --page 1 --limit 20";
 pub(crate) const EARNINGS_CALENDAR_ABOUT: &str =
     "Get earnings calendar rows for an optional announcement date range.";
 pub(crate) const EARNINGS_CALENDAR_LONG: &str = "Get earnings calendar rows for an optional announcement date range.\n\nExamples:\n  fmp-agent earnings-calendar\n  fmp-agent earnings-calendar --from 2024-01-01 --to 2024-03-31";
@@ -122,16 +121,15 @@ pub(crate) const CRYPTO_HISTORICAL_ABOUT: &str =
     "Get historical end-of-day price bars for a cryptocurrency pair.";
 pub(crate) const CRYPTO_HISTORICAL_LONG: &str = "Get historical end-of-day price bars for a cryptocurrency pair. Optionally filter by date range.\n\nExamples:\n  fmp-agent crypto-historical BTCUSD\n  fmp-agent crypto-historical BTCUSD --from 2024-01-01 --to 2024-12-31";
 pub(crate) const FOREX_QUOTE_ABOUT: &str = "Get the latest quote for a forex pair.";
-pub(crate) const FOREX_QUOTE_LONG: &str = "Get the latest quote for a forex pair.\n\nExamples:\n  fmp-agent forex-quote EURUSD";
+pub(crate) const FOREX_QUOTE_LONG: &str =
+    "Get the latest quote for a forex pair.\n\nExamples:\n  fmp-agent forex-quote EURUSD";
 pub(crate) const FOREX_HISTORICAL_ABOUT: &str =
     "Get historical end-of-day price bars for a forex pair.";
 pub(crate) const FOREX_HISTORICAL_LONG: &str = "Get historical end-of-day price bars for a forex pair. Optionally filter by date range.\n\nExamples:\n  fmp-agent forex-historical EURUSD\n  fmp-agent forex-historical EURUSD --from 2024-01-01 --to 2024-12-31";
 pub(crate) const NEWS_STOCK_ABOUT: &str = "Get recent stock news for a stock ticker.";
-pub(crate) const NEWS_STOCK_LONG: &str =
-    "Get recent stock news for a stock ticker.\n\nExamples:\n  fmp-agent news-stock AAPL\n  fmp-agent news-stock AAPL --limit 20";
+pub(crate) const NEWS_STOCK_LONG: &str = "Get recent stock news for a stock ticker.\n\nExamples:\n  fmp-agent news-stock AAPL\n  fmp-agent news-stock AAPL --limit 20";
 pub(crate) const NEWS_GENERAL_ABOUT: &str = "Get latest general market news.";
-pub(crate) const NEWS_GENERAL_LONG: &str =
-    "Get latest general market news. Uses zero-based paging.\n\nExamples:\n  fmp-agent news-general\n  fmp-agent news-general --page 1 --limit 20";
+pub(crate) const NEWS_GENERAL_LONG: &str = "Get latest general market news. Uses zero-based paging.\n\nExamples:\n  fmp-agent news-general\n  fmp-agent news-general --page 1 --limit 20";
 pub(crate) const NEWS_ARTICLES_ABOUT: &str = "Get latest FMP articles.";
 pub(crate) const NEWS_ARTICLES_LONG: &str = "Get latest FMP articles. Uses zero-based paging.\n\nExamples:\n  fmp-agent news-articles\n  fmp-agent news-articles --page 1 --limit 20";
 pub(crate) const NEWS_FOREX_ABOUT: &str = "Get latest forex news.";
@@ -142,8 +140,7 @@ pub(crate) const NEWS_CRYPTO_LONG: &str = "Get latest crypto news. Uses zero-bas
 pub(crate) const SYMBOL: &str =
     "Symbol accepted by this command, such as a stock ticker, forex pair, or crypto pair.";
 pub(crate) const STOCK_SYMBOL: &str = "Stock ticker symbol, for example AAPL.";
-pub(crate) const LIMIT_ROWS: &str =
-    "Maximum number of rows to return.";
+pub(crate) const LIMIT_ROWS: &str = "Maximum number of rows to return.";
 pub(crate) const YEAR: &str = "Fiscal year, for example 2024.";
 pub(crate) const PERIOD: &str = "Fiscal period, usually FY.";
 pub(crate) const FROM: &str =
@@ -151,8 +148,7 @@ pub(crate) const FROM: &str =
 pub(crate) const TO: &str =
     "Inclusive end date in YYYY-MM-DD format. Omit for an open-ended end when supported.";
 pub(crate) const ECONOMIC_INDICATOR_NAME: &str = "Economic indicator name, for example GDP.";
-pub(crate) const ANNUAL_LIMIT: &str =
-    "Maximum number of annual rows to return.";
+pub(crate) const ANNUAL_LIMIT: &str = "Maximum number of annual rows to return.";
 pub(crate) const PERIOD_LENGTH: &str = "Number of periods in the moving average window.";
 pub(crate) const TIMEFRAME: &str = "FMP candle timeframe, for example 1day.";
 pub(crate) const PAGE: &str = "Zero-based result page.";
