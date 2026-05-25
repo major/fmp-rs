@@ -43,6 +43,11 @@ Keep `AGENTS.md`, `README.md`, and `SKILL.md` updated with code changes. Stale d
 - CodeRabbit uses `.coderabbit.yaml`. Keep its path instructions aligned with this repo's JSON CLI, library-only feature support, and endpoint inventory rules.
 - `rust-toolchain.toml` pins Rust 1.95 for local consistency with the MSRV workflow.
 
+## Review guidelines
+
+- Codex PR reviews should follow the repository rules above plus the reviewer-focused guidance in `.github/copilot-instructions.md`.
+- Treat `.coderabbit.yaml` as CodeRabbit-specific configuration, but keep its path instructions aligned with these rules when review policy changes.
+
 ## Implementation notes
 
 - Successful CLI output is the raw FMP JSON payload on one line. Failures in `main.rs` use `{ ok: false, error: { kind, message } }` on stderr.
