@@ -42,6 +42,14 @@ After installation, `man fmp-agent` shows the man page. Release packaging genera
 
 Running `fmp-agent` without a command prints the generic help text.
 
+### Schema introspection
+
+`fmp-agent schema` dumps CLI metadata as JSON without contacting the FMP API and without requiring `FMP_API_KEY`. The output is experimental and may change between releases. Fields include `schema_version` (currently `1`), `binary`, `version`, and `commands` (a list of objects with `name`, `about`, `long_about`, and `args`). This is useful for LLM tool-calling setups that need to discover available commands programmatically.
+
+```bash
+fmp-agent schema | jq '.commands | length'
+```
+
 ## Using as a library
 
 Other Rust projects (for example an MCP server) can depend on `rusty-fmp` as an API client without pulling in the CLI by disabling default features:
