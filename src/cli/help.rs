@@ -19,6 +19,7 @@ pub(crate) const COMPANY_EXECUTIVES_LONG: &str = "Get key executives for a compa
 pub(crate) const COMPANY_PEERS_ABOUT: &str = "Get peer company tickers for a stock ticker.";
 pub(crate) const COMPANY_PEERS_LONG: &str = "Get a list of peer company tickers that trade in the same sector and industry.\n\nExamples:\n  fmp-agent company-peers AAPL";
 pub(crate) const MARKET_STOCK_LIST_ABOUT: &str = "List supported stock symbols.";
+pub(crate) const MARKET_STOCK_LIST_LONG: &str = "List all supported stock symbols. Returns a large payload with ticker, name, exchange, and type for each instrument.\n\nExamples:\n  fmp-agent market-stock-list";
 pub(crate) const ETF_HOLDINGS_ABOUT: &str =
     "Get ETF holdings for a fund symbol; Starter accounts return an API error.";
 pub(crate) const COMPANY_FINANCIAL_SCORES_ABOUT: &str =
@@ -34,14 +35,19 @@ pub(crate) const COMPANY_HISTORICAL_RATING_ABOUT: &str =
     "Get historical company rating rows for a stock ticker.";
 pub(crate) const COMPANY_HISTORICAL_RATING_LONG: &str = "Get historical company rating rows for a stock ticker. Returns up to the limit of most-recent rating snapshots.\n\nExamples:\n  fmp-agent company-historical-rating AAPL\n  fmp-agent company-historical-rating AAPL --limit 20";
 pub(crate) const MARKET_QUOTE_ABOUT: &str = "Get the latest market quote for a stock ticker.";
+pub(crate) const MARKET_QUOTE_LONG: &str = "Get the latest market quote for a stock ticker including price, volume, and change data.\n\nExamples:\n  fmp-agent market-quote AAPL\n  fmp-agent market-quote TSLA";
 pub(crate) const MARKET_HISTORICAL_ABOUT: &str =
     "Get historical end-of-day price bars for a stock ticker.";
+pub(crate) const MARKET_HISTORICAL_LONG: &str = "Get historical end-of-day price bars for a stock ticker. Optionally filter by date range.\n\nExamples:\n  fmp-agent market-historical AAPL\n  fmp-agent market-historical AAPL --from 2024-01-01 --to 2024-12-31";
 pub(crate) const MARKET_DIVIDENDS_ABOUT: &str =
     "Get historical dividend events for a stock ticker.";
+pub(crate) const MARKET_DIVIDENDS_LONG: &str = "Get historical dividend events for a stock ticker.\n\nExamples:\n  fmp-agent market-dividends AAPL";
 pub(crate) const MARKET_SPLITS_ABOUT: &str =
     "Get historical stock split events for a stock ticker.";
+pub(crate) const MARKET_SPLITS_LONG: &str = "Get historical stock split events for a stock ticker.\n\nExamples:\n  fmp-agent market-splits AAPL";
 pub(crate) const MARKET_PRICE_CHANGE_ABOUT: &str =
     "Get price change percentages for a stock ticker.";
+pub(crate) const MARKET_PRICE_CHANGE_LONG: &str = "Get price change percentages for a stock ticker across multiple time periods (1D, 5D, 1M, 3M, 6M, YTD, 1Y, 3Y, 5Y, 10Y).\n\nExamples:\n  fmp-agent market-price-change AAPL";
 pub(crate) const FUNDAMENTALS_INCOME_STATEMENT_ABOUT: &str =
     "Get annual income statement rows for a stock ticker.";
 pub(crate) const FUNDAMENTALS_INCOME_STATEMENT_AS_REPORTED_ABOUT: &str =

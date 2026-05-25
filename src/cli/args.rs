@@ -51,7 +51,7 @@ pub enum Command {
     CompanyPeers(SymbolArgs),
 
     /// Stock list command.
-    #[command(about = help::MARKET_STOCK_LIST_ABOUT)]
+    #[command(about = help::MARKET_STOCK_LIST_ABOUT, long_about = help::MARKET_STOCK_LIST_LONG)]
     MarketStockList,
 
     /// ETF holdings command.
@@ -75,23 +75,23 @@ pub enum Command {
     CompanyHistoricalRating(SymbolLimitArgs),
 
     /// Market quote command.
-    #[command(about = help::MARKET_QUOTE_ABOUT)]
+    #[command(about = help::MARKET_QUOTE_ABOUT, long_about = help::MARKET_QUOTE_LONG)]
     MarketQuote(SymbolArgs),
 
     /// Market historical prices command.
-    #[command(about = help::MARKET_HISTORICAL_ABOUT)]
+    #[command(about = help::MARKET_HISTORICAL_ABOUT, long_about = help::MARKET_HISTORICAL_LONG)]
     MarketHistorical(SymbolDateRangeArgs),
 
     /// Market dividends command.
-    #[command(about = help::MARKET_DIVIDENDS_ABOUT)]
+    #[command(about = help::MARKET_DIVIDENDS_ABOUT, long_about = help::MARKET_DIVIDENDS_LONG)]
     MarketDividends(SymbolArgs),
 
     /// Market splits command.
-    #[command(about = help::MARKET_SPLITS_ABOUT)]
+    #[command(about = help::MARKET_SPLITS_ABOUT, long_about = help::MARKET_SPLITS_LONG)]
     MarketSplits(SymbolArgs),
 
     /// Market price change command.
-    #[command(about = help::MARKET_PRICE_CHANGE_ABOUT)]
+    #[command(about = help::MARKET_PRICE_CHANGE_ABOUT, long_about = help::MARKET_PRICE_CHANGE_LONG)]
     MarketPriceChange(SymbolArgs),
 
     /// Income statement command.
