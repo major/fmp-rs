@@ -98,7 +98,7 @@ pub(crate) const ANALYST_GRADES_ABOUT: &str =
 pub(crate) const ANALYST_GRADES_LONG: &str = "Get analyst grade action history for a stock ticker showing upgrades, downgrades, and initiations.\n\nExamples:\n  fmp-agent analyst-grades AAPL";
 pub(crate) const INSIDER_TRADING_LATEST_ABOUT: &str = "Get latest insider trading rows.";
 pub(crate) const INSIDER_TRADING_LATEST_LONG: &str =
-    "Get latest insider trading rows. Uses zero-based paging.";
+    "Get latest insider trading rows. Uses zero-based paging.\n\nExamples:\n  fmp-agent insider-trading-latest\n  fmp-agent insider-trading-latest --page 1 --limit 20";
 pub(crate) const EARNINGS_CALENDAR_ABOUT: &str =
     "Get earnings calendar rows for an optional announcement date range.";
 pub(crate) const TREASURY_RATES_ABOUT: &str = "Get treasury rate rows for an optional date range.";
