@@ -1,26 +1,24 @@
 //! Clap command and argument definitions.
 
+use crate::cli::help;
+
 use clap::{Args, Parser, Subcommand};
 
 const DEFAULT_BASE_URL: &str = "https://financialmodelingprep.com/stable/";
 
-/// Financial Modeling Prep CLI optimized for predictable JSON output.
+/// Financial Modeling Prep CLI configuration.
 #[derive(Debug, Parser)]
-#[command(
-    version,
-    about,
-    after_help = "EXIT CODES:\n  0  Success\n  2  Usage error (bad flags or arguments)\n  3  Configuration error (missing API key or invalid base URL)\n  4  Network error (HTTP request failed)\n  5  API error (server returned an error response)\n  6  Parse error (JSON deserialization failed)"
-)]
+#[command(name = "fmp-agent", version, about = help::CLI_ABOUT, after_help = help::EXIT_CODES)]
 pub struct Cli {
-    /// FMP API key. Prefer `FMP_API_KEY` in `.env` or the environment so shells do not record it.
-    #[arg(long, env = "FMP_API_KEY", hide_env_values = true)]
+    /// FMP API key.
+    #[arg(long, env = "FMP_API_KEY", hide_env_values = true, help = help::API_KEY)]
     pub api_key: Option<String>,
 
-    /// FMP stable API base URL. Override for tests or proxies.
-    #[arg(long, env = "FMP_BASE_URL", default_value = DEFAULT_BASE_URL)]
+    /// FMP stable API base URL.
+    #[arg(long, env = "FMP_BASE_URL", default_value = DEFAULT_BASE_URL, help = help::BASE_URL)]
     pub base_url: String,
 
-    /// Increase log verbosity. Use -v for INFO, -vv for DEBUG, -vvv for TRACE.
+    /// Log verbosity flags.
     #[command(flatten)]
     pub verbose: clap_verbosity_flag::Verbosity,
 
@@ -32,257 +30,312 @@ pub struct Cli {
 /// Supported FMP endpoint commands.
 #[derive(Debug, Subcommand)]
 pub enum Command {
-    /// Search for a tradable symbol by ticker or company name.
+    /// Search command.
+    #[command(about = help::SEARCH_ABOUT)]
     Search {
-        /// Ticker or company name query.
+        /// Search query.
+        #[arg(help = help::SEARCH_QUERY)]
         query: String,
     },
 
-    /// Get company profile/reference data for a symbol.
+    /// Company profile command.
+    #[command(about = help::COMPANY_PROFILE_ABOUT)]
     CompanyProfile(SymbolArgs),
 
-    /// Get key executives for a symbol.
+    /// Company executives command.
+    #[command(about = help::COMPANY_EXECUTIVES_ABOUT)]
     CompanyExecutives(SymbolArgs),
 
-    /// Get peer companies for a symbol.
+    /// Company peers command.
+    #[command(about = help::COMPANY_PEERS_ABOUT)]
     CompanyPeers(SymbolArgs),
 
-    /// List supported stock symbols.
+    /// Stock list command.
+    #[command(about = help::MARKET_STOCK_LIST_ABOUT)]
     MarketStockList,
 
-    /// Get financial scores for a symbol.
+    /// Company financial scores command.
+    #[command(about = help::COMPANY_FINANCIAL_SCORES_ABOUT)]
     CompanyFinancialScores(SymbolArgs),
 
-    /// Get share float data for a symbol.
+    /// Company share float command.
+    #[command(about = help::COMPANY_SHARE_FLOAT_ABOUT)]
     CompanyShareFloat(SymbolArgs),
 
-    /// Get analyst rating consensus for a symbol.
+    /// Company rating command.
+    #[command(about = help::COMPANY_RATING_ABOUT)]
     CompanyRating(SymbolArgs),
 
-    /// Get historical company rating rows for a symbol.
+    /// Company historical rating command.
+    #[command(about = help::COMPANY_HISTORICAL_RATING_ABOUT)]
     CompanyHistoricalRating(SymbolLimitArgs),
 
-    /// Get the latest quote for a symbol.
+    /// Market quote command.
+    #[command(about = help::MARKET_QUOTE_ABOUT)]
     MarketQuote(SymbolArgs),
 
-    /// Get historical end-of-day price bars for a symbol.
+    /// Market historical prices command.
+    #[command(about = help::MARKET_HISTORICAL_ABOUT)]
     MarketHistorical(SymbolDateRangeArgs),
 
-    /// Get historical dividends for a symbol.
+    /// Market dividends command.
+    #[command(about = help::MARKET_DIVIDENDS_ABOUT)]
     MarketDividends(SymbolArgs),
 
-    /// Get historical stock splits for a symbol.
+    /// Market splits command.
+    #[command(about = help::MARKET_SPLITS_ABOUT)]
     MarketSplits(SymbolArgs),
 
-    /// Get price change percentages for a symbol.
+    /// Market price change command.
+    #[command(about = help::MARKET_PRICE_CHANGE_ABOUT)]
     MarketPriceChange(SymbolArgs),
 
-    /// Get annual income statements for a symbol.
+    /// Income statement command.
+    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_ABOUT)]
     FundamentalsIncomeStatement(AnnualArgs),
 
-    /// Get annual income statements as reported for a symbol.
+    /// As-reported income statement command.
+    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_AS_REPORTED_ABOUT)]
     FundamentalsIncomeStatementAsReported(AnnualArgs),
 
-    /// Get annual balance sheets for a symbol.
+    /// Balance sheet command.
+    #[command(about = help::FUNDAMENTALS_BALANCE_SHEET_ABOUT)]
     FundamentalsBalanceSheet(AnnualArgs),
 
-    /// Get annual cash flow statements for a symbol.
+    /// Cash flow command.
+    #[command(about = help::FUNDAMENTALS_CASH_FLOW_ABOUT)]
     FundamentalsCashFlow(AnnualArgs),
 
-    /// Get annual financial ratios for a symbol.
+    /// Ratios command.
+    #[command(about = help::FUNDAMENTALS_RATIOS_ABOUT)]
     FundamentalsRatios(AnnualArgs),
 
-    /// Get annual key metrics for a symbol.
+    /// Metrics command.
+    #[command(about = help::FUNDAMENTALS_METRICS_ABOUT)]
     FundamentalsMetrics(AnnualArgs),
 
-    /// Get annual income statement growth for a symbol.
+    /// Income statement growth command.
+    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_GROWTH_ABOUT)]
     FundamentalsIncomeStatementGrowth(AnnualArgs),
 
-    /// Get annual balance sheet growth for a symbol.
+    /// Balance sheet growth command.
+    #[command(about = help::FUNDAMENTALS_BALANCE_SHEET_GROWTH_ABOUT)]
     FundamentalsBalanceSheetGrowth(AnnualArgs),
 
-    /// Get annual cash flow growth for a symbol.
+    /// Cash flow growth command.
+    #[command(about = help::FUNDAMENTALS_CASH_FLOW_GROWTH_ABOUT)]
     FundamentalsCashFlowGrowth(AnnualArgs),
 
-    /// Get annual enterprise values for a symbol.
+    /// Enterprise values command.
+    #[command(about = help::FUNDAMENTALS_ENTERPRISE_VALUES_ABOUT)]
     FundamentalsEnterpriseValues(AnnualArgs),
 
-    /// Get annual analyst estimates for a symbol.
+    /// Analyst estimates command.
+    #[command(about = help::FUNDAMENTALS_ANALYST_ESTIMATES_ABOUT)]
     FundamentalsAnalystEstimates(AnnualArgs),
 
-    /// Get available financial report dates for a symbol.
+    /// Financial report dates command.
+    #[command(about = help::FUNDAMENTALS_REPORT_DATES_ABOUT)]
     FundamentalsReportDates(SymbolArgs),
 
-    /// Get annual report form JSON for a symbol and fiscal year.
+    /// Annual report form command.
+    #[command(about = help::FUNDAMENTALS_ANNUAL_REPORT_FORM_ABOUT)]
     FundamentalsAnnualReportForm(AnnualReportFormArgs),
 
-    /// Get price target consensus for a symbol.
+    /// Price target consensus command.
+    #[command(about = help::ANALYST_PRICE_TARGET_CONSENSUS_ABOUT)]
     AnalystPriceTargetConsensus(SymbolArgs),
 
-    /// Get price target summary for a symbol.
+    /// Price target summary command.
+    #[command(about = help::ANALYST_PRICE_TARGET_SUMMARY_ABOUT)]
     AnalystPriceTargetSummary(SymbolArgs),
 
-    /// Get analyst grade actions for a symbol.
+    /// Analyst grades command.
+    #[command(about = help::ANALYST_GRADES_ABOUT)]
     AnalystGrades(SymbolArgs),
 
-    /// Get latest insider trading rows.
+    /// Insider trading command.
+    #[command(about = help::INSIDER_TRADING_LATEST_ABOUT, long_about = help::INSIDER_TRADING_LATEST_LONG)]
     InsiderTradingLatest(PagedArgs),
 
-    /// Get earnings calendar rows for a date range.
+    /// Earnings calendar command.
+    #[command(about = help::EARNINGS_CALENDAR_ABOUT)]
     EarningsCalendar(DateRangeArgs),
 
-    /// Get treasury rates for a date range.
+    /// Treasury rates command.
+    #[command(about = help::TREASURY_RATES_ABOUT)]
     TreasuryRates(DateRangeArgs),
 
-    /// Get economic indicator rows by indicator name and optional date range.
+    /// Economic indicators command.
+    #[command(about = help::ECONOMIC_INDICATORS_ABOUT)]
     EconomicIndicators(NameDateRangeArgs),
 
-    /// Get simple moving average technical indicator rows for a symbol.
+    /// Technical SMA command.
+    #[command(about = help::TECHNICAL_SMA_ABOUT, long_about = help::TECHNICAL_SMA_LONG)]
     TechnicalSma(TechnicalSmaArgs),
 
-    /// Get SEC filings for a symbol.
+    /// SEC filings command.
+    #[command(about = help::SEC_FILINGS_ABOUT, long_about = help::SEC_FILINGS_LONG)]
     SecFilings(SymbolDateRangeArgs),
 
-    /// List supported cryptocurrency symbols.
+    /// Cryptocurrency list command.
+    #[command(about = help::CRYPTO_LIST_ABOUT)]
     CryptoList,
 
-    /// Get the latest quote for a cryptocurrency pair.
+    /// Cryptocurrency quote command.
+    #[command(about = help::CRYPTO_QUOTE_ABOUT)]
     CryptoQuote(SymbolArgs),
 
-    /// Get historical end-of-day price bars for a cryptocurrency pair.
+    /// Cryptocurrency historical prices command.
+    #[command(about = help::CRYPTO_HISTORICAL_ABOUT)]
     CryptoHistorical(SymbolDateRangeArgs),
 
-    /// Get the latest quote for a forex pair.
+    /// Forex quote command.
+    #[command(about = help::FOREX_QUOTE_ABOUT)]
     ForexQuote(SymbolArgs),
 
-    /// Get historical end-of-day price bars for a forex pair.
+    /// Forex historical prices command.
+    #[command(about = help::FOREX_HISTORICAL_ABOUT)]
     ForexHistorical(SymbolDateRangeArgs),
 
-    /// Get recent stock news for a symbol.
+    /// Stock news command.
+    #[command(about = help::NEWS_STOCK_ABOUT, long_about = help::NEWS_STOCK_LONG)]
     NewsStock(StockNewsArgs),
 
-    /// Get latest general market news.
+    /// General news command.
+    #[command(about = help::NEWS_GENERAL_ABOUT, long_about = help::NEWS_GENERAL_LONG)]
     NewsGeneral(PagedArgs),
 
-    /// Get latest FMP articles.
+    /// FMP articles command.
+    #[command(about = help::NEWS_ARTICLES_ABOUT, long_about = help::NEWS_ARTICLES_LONG)]
     NewsArticles(PagedArgs),
 
-    /// Get latest forex news.
+    /// Forex news command.
+    #[command(about = help::NEWS_FOREX_ABOUT, long_about = help::NEWS_FOREX_LONG)]
     NewsForex(PagedArgs),
 
-    /// Get latest crypto news.
+    /// Crypto news command.
+    #[command(about = help::NEWS_CRYPTO_ABOUT, long_about = help::NEWS_CRYPTO_LONG)]
     NewsCrypto(PagedArgs),
 }
 
-/// Shared symbol argument.
+/// Shared command symbol argument.
 #[derive(Debug, Args)]
 pub struct SymbolArgs {
-    /// Ticker symbol, forex pair, or crypto pair.
+    /// Command symbol.
+    #[arg(help = help::SYMBOL)]
     pub symbol: String,
 }
 
 /// Shared symbol plus row limit arguments.
 #[derive(Debug, Args)]
 pub struct SymbolLimitArgs {
-    /// Ticker symbol.
+    /// Stock ticker symbol.
+    #[arg(help = help::STOCK_SYMBOL)]
     pub symbol: String,
 
     /// Maximum number of rows to return.
-    #[arg(long)]
+    #[arg(long, help = help::LIMIT_ROWS)]
     pub limit: Option<u16>,
 }
 
 /// Annual report form arguments.
 #[derive(Debug, Args)]
 pub struct AnnualReportFormArgs {
-    /// Ticker symbol.
+    /// Stock ticker symbol.
+    #[arg(help = help::STOCK_SYMBOL)]
     pub symbol: String,
 
     /// Fiscal year.
-    #[arg(long)]
+    #[arg(long, help = help::YEAR)]
     pub year: u16,
 
-    /// Fiscal period, usually `FY`.
-    #[arg(long, default_value = "FY")]
+    /// Fiscal period.
+    #[arg(long, default_value = "FY", help = help::PERIOD)]
     pub period: String,
 }
 
 /// Shared symbol and date range arguments.
 #[derive(Debug, Args)]
 pub struct SymbolDateRangeArgs {
-    /// Ticker symbol, forex pair, or crypto pair.
+    /// Symbol accepted by this command.
+    #[arg(help = help::SYMBOL)]
     pub symbol: String,
 
-    /// Inclusive start date in `YYYY-MM-DD` format.
-    #[arg(long)]
+    /// Inclusive start date.
+    #[arg(long, help = help::FROM)]
     pub from: Option<String>,
 
-    /// Inclusive end date in `YYYY-MM-DD` format.
-    #[arg(long)]
+    /// Inclusive end date.
+    #[arg(long, help = help::TO)]
     pub to: Option<String>,
 }
 
 /// Shared date range arguments.
 #[derive(Debug, Args)]
 pub struct DateRangeArgs {
-    /// Inclusive start date in `YYYY-MM-DD` format.
-    #[arg(long)]
+    /// Inclusive start date.
+    #[arg(long, help = help::FROM)]
     pub from: Option<String>,
 
-    /// Inclusive end date in `YYYY-MM-DD` format.
-    #[arg(long)]
+    /// Inclusive end date.
+    #[arg(long, help = help::TO)]
     pub to: Option<String>,
 }
 
 /// Shared indicator name and date range arguments.
 #[derive(Debug, Args)]
 pub struct NameDateRangeArgs {
-    /// Indicator name, for example `GDP`.
+    /// Economic indicator name.
+    #[arg(help = help::ECONOMIC_INDICATOR_NAME)]
     pub name: String,
 
-    /// Inclusive start date in `YYYY-MM-DD` format.
-    #[arg(long)]
+    /// Inclusive start date.
+    #[arg(long, help = help::FROM)]
     pub from: Option<String>,
 
-    /// Inclusive end date in `YYYY-MM-DD` format.
-    #[arg(long)]
+    /// Inclusive end date.
+    #[arg(long, help = help::TO)]
     pub to: Option<String>,
 }
 
 /// Shared annual endpoint arguments.
 #[derive(Debug, Args)]
 pub struct AnnualArgs {
-    /// Ticker symbol.
+    /// Stock ticker symbol.
+    #[arg(help = help::STOCK_SYMBOL)]
     pub symbol: String,
 
     /// Maximum number of annual rows to return.
-    #[arg(long)]
+    #[arg(long, help = help::ANNUAL_LIMIT)]
     pub limit: Option<u16>,
 }
 
 /// Simple moving average arguments.
 #[derive(Debug, Args)]
 pub struct TechnicalSmaArgs {
-    /// Ticker symbol.
+    /// Stock ticker symbol.
+    #[arg(help = help::STOCK_SYMBOL)]
     pub symbol: String,
 
-    /// Moving average period length.
-    #[arg(long, default_value_t = 10)]
+    /// Number of periods in the moving average window.
+    #[arg(long, default_value_t = 10, help = help::PERIOD_LENGTH)]
     pub period_length: u16,
 
-    /// FMP timeframe, for example `1day`.
-    #[arg(long, default_value = "1day")]
+    /// FMP candle timeframe.
+    #[arg(long, default_value = "1day", help = help::TIMEFRAME)]
     pub timeframe: String,
 }
 
 /// Stock news arguments.
 #[derive(Debug, Args)]
 pub struct StockNewsArgs {
-    /// Ticker symbol.
+    /// Stock ticker symbol.
+    #[arg(help = help::STOCK_SYMBOL)]
     pub symbol: String,
 
     /// Maximum number of news items to return.
-    #[arg(long)]
+    #[arg(long, help = help::NEWS_LIMIT)]
     pub limit: Option<u16>,
 }
 
@@ -290,10 +343,10 @@ pub struct StockNewsArgs {
 #[derive(Debug, Args)]
 pub struct PagedArgs {
     /// Zero-based result page.
-    #[arg(long)]
+    #[arg(long, help = help::PAGE)]
     pub page: Option<u16>,
 
     /// Maximum number of items to return.
-    #[arg(long)]
+    #[arg(long, help = help::PAGE_LIMIT)]
     pub limit: Option<u16>,
 }
