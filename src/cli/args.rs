@@ -183,23 +183,23 @@ pub enum Command {
     SecFilings(SymbolDateRangeArgs),
 
     /// Cryptocurrency list command.
-    #[command(about = help::CRYPTO_LIST_ABOUT)]
+    #[command(about = help::CRYPTO_LIST_ABOUT, long_about = help::CRYPTO_LIST_LONG)]
     CryptoList,
 
     /// Cryptocurrency quote command.
-    #[command(about = help::CRYPTO_QUOTE_ABOUT)]
+    #[command(about = help::CRYPTO_QUOTE_ABOUT, long_about = help::CRYPTO_QUOTE_LONG)]
     CryptoQuote(SymbolArgs),
 
     /// Cryptocurrency historical prices command.
-    #[command(about = help::CRYPTO_HISTORICAL_ABOUT)]
+    #[command(about = help::CRYPTO_HISTORICAL_ABOUT, long_about = help::CRYPTO_HISTORICAL_LONG)]
     CryptoHistorical(SymbolDateRangeArgs),
 
     /// Forex quote command.
-    #[command(about = help::FOREX_QUOTE_ABOUT)]
+    #[command(about = help::FOREX_QUOTE_ABOUT, long_about = help::FOREX_QUOTE_LONG)]
     ForexQuote(SymbolArgs),
 
     /// Forex historical prices command.
-    #[command(about = help::FOREX_HISTORICAL_ABOUT)]
+    #[command(about = help::FOREX_HISTORICAL_ABOUT, long_about = help::FOREX_HISTORICAL_LONG)]
     ForexHistorical(SymbolDateRangeArgs),
 
     /// Stock news command.

@@ -113,12 +113,17 @@ pub(crate) const TECHNICAL_SMA_LONG: &str = "Get simple moving average technical
 pub(crate) const SEC_FILINGS_ABOUT: &str = "Get SEC filing metadata for a stock ticker.";
 pub(crate) const SEC_FILINGS_LONG: &str = "Get SEC filing metadata for a stock ticker. Defaults --from to 90 days ago when omitted because FMP requires a start date.\n\nExamples:\n  fmp-agent sec-filings AAPL\n  fmp-agent sec-filings AAPL --from 2024-01-01 --to 2024-12-31";
 pub(crate) const CRYPTO_LIST_ABOUT: &str = "List supported cryptocurrency symbols.";
+pub(crate) const CRYPTO_LIST_LONG: &str = "List all supported cryptocurrency symbols. Returns a large payload with symbol and name for each instrument.\n\nExamples:\n  fmp-agent crypto-list";
 pub(crate) const CRYPTO_QUOTE_ABOUT: &str = "Get the latest quote for a cryptocurrency pair.";
+pub(crate) const CRYPTO_QUOTE_LONG: &str = "Get the latest quote for a cryptocurrency pair including price and volume data.\n\nExamples:\n  fmp-agent crypto-quote BTCUSD";
 pub(crate) const CRYPTO_HISTORICAL_ABOUT: &str =
     "Get historical end-of-day price bars for a cryptocurrency pair.";
+pub(crate) const CRYPTO_HISTORICAL_LONG: &str = "Get historical end-of-day price bars for a cryptocurrency pair. Optionally filter by date range.\n\nExamples:\n  fmp-agent crypto-historical BTCUSD\n  fmp-agent crypto-historical BTCUSD --from 2024-01-01 --to 2024-12-31";
 pub(crate) const FOREX_QUOTE_ABOUT: &str = "Get the latest quote for a forex pair.";
+pub(crate) const FOREX_QUOTE_LONG: &str = "Get the latest quote for a forex pair.\n\nExamples:\n  fmp-agent forex-quote EURUSD";
 pub(crate) const FOREX_HISTORICAL_ABOUT: &str =
     "Get historical end-of-day price bars for a forex pair.";
+pub(crate) const FOREX_HISTORICAL_LONG: &str = "Get historical end-of-day price bars for a forex pair. Optionally filter by date range.\n\nExamples:\n  fmp-agent forex-historical EURUSD\n  fmp-agent forex-historical EURUSD --from 2024-01-01 --to 2024-12-31";
 pub(crate) const NEWS_STOCK_ABOUT: &str = "Get recent stock news for a stock ticker.";
 pub(crate) const NEWS_STOCK_LONG: &str =
     "Get recent stock news for a stock ticker.\n\nExamples:\n  fmp-agent news-stock AAPL\n  fmp-agent news-stock AAPL --limit 20";
