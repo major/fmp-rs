@@ -167,6 +167,18 @@ fn flat_command_specific_help_present() {
 }
 
 #[test]
+fn historical_rating_help_explains_limit_default() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .args(["company-historical-rating", "--help"])
+        .env("CLAP_COLOR", "never")
+        .env("NO_COLOR", "1")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("[default: 10]"));
+}
+
+#[test]
 fn technical_sma_help_explains_defaults() {
     Command::cargo_bin("fmp-agent")
         .unwrap()

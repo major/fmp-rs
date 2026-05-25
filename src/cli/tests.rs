@@ -25,7 +25,7 @@ fn symbol(symbol: &str) -> SymbolArgs {
 fn symbol_limit(symbol: &str) -> SymbolLimitArgs {
     SymbolLimitArgs {
         symbol: symbol.to_owned(),
-        limit: None,
+        limit: 10,
     }
 }
 
@@ -221,7 +221,7 @@ fn parses_new_endpoint_commands() {
         panic!("expected historical rating command");
     };
     assert_eq!(args.symbol, "AAPL");
-    assert_eq!(args.limit, Some(3));
+    assert_eq!(args.limit, 3);
 
     let annual_report = Cli::parse_from([
         "fmp",
@@ -468,7 +468,7 @@ async fn execute_symbol_commands_use_endpoint_descriptors() {
         (
             "ratings-historical",
             Command::CompanyHistoricalRating(SymbolLimitArgs {
-                limit: Some(3),
+                limit: 3,
                 ..symbol_limit("AAPL")
             }),
         ),
@@ -1002,7 +1002,7 @@ async fn execute_flat_commands_use_endpoint_descriptors() {
         (
             "ratings-historical",
             Command::CompanyHistoricalRating(symbol_limit("AAPL")),
-            json!({ "symbol": "AAPL", "limit": null }),
+            json!({ "symbol": "AAPL", "limit": 10 }),
         ),
         (
             "insider-trading/latest",
