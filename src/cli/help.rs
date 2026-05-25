@@ -10,6 +10,7 @@ pub(crate) const BASE_URL: &str = "FMP stable API base URL. Override for tests o
 
 pub(crate) const SEARCH_ABOUT: &str =
     "Search for tradable stock symbols by ticker or company name.";
+pub(crate) const SEARCH_LONG: &str = "Search for tradable stock symbols by ticker fragment or company name. The query is a positional argument.\n\nExamples:\n  fmp-agent search Apple\n  fmp-agent search AAPL";
 pub(crate) const SEARCH_QUERY: &str = "Ticker fragment or company name to search for.";
 pub(crate) const COMPANY_PROFILE_ABOUT: &str =
     "Get company profile and reference data for a stock ticker.";

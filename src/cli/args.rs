@@ -31,7 +31,7 @@ pub struct Cli {
 #[derive(Debug, Subcommand)]
 pub enum Command {
     /// Search command.
-    #[command(about = help::SEARCH_ABOUT)]
+    #[command(about = help::SEARCH_ABOUT, long_about = help::SEARCH_LONG)]
     Search {
         /// Search query.
         #[arg(help = help::SEARCH_QUERY)]
