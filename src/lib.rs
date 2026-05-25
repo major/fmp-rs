@@ -2,8 +2,8 @@
 //!
 //! The HTTP client (`FmpClient`), endpoint descriptors, and error types are always available
 //! so other Rust projects (for example an MCP server) can consume the API without pulling in
-//! the CLI. The `cli` module and its re-exports are gated behind the default `cli` feature and
-//! used by the bundled `fmp-agent` binary.
+//! the CLI. The `cli` module is gated behind the default `cli` feature and exposes only the
+//! `Cli` parser type plus `run` entry point used by the bundled `fmp-agent` binary.
 //!
 //! Library-only consumers should disable default features:
 //!

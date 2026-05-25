@@ -7,6 +7,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 /// Errors returned by the FMP CLI and client.
 #[derive(Debug, thiserror::Error)]
+#[non_exhaustive]
 pub enum Error {
     /// The API key was not provided.
     #[error("missing FMP API key; set FMP_API_KEY or pass --api-key")]
