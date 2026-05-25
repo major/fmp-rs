@@ -347,10 +347,10 @@ pub struct StockNewsArgs {
 #[derive(Debug, Args)]
 pub struct PagedArgs {
     /// Zero-based result page.
-    #[arg(long, help = help::PAGE)]
-    pub page: Option<u16>,
+    #[arg(long, default_value_t = 0, help = help::PAGE)]
+    pub page: u16,
 
     /// Maximum number of items to return.
-    #[arg(long, help = help::PAGE_LIMIT)]
-    pub limit: Option<u16>,
+    #[arg(long, default_value_t = 10, help = help::PAGE_LIMIT)]
+    pub limit: u16,
 }

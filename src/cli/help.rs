@@ -68,7 +68,8 @@ pub(crate) const ANALYST_PRICE_TARGET_SUMMARY_ABOUT: &str =
 pub(crate) const ANALYST_GRADES_ABOUT: &str =
     "Get analyst grade action history for a stock ticker.";
 pub(crate) const INSIDER_TRADING_LATEST_ABOUT: &str = "Get latest insider trading rows.";
-pub(crate) const INSIDER_TRADING_LATEST_LONG: &str = "Get latest insider trading rows. Uses zero-based paging and defaults to page 0 with 10 rows when paging flags are omitted.";
+pub(crate) const INSIDER_TRADING_LATEST_LONG: &str =
+    "Get latest insider trading rows. Uses zero-based paging.";
 pub(crate) const EARNINGS_CALENDAR_ABOUT: &str =
     "Get earnings calendar rows for an optional announcement date range.";
 pub(crate) const TREASURY_RATES_ABOUT: &str = "Get treasury rate rows for an optional date range.";
@@ -90,13 +91,14 @@ pub(crate) const NEWS_STOCK_ABOUT: &str = "Get recent stock news for a stock tic
 pub(crate) const NEWS_STOCK_LONG: &str =
     "Get recent stock news for a stock ticker. Defaults to 10 news items when --limit is omitted.";
 pub(crate) const NEWS_GENERAL_ABOUT: &str = "Get latest general market news.";
-pub(crate) const NEWS_GENERAL_LONG: &str = "Get latest general market news. Uses zero-based paging and defaults to page 0 with 10 items when paging flags are omitted.";
+pub(crate) const NEWS_GENERAL_LONG: &str =
+    "Get latest general market news. Uses zero-based paging.";
 pub(crate) const NEWS_ARTICLES_ABOUT: &str = "Get latest FMP articles.";
-pub(crate) const NEWS_ARTICLES_LONG: &str = "Get latest FMP articles. Uses zero-based paging and defaults to page 0 with 10 items when paging flags are omitted.";
+pub(crate) const NEWS_ARTICLES_LONG: &str = "Get latest FMP articles. Uses zero-based paging.";
 pub(crate) const NEWS_FOREX_ABOUT: &str = "Get latest forex news.";
-pub(crate) const NEWS_FOREX_LONG: &str = "Get latest forex news. Uses zero-based paging and defaults to page 0 with 10 items when paging flags are omitted.";
+pub(crate) const NEWS_FOREX_LONG: &str = "Get latest forex news. Uses zero-based paging.";
 pub(crate) const NEWS_CRYPTO_ABOUT: &str = "Get latest crypto news.";
-pub(crate) const NEWS_CRYPTO_LONG: &str = "Get latest crypto news. Uses zero-based paging and defaults to page 0 with 10 items when paging flags are omitted.";
+pub(crate) const NEWS_CRYPTO_LONG: &str = "Get latest crypto news. Uses zero-based paging.";
 
 pub(crate) const SYMBOL: &str =
     "Symbol accepted by this command, such as a stock ticker, forex pair, or crypto pair.";
@@ -116,6 +118,5 @@ pub(crate) const PERIOD_LENGTH: &str = "Number of periods in the moving average 
 pub(crate) const TIMEFRAME: &str = "FMP candle timeframe, for example 1day.";
 pub(crate) const NEWS_LIMIT: &str =
     "Maximum number of news items to return. Defaults to 10 when omitted.";
-pub(crate) const PAGE: &str = "Zero-based result page. Defaults to 0 when omitted.";
-pub(crate) const PAGE_LIMIT: &str =
-    "Maximum number of items to return. Defaults to 10 when omitted.";
+pub(crate) const PAGE: &str = "Zero-based result page.";
+pub(crate) const PAGE_LIMIT: &str = "Maximum number of items to return.";

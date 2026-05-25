@@ -83,10 +83,7 @@ fn stock_news(symbol: &str) -> StockNewsArgs {
 }
 
 fn paged() -> PagedArgs {
-    PagedArgs {
-        page: Some(0),
-        limit: Some(3),
-    }
+    PagedArgs { page: 0, limit: 3 }
 }
 
 #[test]
@@ -201,8 +198,8 @@ fn parses_paginated_news_commands() {
             Command::NewsCrypto(args) if expected == "crypto" => args,
             _ => panic!("unexpected news command"),
         };
-        assert_eq!(args.page, Some(0));
-        assert_eq!(args.limit, Some(3));
+        assert_eq!(args.page, 0);
+        assert_eq!(args.limit, 3);
     }
 }
 
@@ -754,10 +751,7 @@ async fn execute_paginated_news_commands_use_endpoint_descriptors() {
             "news/general-latest",
             0,
             10,
-            Command::NewsGeneral(PagedArgs {
-                page: None,
-                limit: None,
-            }),
+            Command::NewsGeneral(PagedArgs { page: 0, limit: 10 }),
         ),
     ];
     let mut mocks = Vec::new();

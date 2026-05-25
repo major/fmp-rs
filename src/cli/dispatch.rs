@@ -3,7 +3,7 @@
 use serde_json::json;
 
 use crate::client::FmpClient;
-use crate::endpoint::{ANNUAL_PERIOD, Endpoint, NEWS_LIMIT, PAGE};
+use crate::endpoint::{ANNUAL_PERIOD, Endpoint};
 use crate::error::Result;
 
 use super::output::CommandPayload;
@@ -172,12 +172,10 @@ pub(super) async fn run_news(
 pub(super) async fn run_paged(
     client: &FmpClient,
     endpoint: Endpoint,
-    page: Option<u16>,
-    limit: Option<u16>,
+    page: u16,
+    limit: u16,
 ) -> Result<CommandPayload> {
-    let data = client.paged(endpoint, page, limit).await?;
-    let page = page.unwrap_or(PAGE);
-    let limit = limit.unwrap_or(NEWS_LIMIT);
+    let data = client.paged(endpoint, Some(page), Some(limit)).await?;
     Ok(CommandPayload::new(
         endpoint.path(),
         json!({ "page": page, "limit": limit }),

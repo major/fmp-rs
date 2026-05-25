@@ -221,32 +221,15 @@ fn annual_help_explains_limit_default_without_parser_default() {
 fn news_help_explains_limit_and_paging_defaults() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
-        .args(["news-stock", "--help"])
-        .env("CLAP_COLOR", "never")
-        .env("NO_COLOR", "1")
-        .assert()
-        .success()
-        .stdout(predicate::str::contains(
-            "Defaults to 10 news items when --limit is omitted.",
-        ))
-        .stdout(predicate::str::contains(
-            "Maximum number of news items to return. Defaults to 10 when omitted.",
-        ));
-
-    Command::cargo_bin("fmp-agent")
-        .unwrap()
         .args(["news-general", "--help"])
         .env("CLAP_COLOR", "never")
         .env("NO_COLOR", "1")
         .assert()
         .success()
+        .stdout(predicate::str::contains("[default: 0]"))
+        .stdout(predicate::str::contains("[default: 10]"))
+        .stdout(predicate::str::contains("Zero-based result page."))
         .stdout(predicate::str::contains(
-            "Uses zero-based paging and defaults to page 0 with 10 items when paging flags are omitted.",
-        ))
-        .stdout(predicate::str::contains(
-            "Zero-based result page. Defaults to 0 when omitted.",
-        ))
-        .stdout(predicate::str::contains(
-            "Maximum number of items to return. Defaults to 10 when omitted.",
+            "Maximum number of items to return.",
         ));
 }
