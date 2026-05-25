@@ -48,7 +48,7 @@ fn name_date_range(name: &str) -> NameDateRangeArgs {
 fn annual(symbol: &str) -> AnnualArgs {
     AnnualArgs {
         symbol: symbol.to_owned(),
-        limit: None,
+        limit: 5,
     }
 }
 
@@ -449,7 +449,7 @@ async fn execute_annual_command_uses_endpoint_descriptor() {
         assert_eq!(payload.endpoint, expected_path);
         assert_eq!(
             payload.query,
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null })
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 })
         );
         assert_eq!(payload.data[0]["symbol"], "AAPL");
     }
@@ -942,52 +942,52 @@ async fn execute_flat_commands_use_endpoint_descriptors() {
         (
             "income-statement",
             Command::FundamentalsIncomeStatement(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "income-statement-as-reported",
             Command::FundamentalsIncomeStatementAsReported(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "balance-sheet-statement",
             Command::FundamentalsBalanceSheet(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "cash-flow-statement",
             Command::FundamentalsCashFlow(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "ratios",
             Command::FundamentalsRatios(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "key-metrics",
             Command::FundamentalsMetrics(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "income-statement-growth",
             Command::FundamentalsIncomeStatementGrowth(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "balance-sheet-statement-growth",
             Command::FundamentalsBalanceSheetGrowth(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "cash-flow-statement-growth",
             Command::FundamentalsCashFlowGrowth(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "enterprise-values",
             Command::FundamentalsEnterpriseValues(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "financial-reports-json",
@@ -1017,7 +1017,7 @@ async fn execute_flat_commands_use_endpoint_descriptors() {
         (
             "analyst-estimates",
             Command::FundamentalsAnalystEstimates(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "news/stock",

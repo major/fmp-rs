@@ -311,8 +311,8 @@ pub struct AnnualArgs {
     pub symbol: String,
 
     /// Maximum number of annual rows to return.
-    #[arg(long, help = help::ANNUAL_LIMIT)]
-    pub limit: Option<u16>,
+    #[arg(long, default_value_t = 5, help = help::ANNUAL_LIMIT)]
+    pub limit: u16,
 }
 
 /// Simple moving average arguments.

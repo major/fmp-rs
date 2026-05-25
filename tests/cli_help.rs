@@ -212,9 +212,7 @@ fn annual_help_explains_limit_default_without_parser_default() {
         .env("NO_COLOR", "1")
         .assert()
         .success()
-        .stdout(predicate::str::contains(
-            "Maximum number of annual rows to return. Defaults to 5 when omitted.",
-        ));
+        .stdout(predicate::str::contains("[default: 5]"));
 }
 
 #[test]
