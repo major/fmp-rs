@@ -95,55 +95,55 @@ pub enum Command {
     MarketPriceChange(SymbolArgs),
 
     /// Income statement command.
-    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_ABOUT, long_about = help::FUNDAMENTALS_INCOME_STATEMENT_LONG)]
     FundamentalsIncomeStatement(AnnualArgs),
 
     /// As-reported income statement command.
-    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_AS_REPORTED_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_AS_REPORTED_ABOUT, long_about = help::FUNDAMENTALS_INCOME_STATEMENT_AS_REPORTED_LONG)]
     FundamentalsIncomeStatementAsReported(AnnualArgs),
 
     /// Balance sheet command.
-    #[command(about = help::FUNDAMENTALS_BALANCE_SHEET_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_BALANCE_SHEET_ABOUT, long_about = help::FUNDAMENTALS_BALANCE_SHEET_LONG)]
     FundamentalsBalanceSheet(AnnualArgs),
 
     /// Cash flow command.
-    #[command(about = help::FUNDAMENTALS_CASH_FLOW_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_CASH_FLOW_ABOUT, long_about = help::FUNDAMENTALS_CASH_FLOW_LONG)]
     FundamentalsCashFlow(AnnualArgs),
 
     /// Ratios command.
-    #[command(about = help::FUNDAMENTALS_RATIOS_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_RATIOS_ABOUT, long_about = help::FUNDAMENTALS_RATIOS_LONG)]
     FundamentalsRatios(AnnualArgs),
 
     /// Metrics command.
-    #[command(about = help::FUNDAMENTALS_METRICS_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_METRICS_ABOUT, long_about = help::FUNDAMENTALS_METRICS_LONG)]
     FundamentalsMetrics(AnnualArgs),
 
     /// Income statement growth command.
-    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_GROWTH_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_GROWTH_ABOUT, long_about = help::FUNDAMENTALS_INCOME_STATEMENT_GROWTH_LONG)]
     FundamentalsIncomeStatementGrowth(AnnualArgs),
 
     /// Balance sheet growth command.
-    #[command(about = help::FUNDAMENTALS_BALANCE_SHEET_GROWTH_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_BALANCE_SHEET_GROWTH_ABOUT, long_about = help::FUNDAMENTALS_BALANCE_SHEET_GROWTH_LONG)]
     FundamentalsBalanceSheetGrowth(AnnualArgs),
 
     /// Cash flow growth command.
-    #[command(about = help::FUNDAMENTALS_CASH_FLOW_GROWTH_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_CASH_FLOW_GROWTH_ABOUT, long_about = help::FUNDAMENTALS_CASH_FLOW_GROWTH_LONG)]
     FundamentalsCashFlowGrowth(AnnualArgs),
 
     /// Enterprise values command.
-    #[command(about = help::FUNDAMENTALS_ENTERPRISE_VALUES_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_ENTERPRISE_VALUES_ABOUT, long_about = help::FUNDAMENTALS_ENTERPRISE_VALUES_LONG)]
     FundamentalsEnterpriseValues(AnnualArgs),
 
     /// Analyst estimates command.
-    #[command(about = help::FUNDAMENTALS_ANALYST_ESTIMATES_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_ANALYST_ESTIMATES_ABOUT, long_about = help::FUNDAMENTALS_ANALYST_ESTIMATES_LONG)]
     FundamentalsAnalystEstimates(AnnualArgs),
 
     /// Financial report dates command.
-    #[command(about = help::FUNDAMENTALS_REPORT_DATES_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_REPORT_DATES_ABOUT, long_about = help::FUNDAMENTALS_REPORT_DATES_LONG)]
     FundamentalsReportDates(SymbolArgs),
 
     /// Annual report form command.
-    #[command(about = help::FUNDAMENTALS_ANNUAL_REPORT_FORM_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_ANNUAL_REPORT_FORM_ABOUT, long_about = help::FUNDAMENTALS_ANNUAL_REPORT_FORM_LONG)]
     FundamentalsAnnualReportForm(AnnualReportFormArgs),
 
     /// Price target consensus command.
