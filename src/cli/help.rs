@@ -89,10 +89,13 @@ pub(crate) const FUNDAMENTALS_ANNUAL_REPORT_FORM_ABOUT: &str =
 pub(crate) const FUNDAMENTALS_ANNUAL_REPORT_FORM_LONG: &str = "Get annual report form JSON for a stock ticker and fiscal year. The --year flag is required.\n\nExamples:\n  fmp-agent fundamentals-annual-report-form AAPL --year 2023\n  fmp-agent fundamentals-annual-report-form MSFT --year 2022 --period FY";
 pub(crate) const ANALYST_PRICE_TARGET_CONSENSUS_ABOUT: &str =
     "Get analyst price target consensus for a stock ticker.";
+pub(crate) const ANALYST_PRICE_TARGET_CONSENSUS_LONG: &str = "Get the consensus price target for a stock ticker aggregated across analyst estimates.\n\nExamples:\n  fmp-agent analyst-price-target-consensus AAPL";
 pub(crate) const ANALYST_PRICE_TARGET_SUMMARY_ABOUT: &str =
     "Get analyst price target summary for a stock ticker.";
+pub(crate) const ANALYST_PRICE_TARGET_SUMMARY_LONG: &str = "Get a summary of analyst price targets for a stock ticker including high, low, and median targets.\n\nExamples:\n  fmp-agent analyst-price-target-summary AAPL";
 pub(crate) const ANALYST_GRADES_ABOUT: &str =
     "Get analyst grade action history for a stock ticker.";
+pub(crate) const ANALYST_GRADES_LONG: &str = "Get analyst grade action history for a stock ticker showing upgrades, downgrades, and initiations.\n\nExamples:\n  fmp-agent analyst-grades AAPL";
 pub(crate) const INSIDER_TRADING_LATEST_ABOUT: &str = "Get latest insider trading rows.";
 pub(crate) const INSIDER_TRADING_LATEST_LONG: &str =
     "Get latest insider trading rows. Uses zero-based paging.";

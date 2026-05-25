@@ -147,15 +147,15 @@ pub enum Command {
     FundamentalsAnnualReportForm(AnnualReportFormArgs),
 
     /// Price target consensus command.
-    #[command(about = help::ANALYST_PRICE_TARGET_CONSENSUS_ABOUT)]
+    #[command(about = help::ANALYST_PRICE_TARGET_CONSENSUS_ABOUT, long_about = help::ANALYST_PRICE_TARGET_CONSENSUS_LONG)]
     AnalystPriceTargetConsensus(SymbolArgs),
 
     /// Price target summary command.
-    #[command(about = help::ANALYST_PRICE_TARGET_SUMMARY_ABOUT)]
+    #[command(about = help::ANALYST_PRICE_TARGET_SUMMARY_ABOUT, long_about = help::ANALYST_PRICE_TARGET_SUMMARY_LONG)]
     AnalystPriceTargetSummary(SymbolArgs),
 
     /// Analyst grades command.
-    #[command(about = help::ANALYST_GRADES_ABOUT)]
+    #[command(about = help::ANALYST_GRADES_ABOUT, long_about = help::ANALYST_GRADES_LONG)]
     AnalystGrades(SymbolArgs),
 
     /// Insider trading command.
