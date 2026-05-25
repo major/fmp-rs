@@ -110,7 +110,7 @@ pub(crate) const TECHNICAL_SMA_ABOUT: &str =
     "Get simple moving average technical indicator rows for a stock ticker.";
 pub(crate) const TECHNICAL_SMA_LONG: &str = "Get simple moving average technical indicator rows for a stock ticker. Defaults to a 10-period SMA on the 1day timeframe.\n\nExamples:\n  fmp-agent technical-sma AAPL\n  fmp-agent technical-sma AAPL --period-length 20 --timeframe 1hour";
 pub(crate) const SEC_FILINGS_ABOUT: &str = "Get SEC filing metadata for a stock ticker.";
-pub(crate) const SEC_FILINGS_LONG: &str = "Get SEC filing metadata for a stock ticker. Defaults --from to 90 days ago when omitted because FMP requires a start date.";
+pub(crate) const SEC_FILINGS_LONG: &str = "Get SEC filing metadata for a stock ticker. Defaults --from to 90 days ago when omitted because FMP requires a start date.\n\nExamples:\n  fmp-agent sec-filings AAPL\n  fmp-agent sec-filings AAPL --from 2024-01-01 --to 2024-12-31";
 pub(crate) const CRYPTO_LIST_ABOUT: &str = "List supported cryptocurrency symbols.";
 pub(crate) const CRYPTO_QUOTE_ABOUT: &str = "Get the latest quote for a cryptocurrency pair.";
 pub(crate) const CRYPTO_HISTORICAL_ABOUT: &str =
