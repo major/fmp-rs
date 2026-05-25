@@ -3,6 +3,7 @@
 mod args;
 mod commands;
 mod dispatch;
+mod help;
 mod output;
 
 #[cfg(test)]

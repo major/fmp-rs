@@ -192,6 +192,6 @@ make patch-coverage
 make audit
 ```
 
-`make check` runs formatting, clippy, tests, and docs for both supported feature shapes: the default CLI build and the library-only `--no-default-features` build. GitHub CI mirrors these checks and verifies MSRV 1.95. The integration tests check that the README library dependency example stays aligned with `Cargo.toml`.
+`make check` runs formatting, clippy, tests, and docs for both supported feature shapes: the default CLI build and the library-only `--no-default-features` build. GitHub CI mirrors these checks and verifies MSRV 1.95. The integration tests check that the README library dependency example stays aligned with `Cargo.toml`. Keep command help text in `src/cli/help.rs` so `--help`, generated man pages, and command reference updates stay in sync.
 
 `make coverage` enforces 90 percent line coverage with `cargo llvm-cov`. Before opening a PR, run `make patch-coverage` to generate `lcov.info` and verify changed lines against `main` with `diff-cover`, matching the Codecov patch gate. Use `PATCH_COVERAGE_BASE=<branch>` for non-main bases or `DIFF_COVER='uvx diff-cover'` when needed.
