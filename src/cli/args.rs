@@ -55,7 +55,7 @@ pub enum Command {
     MarketStockList,
 
     /// ETF holdings command.
-    #[command(about = help::ETF_HOLDINGS_ABOUT)]
+    #[command(about = help::ETF_HOLDINGS_ABOUT, long_about = help::ETF_HOLDINGS_LONG)]
     EtfHoldings(SymbolArgs),
 
     /// Company financial scores command.
@@ -163,7 +163,7 @@ pub enum Command {
     InsiderTradingLatest(PagedArgs),
 
     /// Earnings calendar command.
-    #[command(about = help::EARNINGS_CALENDAR_ABOUT)]
+    #[command(about = help::EARNINGS_CALENDAR_ABOUT, long_about = help::EARNINGS_CALENDAR_LONG)]
     EarningsCalendar(DateRangeArgs),
 
     /// Treasury rates command.

@@ -23,6 +23,7 @@ pub(crate) const MARKET_STOCK_LIST_ABOUT: &str = "List supported stock symbols."
 pub(crate) const MARKET_STOCK_LIST_LONG: &str = "List all supported stock symbols. Returns a large payload with ticker, name, exchange, and type for each instrument.\n\nExamples:\n  fmp-agent market-stock-list";
 pub(crate) const ETF_HOLDINGS_ABOUT: &str =
     "Get ETF holdings for a fund symbol; Starter accounts return an API error.";
+pub(crate) const ETF_HOLDINGS_LONG: &str = "Get ETF holdings for a fund symbol. Note: Starter plan accounts receive an API error for this endpoint; it is included to exercise structured error handling.\n\nExamples:\n  fmp-agent etf-holdings SPY";
 pub(crate) const COMPANY_FINANCIAL_SCORES_ABOUT: &str =
     "Get financial quality scores for a stock ticker.";
 pub(crate) const COMPANY_FINANCIAL_SCORES_LONG: &str = "Get financial quality scores for a company including Piotroski score and intrinsic value rating.\n\nExamples:\n  fmp-agent company-financial-scores AAPL";
@@ -102,6 +103,7 @@ pub(crate) const INSIDER_TRADING_LATEST_LONG: &str =
     "Get latest insider trading rows. Uses zero-based paging.\n\nExamples:\n  fmp-agent insider-trading-latest\n  fmp-agent insider-trading-latest --page 1 --limit 20";
 pub(crate) const EARNINGS_CALENDAR_ABOUT: &str =
     "Get earnings calendar rows for an optional announcement date range.";
+pub(crate) const EARNINGS_CALENDAR_LONG: &str = "Get earnings calendar rows for an optional announcement date range.\n\nExamples:\n  fmp-agent earnings-calendar\n  fmp-agent earnings-calendar --from 2024-01-01 --to 2024-03-31";
 pub(crate) const TREASURY_RATES_ABOUT: &str = "Get treasury rate rows for an optional date range.";
 pub(crate) const TREASURY_RATES_LONG: &str = "Get treasury rate rows for an optional date range. Returns yields for standard maturities (1M, 2M, 3M, 6M, 1Y, 2Y, 3Y, 5Y, 7Y, 10Y, 20Y, 30Y).\n\nExamples:\n  fmp-agent treasury-rates\n  fmp-agent treasury-rates --from 2024-01-01 --to 2024-12-31";
 pub(crate) const ECONOMIC_INDICATORS_ABOUT: &str =
