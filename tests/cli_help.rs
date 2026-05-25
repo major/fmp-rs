@@ -37,6 +37,24 @@ fn invalid_argument_uses_clap_error_path() {
 }
 
 #[test]
+fn help_explains_clap_and_json_error_paths() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .arg("--help")
+        .env("CLAP_COLOR", "never")
+        .env("NO_COLOR", "1")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("JSON envelope"))
+        .stdout(predicate::str::contains(
+            "Clap's native human-readable usage text",
+        ))
+        .stdout(predicate::str::contains(
+            "check the exit code first, then parse stderr only for exit codes 3-6",
+        ));
+}
+
+#[test]
 fn command_invocation_prints_compact_json() {
     let server = MockServer::start();
     let mock = server.mock(|when, then| {

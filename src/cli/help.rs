@@ -2,7 +2,7 @@
 
 pub(crate) const CLI_ABOUT: &str =
     "Financial Modeling Prep CLI optimized for predictable JSON output.";
-pub(crate) const EXIT_CODES: &str = "EXIT CODES:\n  0  Success\n  2  Usage error (bad flags or arguments)\n  3  Configuration error (missing API key or invalid base URL)\n  4  Network error (HTTP request failed)\n  5  API error (server returned an error response)\n  6  Parse error (JSON deserialization failed)";
+pub(crate) const EXIT_CODES: &str = "EXIT CODES:\n  0  Success\n  2  Usage error (bad flags or arguments)\n  3  Configuration error (missing API key or invalid base URL)\n  4  Network error (HTTP request failed)\n  5  API error (server returned an error response)\n  6  Parse error (JSON deserialization failed)\n\nParse errors use Clap's native human-readable usage text on stderr for exit code 2. Runtime errors use the JSON envelope on stderr: {\"ok\":false,...} for exit codes 3-6. To distinguish programmatically, check the exit code first, then parse stderr only for exit codes 3-6.";
 
 pub(crate) const API_KEY: &str =
     "FMP API key. Prefer FMP_API_KEY in .env or the environment so shells do not record it.";
