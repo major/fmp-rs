@@ -57,6 +57,7 @@ Company commands cover profile/reference data, key executives, peer companies, f
 ### Market
 
 ```bash
+fmp-agent etf-holdings <SYMBOL>
 fmp-agent market-quote <SYMBOL>
 fmp-agent market-historical <SYMBOL> [--from <FROM>] [--to <TO>]
 fmp-agent market-dividends <SYMBOL>
@@ -65,7 +66,7 @@ fmp-agent market-price-change <SYMBOL>
 fmp-agent market-stock-list
 ```
 
-Market commands cover quotes, end-of-day price bars, dividends, splits, price change percentages, and supported stock symbols. Date ranges use inclusive `YYYY-MM-DD` values.
+Market commands cover ETF holdings, quotes, end-of-day price bars, dividends, splits, price change percentages, and supported stock symbols. Date ranges use inclusive `YYYY-MM-DD` values. `etf-holdings` is intentionally exposed even though Starter accounts return a subscription error, so callers can exercise the structured API-error path.
 
 ### Crypto and forex
 
@@ -134,6 +135,7 @@ FMP_API_KEY=your-key fmp-agent market-quote AAPL
 fmp-agent market-historical AAPL --from 2025-01-01 --to 2025-01-31
 fmp-agent company-executives AAPL
 fmp-agent company-peers AAPL
+fmp-agent etf-holdings SPY
 fmp-agent market-stock-list
 fmp-agent market-dividends AAPL
 fmp-agent market-splits AAPL

@@ -16,6 +16,8 @@ pub(crate) const COMPANY_PROFILE_ABOUT: &str =
 pub(crate) const COMPANY_EXECUTIVES_ABOUT: &str = "Get key executives for a stock ticker.";
 pub(crate) const COMPANY_PEERS_ABOUT: &str = "Get peer company tickers for a stock ticker.";
 pub(crate) const MARKET_STOCK_LIST_ABOUT: &str = "List supported stock symbols.";
+pub(crate) const ETF_HOLDINGS_ABOUT: &str =
+    "Get ETF holdings for a fund symbol; Starter accounts return an API error.";
 pub(crate) const COMPANY_FINANCIAL_SCORES_ABOUT: &str =
     "Get financial quality scores for a stock ticker.";
 pub(crate) const COMPANY_SHARE_FLOAT_ABOUT: &str =

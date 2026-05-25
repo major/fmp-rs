@@ -83,7 +83,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Stock list | `stock-list` | confirmed | Array with supported stock symbols and company metadata such as `symbol`, `companyName`, `price`, `exchange`, and `type`. |
 | Latest insider trading | `insider-trading/latest?page=0&limit=5` | confirmed | Array with insider trading fields such as `symbol`, `filingDate`, `transactionDate`, `transactionType`, and `reportingName`. |
 | Economic indicators | `economic-indicators?name=GDP&from=2025-01-01&to=2025-12-31` | confirmed | Array with macroeconomic indicator rows containing `name`, `date`, and `value`. |
-| ETF holdings | `etf/holdings?symbol=SPY` | denied | HTTP 402 subscription restriction. |
+| ETF holdings | `etf/holdings?symbol=SPY` | denied | HTTP 402 subscription restriction; implemented as `etf-holdings` to exercise structured API-error handling. |
 | Earnings transcript | `earning-call-transcript?symbol=AAPL&year=2024&quarter=1` | denied | HTTP 402 subscription restriction. |
 | Transcript dates | `earning-call-transcript-dates?symbol=AAPL` | denied | HTTP 402 subscription restriction. |
 | Price target | `price-target?symbol=AAPL` | unconfirmed | Tested path returned HTTP 404 with an empty array, so the path or entitlement needs API Viewer confirmation. |
@@ -167,7 +167,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | SEC/filings/insider | [Beneficial ownership](https://site.financialmodelingprep.com/developer/docs/acquisition-of-beneficial-ownership) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [CIK mapper](https://site.financialmodelingprep.com/developer/docs/cik-mapper-insider-trading) | unknown | low | Verify before exposing. |
 | ETFs/funds/13F | [ETF list](https://site.financialmodelingprep.com/developer/docs/etf-list-api) | unknown | low | ETF metadata may differ from ETF holdings. |
-| ETFs/funds/13F | [ETF holders](https://site.financialmodelingprep.com/developer/docs/etf-holders-api) | denied | low | Tested `etf/holdings?symbol=SPY`; HTTP 402 subscription restriction. |
+| ETFs/funds/13F | [ETF holders](https://site.financialmodelingprep.com/developer/docs/etf-holders-api) | denied | low | Tested `etf/holdings?symbol=SPY`; HTTP 402 subscription restriction. Implemented as `etf-holdings` so callers can verify graceful API-error handling for subscription-restricted data. |
 | ETFs/funds/13F | [Historical ETF holdings](https://site.financialmodelingprep.com/developer/docs/historical-etf-holdings-api) | excluded | low | ETF holdings are excluded by pricing. |
 | ETFs/funds/13F | [ETF holdings dates](https://site.financialmodelingprep.com/developer/docs/historical-etf-holdings-available-dates-api) | excluded | low | ETF holdings are excluded by pricing. |
 | ETFs/funds/13F | [ETF expense ratio](https://site.financialmodelingprep.com/developer/docs/etf-expense-ratio-api) | unknown | low | Verify before exposing. |
