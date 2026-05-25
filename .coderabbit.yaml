@@ -54,7 +54,7 @@ reviews:
         - Preserve the default `cli` feature and the library-only `default-features = false` build.
         - CLI output must stay predictable JSON: successes are the raw FMP JSON payload on one stdout line, and failures use `{ ok: false, error: { kind, message } }` on stderr.
         - Keep API keys out of logs, errors, tests, and docs.
-        - New user-facing endpoints must be confirmed in `docs/api-inventory.md` before they are exposed.
+        - New user-facing endpoints must be confirmed in `docs/api-inventory.md` before they are exposed, except intentionally denied endpoints that exist to verify structured subscription-error handling.
         - Prefer the existing shape helpers over bespoke per-endpoint client wrappers.
         - Do not nitpick style because rustfmt and clippy handle formatting and lint.
 
@@ -70,7 +70,7 @@ reviews:
       instructions: |
         Endpoint inventory review:
         - This file is the source of truth for Starter-plan endpoint access.
-        - Do not accept new CLI endpoints for denied, excluded, unknown, or unconfirmed rows without updated verification notes.
+        - Do not accept new CLI endpoints for excluded, unknown, or unconfirmed rows without updated verification notes. Denied rows are acceptable only when explicitly documented as structured subscription-error handling tests.
 
     - path: ".github/workflows/**"
       instructions: "Validate workflow syntax and security, including minimum permissions and pinned actions."
