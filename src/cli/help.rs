@@ -179,6 +179,10 @@ pub(crate) const SCHEMA_LONG: &str = "Dump the CLI surface as machine-readable J
 pub(crate) const COMMANDS_ABOUT: &str = "List all available leaf commands.";
 pub(crate) const COMMANDS_LONG: &str = "List all available leaf commands, one per line. Output is sorted alphabetically.\n\nThis command does not require FMP_API_KEY and does not make any network requests.\n\nExamples:\n  fmp-agent commands\n  fmp-agent commands | grep quote";
 
+pub(crate) const COMPLETIONS_ABOUT: &str =
+    "Generate shell completions for bash, zsh, or fish.";
+pub(crate) const COMPLETIONS_LONG: &str = "Generate shell completions for the specified shell. The completions script is written to stdout. Supported shells: bash, zsh, fish.\n\nThis command does not require FMP_API_KEY and does not make any network requests.\n\nExamples:\n  fmp-agent completions bash\n  fmp-agent completions zsh | sudo tee /usr/share/zsh/site-functions/_fmp-agent\n  source <(fmp-agent completions bash)";
+
 pub(crate) const SYMBOL: &str =
     "Symbol accepted by this command, such as a stock ticker, forex pair, or crypto pair.";
 pub(crate) const STOCK_SYMBOL: &str = "Stock ticker symbol, for example AAPL.";

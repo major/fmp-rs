@@ -56,6 +56,16 @@ pub async fn run(cli: Cli) -> Result<()> {
         return Ok(());
     }
 
+    // Shell completions are metadata-only and do not require an API key.
+    if let args::Command::Completions { shell } = &cli.command {
+        let mut cmd = <Cli as CommandFactory>::command();
+        let mut buf = Vec::new();
+        clap_complete::generate(shell.to_owned(), &mut cmd, "fmp-agent", &mut buf);
+        let output = String::from_utf8(buf).expect("completions output is valid UTF-8");
+        print_stdout_line(&output);
+        return Ok(());
+    }
+
     if let Some(group_name) = bare_group_name(&cli.command) {
         print_group_help(group_name)?;
         return Ok(());
