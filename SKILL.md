@@ -1,199 +1,256 @@
-# fmp-agent CLI command reference
+# fmp-agent CLI reference
 
-Use this as a compact command reference for the unofficial `fmp-agent` CLI. The project is not affiliated with, endorsed by, or sponsored by Financial Modeling Prep.
+`fmp-agent` is an unofficial CLI for the Financial Modeling Prep stable API, optimized for predictable JSON output in shell pipelines and LLM tool-calling. It is not affiliated with, endorsed by, or sponsored by Financial Modeling Prep.
 
-## Install
+This document is the long-form reference. For programmatic discovery, prefer the `schema` subcommand below.
+
+## 1. Self-discovery (start here)
+
+LLMs and tool runners should discover the command surface from the binary itself instead of parsing this document:
+
+```bash
+fmp-agent schema             # versioned JSON: { schema_version, binary, version, commands[] }
+fmp-agent --help             # human-readable top-level help
+fmp-agent <COMMAND> --help   # human-readable per-command help, includes Examples
+```
+
+`fmp-agent schema`:
+
+- Does **not** require `FMP_API_KEY` and makes **no** network requests.
+- Emits `schema_version: 1` today; the shape is experimental and may change between releases.
+- Each command entry has `name`, `about`, `long_about`, and `args` (with `name`, `kind`, defaults, value names).
+- Use this as the source of truth for available commands and arguments; treat the catalog in section 6 as a curated index.
+
+## 2. Install
 
 ```bash
 cargo install rusty-fmp --locked
 ```
 
-GitHub releases also provide cargo-dist archives and shell or PowerShell installers for supported platforms.
+GitHub releases also publish cargo-dist archives and shell or PowerShell installers. The Cargo package is `rusty-fmp`; the installed binary is `fmp-agent`. From a repo checkout, substitute `cargo run -- <COMMAND>` for `fmp-agent <COMMAND>`.
 
-## Global form
+## 3. Invocation contract
 
 ```bash
-fmp-agent [OPTIONS] <COMMAND>
+fmp-agent [OPTIONS] <COMMAND> [ARGS]
 ```
 
-Global options:
+Stable behavior callers can rely on:
 
-- `--api-key <API_KEY>`: FMP API key. Prefer `FMP_API_KEY` or local `.env`.
-- `--base-url <BASE_URL>`: FMP stable API base URL. Defaults to `https://financialmodelingprep.com/stable/`; can also use `FMP_BASE_URL`.
-- `-v`, `--verbose`: increase log verbosity. Pass once for INFO, twice (`-vv`) for DEBUG, three times (`-vvv`) for TRACE. Log output goes to stderr.
-- `-h`, `--help`: print help.
-- `-V`, `--version`: print version.
+- **Success**: the raw FMP JSON payload on **one line** to stdout, exit code 0.
+- **Runtime error** (config, network, API, parse): JSON envelope on **stderr**, non-zero exit:
+  `{"ok": false, "error": {"kind": "...", "message": "..."}}`
+- **Parse error** (bad flags or missing required args): Clap's human-readable usage text on stderr, exit code 2. To distinguish programmatically, check exit code first; only parse stderr as JSON for codes 3-6.
+- Help and version output are human-readable text, not JSON.
+- The CLI deliberately offers no output formatting, filtering, or pagination flags. Pipe through `jq` for selection.
+- Running `fmp-agent` with no command prints help and exits.
 
-Running `fmp-agent` without a command prints this generic help text.
+### Exit codes
 
-Successful command responses are the raw FMP JSON payload on one line. Normal command output goes to stdout, and runtime errors are JSON on stderr. Help and version output are human-readable text. The CLI does not provide output formatting or filtering options.
+| Code | Meaning                                                        |
+| ---- | -------------------------------------------------------------- |
+| 0    | Success                                                        |
+| 2    | Usage error (Clap parse failure)                               |
+| 3    | Configuration error (missing API key or invalid base URL)      |
+| 4    | Network error (HTTP request failed)                            |
+| 5    | API error (server returned non-2xx, e.g. plan restriction)     |
+| 6    | Parse error (JSON deserialization failed)                      |
 
-## Commands
+## 4. Configuration
 
-The visible command surface is flat and domain-prefixed so agents and humans can use one command token per endpoint. Old grouped forms such as `market quote` and legacy aliases such as `quote` are rejected.
+Global options apply to every subcommand:
+
+| Flag                  | Env var          | Default                                          | Notes                                                          |
+| --------------------- | ---------------- | ------------------------------------------------ | -------------------------------------------------------------- |
+| `--api-key <KEY>`     | `FMP_API_KEY`    | (none; required for all commands except `schema`)| Prefer env or `.env`; CLI flag is recorded in shell history.   |
+| `--base-url <URL>`    | `FMP_BASE_URL`   | `https://financialmodelingprep.com/stable/`      | Override for proxies or tests.                                 |
+| `-v` / `-vv` / `-vvv` | `RUST_LOG`       | warnings only                                    | INFO / DEBUG / TRACE; logs go to stderr; API key is redacted.  |
+| `-h`, `--help`        |                  |                                                  | Human-readable help.                                           |
+| `-V`, `--version`     |                  |                                                  | Binary version.                                                |
+
+A `.env` file in the working directory is loaded automatically before parsing.
+
+## 5. Argument shapes
+
+Commands fall into a small set of reusable argument shapes. Pattern-matching on shape is the fastest way to generalize across the catalog.
+
+| Shape                  | Positional | Options                                                  | Typical use                            |
+| ---------------------- | ---------- | -------------------------------------------------------- | -------------------------------------- |
+| `Endpoint`             | (none)     | (none)                                                   | List endpoints (`market-stock-list`).  |
+| `Query`                | `<QUERY>`  | (none)                                                   | Free-text search.                      |
+| `Symbol`               | `<SYMBOL>` | (none)                                                   | Reference data for one ticker.         |
+| `SymbolLimit`          | `<SYMBOL>` | `--limit <N>`                                            | Recent rows for one ticker.            |
+| `SymbolDateRange`      | `<SYMBOL>` | `--from <YYYY-MM-DD>` `--to <YYYY-MM-DD>`                | Time-series for one ticker.            |
+| `DateRange`            | (none)     | `--from <YYYY-MM-DD>` `--to <YYYY-MM-DD>`                | Cross-market calendars and rates.      |
+| `NameDateRange`        | `<NAME>`   | `--from` `--to`                                          | Indicator series by FMP indicator name.|
+| `Annual`               | `<SYMBOL>` | `--limit <N>`                                            | Annual statements and metrics.         |
+| `AnnualReportForm`     | `<SYMBOL>` | `--year <YEAR>` `[--period <PERIOD>]`                    | Single annual report form.             |
+| `TechnicalSma`         | `<SYMBOL>` | `[--period-length <N>]` `[--timeframe <TF>]`             | Technical indicators.                  |
+| `StockNews`            | `<SYMBOL>` | `--limit <N>`                                            | Per-symbol news.                       |
+| `Paged`                | (none)     | `--page <N>` `--limit <N>`                               | Paginated feeds.                       |
+
+All date arguments are inclusive `YYYY-MM-DD`. Symbols are FMP-style tickers (`AAPL`, `BTCUSD`, `EURUSD`).
+
+### Defaults
+
+These defaults are emitted by Clap (`[default: N]`) in `--help` and reflected in `schema` output. Listed once here for convenience.
+
+| Argument                                          | Default         |
+| ------------------------------------------------- | --------------- |
+| `Annual --limit`                                  | 5               |
+| `SymbolLimit --limit` (`company-historical-rating`)| 5              |
+| `StockNews --limit`                               | 10              |
+| `Paged --page`                                    | 0               |
+| `Paged --limit`                                   | 10              |
+| `AnnualReportForm --period`                       | `FY`            |
+| `TechnicalSma --period-length`                    | 10              |
+| `TechnicalSma --timeframe`                        | `1day`          |
+| `sec-filings --from` (computed at runtime)        | 90 days ago     |
+
+## 6. Command catalog
+
+Commands are flat and domain-prefixed; old grouped forms (`market quote`) and legacy aliases (`quote`) are rejected. Each command is annotated with its argument shape from section 5.
 
 ### Discovery
 
-```bash
-fmp-agent search <QUERY>
-```
+| Command                 | Shape       |
+| ----------------------- | ----------- |
+| `search <QUERY>`        | `Query`     |
+| `schema`                | `Endpoint` (no API key)|
 
-Search for a tradable symbol by ticker or company name.
+### Company reference
 
-### Company
+| Command                                | Shape          |
+| -------------------------------------- | -------------- |
+| `company-profile <SYMBOL>`             | `Symbol`       |
+| `company-executives <SYMBOL>`          | `Symbol`       |
+| `company-peers <SYMBOL>`               | `Symbol`       |
+| `company-financial-scores <SYMBOL>`    | `Symbol`       |
+| `company-share-float <SYMBOL>`         | `Symbol`       |
+| `company-rating <SYMBOL>`              | `Symbol`       |
+| `company-historical-rating <SYMBOL>`   | `SymbolLimit`  |
 
-```bash
-fmp-agent company-profile <SYMBOL>
-fmp-agent company-executives <SYMBOL>
-fmp-agent company-peers <SYMBOL>
-fmp-agent company-financial-scores <SYMBOL>
-fmp-agent company-share-float <SYMBOL>
-fmp-agent company-rating <SYMBOL>
-fmp-agent company-historical-rating <SYMBOL> [--limit <LIMIT>]
-```
+### Market data
 
-Company commands cover profile/reference data, key executives, peer companies, financial scores, share float, rating consensus, and historical ratings.
+| Command                                 | Shape              |
+| --------------------------------------- | ------------------ |
+| `market-quote <SYMBOL>`                 | `Symbol`           |
+| `market-historical <SYMBOL>`            | `SymbolDateRange`  |
+| `market-dividends <SYMBOL>`             | `Symbol`           |
+| `market-splits <SYMBOL>`                | `Symbol`           |
+| `market-price-change <SYMBOL>`          | `Symbol`           |
+| `market-stock-list`                     | `Endpoint`         |
+| `etf-holdings <SYMBOL>`                 | `Symbol` *         |
 
-### Market
-
-```bash
-fmp-agent etf-holdings <SYMBOL>
-fmp-agent market-quote <SYMBOL>
-fmp-agent market-historical <SYMBOL> [--from <FROM>] [--to <TO>]
-fmp-agent market-dividends <SYMBOL>
-fmp-agent market-splits <SYMBOL>
-fmp-agent market-price-change <SYMBOL>
-fmp-agent market-stock-list
-```
-
-Market commands cover ETF holdings, quotes, end-of-day price bars, dividends, splits, price change percentages, and supported stock symbols. Date ranges use inclusive `YYYY-MM-DD` values. `etf-holdings` is intentionally exposed even though Starter accounts return a subscription error, so callers can exercise the structured API-error path.
+\* `etf-holdings` is intentionally exposed even though Starter accounts receive an API error; it exercises the structured error path (exit code 5).
 
 ### Crypto and forex
 
-```bash
-fmp-agent crypto-list
-fmp-agent crypto-quote <SYMBOL>
-fmp-agent crypto-historical <SYMBOL> [--from <FROM>] [--to <TO>]
-fmp-agent forex-quote <SYMBOL>
-fmp-agent forex-historical <SYMBOL> [--from <FROM>] [--to <TO>]
-```
-
-Crypto and forex commands cover supported cryptocurrency symbols, full quotes, currency exchange quotes, and end-of-day price bars. Date ranges use inclusive `YYYY-MM-DD` values.
+| Command                                 | Shape              |
+| --------------------------------------- | ------------------ |
+| `crypto-list`                           | `Endpoint`         |
+| `crypto-quote <SYMBOL>`                 | `Symbol`           |
+| `crypto-historical <SYMBOL>`            | `SymbolDateRange`  |
+| `forex-quote <SYMBOL>`                  | `Symbol`           |
+| `forex-historical <SYMBOL>`             | `SymbolDateRange`  |
 
 ### Fundamentals
 
-```bash
-fmp-agent fundamentals-income-statement <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals-income-statement-as-reported <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals-balance-sheet <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals-cash-flow <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals-ratios <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals-metrics <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals-income-statement-growth <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals-balance-sheet-growth <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals-cash-flow-growth <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals-enterprise-values <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals-analyst-estimates <SYMBOL> [--limit <LIMIT>]
-fmp-agent fundamentals-report-dates <SYMBOL>
-fmp-agent fundamentals-annual-report-form <SYMBOL> --year <YEAR> [--period <PERIOD>]
-```
-
-Fundamentals commands return annual statement, ratio, metric, growth, enterprise value, analyst estimate, financial report date, and annual report form JSON. `--limit` sets the maximum annual rows returned for statement-like endpoints. Annual report forms default `--period` to `FY`.
+| Command                                                  | Shape               |
+| -------------------------------------------------------- | ------------------- |
+| `fundamentals-income-statement <SYMBOL>`                 | `Annual`            |
+| `fundamentals-income-statement-as-reported <SYMBOL>`     | `Annual`            |
+| `fundamentals-balance-sheet <SYMBOL>`                    | `Annual`            |
+| `fundamentals-cash-flow <SYMBOL>`                        | `Annual`            |
+| `fundamentals-ratios <SYMBOL>`                           | `Annual`            |
+| `fundamentals-metrics <SYMBOL>`                          | `Annual`            |
+| `fundamentals-income-statement-growth <SYMBOL>`          | `Annual`            |
+| `fundamentals-balance-sheet-growth <SYMBOL>`             | `Annual`            |
+| `fundamentals-cash-flow-growth <SYMBOL>`                 | `Annual`            |
+| `fundamentals-enterprise-values <SYMBOL>`                | `Annual`            |
+| `fundamentals-analyst-estimates <SYMBOL>`                | `Annual`            |
+| `fundamentals-report-dates <SYMBOL>`                     | `Symbol`            |
+| `fundamentals-annual-report-form <SYMBOL> --year <YEAR>` | `AnnualReportForm`  |
 
 ### Analyst
 
+| Command                                  | Shape    |
+| ---------------------------------------- | -------- |
+| `analyst-price-target-consensus <SYMBOL>`| `Symbol` |
+| `analyst-price-target-summary <SYMBOL>`  | `Symbol` |
+| `analyst-grades <SYMBOL>`                | `Symbol` |
+
+### Calendars, rates, technicals, filings
+
+| Command                                    | Shape              |
+| ------------------------------------------ | ------------------ |
+| `earnings-calendar`                        | `DateRange`        |
+| `treasury-rates`                           | `DateRange`        |
+| `economic-indicators <NAME>`               | `NameDateRange`    |
+| `technical-sma <SYMBOL>`                   | `TechnicalSma`     |
+| `sec-filings <SYMBOL>`                     | `SymbolDateRange`  |
+| `insider-trading-latest`                   | `Paged`            |
+
+`economic-indicators` takes an FMP indicator name as the positional, e.g. `GDP`, `CPI`.
+
+### News
+
+| Command                  | Shape       |
+| ------------------------ | ----------- |
+| `news-stock <SYMBOL>`    | `StockNews` |
+| `news-general`           | `Paged`     |
+| `news-articles`          | `Paged`     |
+| `news-forex`             | `Paged`     |
+| `news-crypto`            | `Paged`     |
+
+## 7. Examples
+
 ```bash
-fmp-agent analyst-price-target-consensus <SYMBOL>
-fmp-agent analyst-price-target-summary <SYMBOL>
-fmp-agent analyst-grades <SYMBOL>
-```
+# Discovery
+fmp-agent schema | jq '.commands | map(.name)'
+fmp-agent search Apple
 
-Analyst commands cover price target consensus, price target summary, and analyst grade actions for a symbol.
-
-### Calendar, rates, technicals, filings, and news
-
-```bash
-fmp-agent earnings-calendar [--from <FROM>] [--to <TO>]
-fmp-agent treasury-rates [--from <FROM>] [--to <TO>]
-fmp-agent economic-indicators <NAME> [--from <FROM>] [--to <TO>]
-fmp-agent technical-sma <SYMBOL> [--period-length <PERIOD_LENGTH>] [--timeframe <TIMEFRAME>]
-fmp-agent sec-filings <SYMBOL> [--from <FROM>] [--to <TO>]
-fmp-agent insider-trading-latest [--page <PAGE>] [--limit <LIMIT>]
-fmp-agent news-stock <SYMBOL> [--limit <LIMIT>]
-fmp-agent news-general [--page <PAGE>] [--limit <LIMIT>]
-fmp-agent news-articles [--page <PAGE>] [--limit <LIMIT>]
-fmp-agent news-forex [--page <PAGE>] [--limit <LIMIT>]
-fmp-agent news-crypto [--page <PAGE>] [--limit <LIMIT>]
-```
-
-Technical SMA defaults are `--period-length 10` and `--timeframe 1day`. SEC filings default `--from` to 90 days ago when omitted. Economic indicators use FMP indicator names such as `GDP`. Stock news `--limit` sets the maximum news items returned. Paginated news and insider trading commands default to page 0 and limit 10 when omitted.
-
-## Examples
-
-```bash
+# Reference data
 FMP_API_KEY=your-key fmp-agent market-quote AAPL
+fmp-agent company-profile AAPL
+fmp-agent company-historical-rating AAPL --limit 20
+
+# Time series
 fmp-agent market-historical AAPL --from 2025-01-01 --to 2025-01-31
-fmp-agent company-executives AAPL
-fmp-agent company-peers AAPL
-fmp-agent etf-holdings SPY
-fmp-agent market-stock-list
-fmp-agent market-dividends AAPL
-fmp-agent market-splits AAPL
+fmp-agent crypto-historical BTCUSD --from 2025-01-01 --to 2025-01-03
+fmp-agent forex-historical EURUSD --from 2025-01-01 --to 2025-01-03
+fmp-agent technical-sma AAPL --period-length 20 --timeframe 1day
+
+# Fundamentals
+fmp-agent fundamentals-income-statement AAPL --limit 5
+fmp-agent fundamentals-annual-report-form AAPL --year 2022
+
+# Calendars and macros
 fmp-agent earnings-calendar --from 2026-01-01 --to 2026-01-31
 fmp-agent treasury-rates --from 2025-01-01 --to 2025-01-31
-fmp-agent crypto-list
-fmp-agent crypto-quote BTCUSD
-fmp-agent crypto-historical BTCUSD --from 2025-01-01 --to 2025-01-03
-fmp-agent forex-quote EURUSD
-fmp-agent forex-historical EURUSD --from 2025-01-01 --to 2025-01-03
-fmp-agent technical-sma AAPL --period-length 10 --timeframe 1day
-fmp-agent market-price-change AAPL
-fmp-agent sec-filings AAPL --from 2024-01-01 --to 2024-03-01
 fmp-agent economic-indicators GDP --from 2025-01-01 --to 2025-12-31
-fmp-agent fundamentals-income-statement AAPL --limit 5
-fmp-agent fundamentals-income-statement-as-reported AAPL --limit 5
-fmp-agent fundamentals-balance-sheet AAPL --limit 5
-fmp-agent fundamentals-cash-flow AAPL --limit 5
-fmp-agent fundamentals-income-statement-growth AAPL --limit 5
-fmp-agent fundamentals-balance-sheet-growth AAPL --limit 5
-fmp-agent fundamentals-cash-flow-growth AAPL --limit 5
-fmp-agent fundamentals-enterprise-values AAPL --limit 5
-fmp-agent company-financial-scores AAPL
-fmp-agent company-share-float AAPL
-fmp-agent company-rating AAPL
-fmp-agent company-historical-rating AAPL --limit 5
-fmp-agent fundamentals-analyst-estimates AAPL --limit 5
-fmp-agent fundamentals-report-dates AAPL
-fmp-agent fundamentals-annual-report-form AAPL --year 2022
-fmp-agent analyst-price-target-consensus AAPL
-fmp-agent analyst-price-target-summary AAPL
-fmp-agent analyst-grades AAPL
-fmp-agent insider-trading-latest --page 0 --limit 10
+
+# Filings and news
+fmp-agent sec-filings AAPL --from 2024-01-01 --to 2024-03-01
 fmp-agent news-stock AAPL --limit 10
 fmp-agent news-general --page 0 --limit 10
-fmp-agent news-articles --page 0 --limit 10
-fmp-agent news-forex --page 0 --limit 10
-fmp-agent news-crypto --page 0 --limit 10
+
+# Verbose logging to stderr (does not affect stdout JSON)
+fmp-agent -vv market-quote AAPL 2> debug.log
 ```
 
-In the repo, use `cargo run -- <COMMAND>` for the same arguments before installing or after cleaning the build.
+## 8. Library use
 
-## Help commands
+Other Rust crates can depend on `rusty-fmp` as an HTTP client without the CLI. See the project `README.md` for the `default-features = false` recipe; the library re-exports `FmpClient`, `Endpoint`, `Error`, and `Result`. New endpoints are added by registering an `Endpoint` constant and dispatching through shape-based methods (`endpoint`, `query`, `by_symbol`, `by_symbol_limit`, `by_symbol_date_range`, `by_date_range`, `by_name_date_range`, `annual`, `annual_report_form`, `technical`, `news`, `paged`).
+
+## 9. Development
 
 ```bash
-fmp-agent --help
-fmp-agent <COMMAND> --help
+make check          # fmt, clippy, tests, docs across both feature shapes
+make coverage       # cargo llvm-cov; fails under 90% line coverage
+make patch-coverage # diff-cover against PATCH_COVERAGE_BASE (default: main)
+make audit          # cargo audit
+make machete        # cargo machete (unused deps)
 ```
 
-## Development
-
-```bash
-make check
-make coverage
-make patch-coverage
-make audit
-```
-
-`make check` runs formatting, clippy, tests, and docs for both supported feature shapes: the default CLI build and the library-only `--no-default-features` build. GitHub CI mirrors these checks and verifies MSRV 1.95. The integration tests check that the README library dependency example stays aligned with `Cargo.toml`. Keep command help text in `src/cli/help.rs` so `--help`, release-generated man pages, and command reference updates stay in sync.
-
-`make coverage` enforces 90 percent line coverage with `cargo llvm-cov`. Before opening a PR, run `make patch-coverage` to generate `lcov.info` and verify changed lines against `main` with `diff-cover`, matching the Codecov patch gate. Use `PATCH_COVERAGE_BASE=<branch>` for non-main bases or `DIFF_COVER='uvx diff-cover'` when needed.
+CI mirrors `make check` across Linux, macOS, and Windows, with an MSRV job pinned to Rust 1.95. Keep command help strings in `src/cli/help.rs` so `--help`, generated man pages, `schema` output, and this reference stay aligned.
