@@ -76,7 +76,7 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["fundamentals", "enterprise-values"],
     &["fundamentals", "analyst-estimates"],
     &["fundamentals", "report-dates"],
-    &["fundamentals", "annual-report-form"],
+    &["fundamentals", "annual-report"],
     // analyst (3)
     &["analyst", "price-target-consensus"],
     &["analyst", "price-target-summary"],

@@ -12,7 +12,7 @@ pub(crate) const COMPANY_GROUP_LONG: &str = "Company data commands. Available su
 pub(crate) const MARKET_GROUP_ABOUT: &str = "Market data command group.";
 pub(crate) const MARKET_GROUP_LONG: &str = "Market data commands. Available subcommands:\n  quote\n  historical\n  dividends\n  splits\n  price-change\n  stock-list\n\nExamples:\n  fmp-agent market\n  fmp-agent market quote AAPL";
 pub(crate) const FUNDAMENTALS_GROUP_ABOUT: &str = "Fundamentals command group.";
-pub(crate) const FUNDAMENTALS_GROUP_LONG: &str = "Fundamentals commands. Available subcommands:\n  income-statement\n  income-statement-as-reported\n  balance-sheet\n  cash-flow\n  ratios\n  metrics\n  income-statement-growth\n  balance-sheet-growth\n  cash-flow-growth\n  enterprise-values\n  analyst-estimates\n  report-dates\n  annual-report-form\n\nExamples:\n  fmp-agent fundamentals\n  fmp-agent fundamentals income-statement AAPL";
+pub(crate) const FUNDAMENTALS_GROUP_LONG: &str = "Fundamentals commands. Available subcommands:\n  income-statement\n  income-statement-as-reported\n  balance-sheet\n  cash-flow\n  ratios\n  metrics\n  income-statement-growth\n  balance-sheet-growth\n  cash-flow-growth\n  enterprise-values\n  analyst-estimates\n  report-dates\n  annual-report\n\nExamples:\n  fmp-agent fundamentals\n  fmp-agent fundamentals income-statement AAPL";
 pub(crate) const ANALYST_GROUP_ABOUT: &str = "Analyst command group.";
 pub(crate) const ANALYST_GROUP_LONG: &str = "Analyst commands. Available subcommands:\n  price-target-consensus\n  price-target-summary\n  grades\n\nExamples:\n  fmp-agent analyst\n  fmp-agent analyst grades AAPL";
 pub(crate) const INSIDER_GROUP_ABOUT: &str = "Insider command group.";
@@ -125,7 +125,7 @@ pub(crate) const FUNDAMENTALS_REPORT_DATES_ABOUT: &str =
 pub(crate) const FUNDAMENTALS_REPORT_DATES_LONG: &str = "Get available financial report dates for a stock ticker showing when statements were filed.\n\nExamples:\n  fmp-agent fundamentals report-dates AAPL";
 pub(crate) const FUNDAMENTALS_ANNUAL_REPORT_FORM_ABOUT: &str =
     "Get annual report form JSON for a stock ticker and fiscal year.";
-pub(crate) const FUNDAMENTALS_ANNUAL_REPORT_FORM_LONG: &str = "Get annual report form JSON for a stock ticker and fiscal year. The --year flag is required.\n\nExamples:\n  fmp-agent fundamentals annual-report-form AAPL --year 2023\n  fmp-agent fundamentals annual-report-form MSFT --year 2022 --period FY";
+pub(crate) const FUNDAMENTALS_ANNUAL_REPORT_FORM_LONG: &str = "Get annual report form JSON for a stock ticker and fiscal year. The --year flag is required.\n\nExamples:\n  fmp-agent fundamentals annual-report AAPL --year 2023\n  fmp-agent fundamentals annual-report MSFT --year 2022 --period FY";
 pub(crate) const ANALYST_PRICE_TARGET_CONSENSUS_ABOUT: &str =
     "Get analyst price target consensus for a stock ticker.";
 pub(crate) const ANALYST_PRICE_TARGET_CONSENSUS_LONG: &str = "Get the consensus price target for a stock ticker aggregated across analyst estimates.\n\nExamples:\n  fmp-agent analyst price-target-consensus AAPL";

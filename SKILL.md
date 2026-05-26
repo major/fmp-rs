@@ -171,7 +171,7 @@ Commands use the `<group> <verb>` form introduced in 0.4.0. See the README migra
 | `fundamentals enterprise-values <SYMBOL>`                        | `Annual`            |
 | `fundamentals analyst-estimates <SYMBOL>`                        | `Annual`            |
 | `fundamentals report-dates <SYMBOL>`                             | `Symbol`            |
-| `fundamentals annual-report-form <SYMBOL> --year <YEAR>`         | `AnnualReportForm`  |
+| `fundamentals annual-report <SYMBOL> --year <YEAR>`             | `AnnualReportForm`  |
 
 ### Analyst
 
@@ -224,7 +224,7 @@ fmp-agent technical sma AAPL --period-length 20 --timeframe 1day
 
 # Fundamentals
 fmp-agent fundamentals income-statement AAPL --limit 5
-fmp-agent fundamentals annual-report-form AAPL --year 2022
+fmp-agent fundamentals annual-report AAPL --year 2022
 
 # Calendars and macros
 fmp-agent calendar earnings --from 2026-01-01 --to 2026-01-31

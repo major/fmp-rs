@@ -109,7 +109,7 @@ pub(crate) enum Cmd {
         about = help::FUNDAMENTALS_ANNUAL_REPORT_FORM_ABOUT,
         long_about = help::FUNDAMENTALS_ANNUAL_REPORT_FORM_LONG
     )]
-    #[command(name = "annual-report-form")]
+    #[command(name = "annual-report")]
     AnnualReport(AnnualReportFormArgs),
 }
 
