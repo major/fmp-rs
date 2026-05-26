@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let path = env::args_os()
         .nth(1)
         .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from("target/generated-man/man/fmp-agent.1"));
+        .unwrap_or_else(|| PathBuf::from("man/fmp-agent.1"));
 
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent)?;
