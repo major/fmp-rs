@@ -6,21 +6,44 @@ use crate::endpoint::{
     CASH_FLOW_STATEMENT, CASH_FLOW_STATEMENT_GROWTH, CRYPTO_NEWS, CRYPTOCURRENCY_LIST, DIVIDENDS,
     EARNINGS_CALENDAR, ECONOMIC_INDICATORS, ENTERPRISE_VALUES, ETF_HOLDINGS,
     FINANCIAL_REPORTS_DATES, FINANCIAL_REPORTS_JSON, FINANCIAL_SCORES, FMP_ARTICLES, FOREX_NEWS,
-    GENERAL_NEWS, GRADES, GRADES_CONSENSUS, HISTORICAL_PRICE_EOD_FULL, INCOME_STATEMENT,
-    INCOME_STATEMENT_AS_REPORTED, INCOME_STATEMENT_GROWTH, INSIDER_TRADING_LATEST, KEY_EXECUTIVES,
-    KEY_METRICS, PRICE_TARGET_CONSENSUS, PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATINGS_HISTORICAL,
-    RATIOS, SEARCH_SYMBOL, SEC_FILINGS_SEARCH_SYMBOL, SHARES_FLOAT, SPLITS, STOCK_LIST, STOCK_NEWS,
+    GENERAL_NEWS, GRADES, GRADES_CONSENSUS, INCOME_STATEMENT, INCOME_STATEMENT_AS_REPORTED,
+    INCOME_STATEMENT_GROWTH, INSIDER_TRADING_LATEST, KEY_EXECUTIVES, KEY_METRICS,
+    PRICE_TARGET_CONSENSUS, PRICE_TARGET_SUMMARY, PROFILE, QUOTE, RATINGS_HISTORICAL, RATIOS,
+    SEARCH_SYMBOL, SEC_FILINGS_SEARCH_SYMBOL, SHARES_FLOAT, SPLITS, STOCK_LIST, STOCK_NEWS,
     STOCK_PEERS, STOCK_PRICE_CHANGE, TECHNICAL_SMA, TREASURY_RATES,
 };
 use crate::error::Result;
 
-use super::args::{Command, SymbolDateRangeArgs};
+use super::args::{Command, SymbolArgs, SymbolDateRangeArgs};
 use super::dispatch::{
     run_annual, run_annual_report_form, run_by_date_range, run_by_name_date_range, run_by_symbol,
     run_by_symbol_date_range, run_by_symbol_limit, run_endpoint, run_news, run_paged, run_query,
     run_technical_sma,
 };
 use super::output::CommandPayload;
+
+/// Dispatch a shared quote command through the symbol-only helper.
+pub(crate) async fn dispatch_quote(
+    client: &FmpClient,
+    args: &SymbolArgs,
+) -> Result<CommandPayload> {
+    run_by_symbol(client, QUOTE, &args.symbol).await
+}
+
+/// Dispatch a shared historical end-of-day command through the date-range helper.
+pub(crate) async fn dispatch_historical_eod(
+    client: &FmpClient,
+    args: &SymbolDateRangeArgs,
+) -> Result<CommandPayload> {
+    run_by_symbol_date_range(
+        client,
+        crate::endpoint::HISTORICAL_PRICE_EOD_FULL,
+        &args.symbol,
+        &args.from,
+        &args.to,
+    )
+    .await
+}
 
 pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<CommandPayload> {
     match command {
@@ -40,17 +63,8 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
         Command::CompanyHistoricalRating(args) => {
             run_by_symbol_limit(client, RATINGS_HISTORICAL, &args.symbol, args.limit).await
         }
-        Command::MarketQuote(args) => run_by_symbol(client, QUOTE, &args.symbol).await,
-        Command::MarketHistorical(args) => {
-            run_by_symbol_date_range(
-                client,
-                HISTORICAL_PRICE_EOD_FULL,
-                &args.symbol,
-                &args.from,
-                &args.to,
-            )
-            .await
-        }
+        Command::MarketQuote(args) => dispatch_quote(client, args).await,
+        Command::MarketHistorical(args) => dispatch_historical_eod(client, args).await,
         Command::MarketDividends(args) => run_by_symbol(client, DIVIDENDS, &args.symbol).await,
         Command::MarketSplits(args) => run_by_symbol(client, SPLITS, &args.symbol).await,
         Command::MarketPriceChange(args) => {
@@ -152,18 +166,11 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
         }
         Command::SecFilings(args) => run_sec_filings(client, args).await,
         Command::CryptoList => run_endpoint(client, CRYPTOCURRENCY_LIST).await,
-        Command::CryptoQuote(args) => run_by_symbol(client, QUOTE, &args.symbol).await,
+        Command::CryptoQuote(args) => dispatch_quote(client, args).await,
         Command::CryptoHistorical(args) | Command::ForexHistorical(args) => {
-            run_by_symbol_date_range(
-                client,
-                HISTORICAL_PRICE_EOD_FULL,
-                &args.symbol,
-                &args.from,
-                &args.to,
-            )
-            .await
+            dispatch_historical_eod(client, args).await
         }
-        Command::ForexQuote(args) => run_by_symbol(client, QUOTE, &args.symbol).await,
+        Command::ForexQuote(args) => dispatch_quote(client, args).await,
         Command::NewsStock(args) => run_news(client, STOCK_NEWS, &args.symbol, args.limit).await,
         Command::NewsGeneral(args) => run_paged(client, GENERAL_NEWS, args.page, args.limit).await,
         Command::NewsArticles(args) => run_paged(client, FMP_ARTICLES, args.page, args.limit).await,
