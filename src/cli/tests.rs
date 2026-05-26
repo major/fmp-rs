@@ -87,6 +87,13 @@ fn paged() -> PagedArgs {
 }
 
 #[test]
+fn print_group_help_unknown_group_returns_err() {
+    let result = super::print_group_help("nonexistent-group");
+
+    assert!(result.is_err());
+}
+
+#[test]
 fn parses_historical_command() {
     let cli = Cli::parse_from([
         "fmp",

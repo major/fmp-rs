@@ -13,6 +13,8 @@ mod tests;
 
 pub use args::Cli;
 
+use clap::CommandFactory;
+
 use commands::execute;
 use output::render_output;
 
@@ -42,6 +44,24 @@ pub async fn run(cli: Cli) -> Result<()> {
     let output = render_output(payload)?;
 
     println!("{output}");
+
+    Ok(())
+}
+
+/// Prints the help text for a named group subcommand.
+///
+/// Called when the user invokes `fmp-agent <group>` without a subcommand.
+#[allow(dead_code)]
+pub(crate) fn print_group_help(group_name: &str) -> Result<()> {
+    let mut command = <Cli as CommandFactory>::command();
+    let Some(group) = command.find_subcommand_mut(group_name) else {
+        return Err(Error::MissingArgument("group"));
+    };
+
+    group
+        .print_help()
+        .map_err(|_| Error::MissingArgument("group"))?;
+    println!();
 
     Ok(())
 }
