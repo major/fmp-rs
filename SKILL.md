@@ -9,18 +9,31 @@ This document is the long-form reference. For programmatic discovery, prefer the
 LLMs and tool runners should discover the command surface from the binary itself instead of parsing this document:
 
 ```bash
+fmp-agent commands           # list all leaf command paths, one per line
+fmp-agent completions <shell> # generate bash/zsh/fish completions script
 fmp-agent schema             # versioned JSON: { schema_version, binary, version, commands[] }
 fmp-agent --help             # human-readable top-level help
 fmp-agent <GROUP> --help     # human-readable per-group help
 fmp-agent <GROUP> <CMD> --help  # human-readable per-command help, includes Examples
 ```
 
-`fmp-agent schema`:
+`fmp-agent commands`, `fmp-agent completions`, and `fmp-agent schema`:
 
-- Does **not** require `FMP_API_KEY` and makes **no** network requests.
-- Emits `schema_version: 2` today; the shape is experimental and may change between releases.
-- Each command entry has `name`, `path`, `aliases`, `preferred_path`, `api_key_required`, `about`, `long_about`, and `args` (with `name`, `kind`, defaults, value names).
-- Use this as the source of truth for available commands and arguments; treat the catalog in section 6 as a curated index.
+- Do **not** require `FMP_API_KEY` and make **no** network requests.
+- `commands` prints one leaf path per line, sorted alphabetically (e.g. `analyst grades`, `company profile`).
+- `completions` generates a shell completions script (bash/zsh/fish) on stdout.
+- `schema` emits `schema_version: 2` today; the shape is experimental and may change between releases.
+- Each schema command entry has `name`, `path`, `aliases`, `preferred_path`, `api_key_required`, `about`, `long_about`, and `args` (with `name`, `kind`, defaults, value names).
+- Use these as the source of truth for available commands and arguments; treat the catalog in section 6 as a curated index.
+
+Top-level aliases (no API key required for discovery):
+
+```bash
+fmp-agent quote AAPL         # alias for market quote
+fmp-agent historical AAPL    # alias for market historical
+fmp-agent profile AAPL       # alias for company profile
+fmp-agent earnings           # alias for calendar earnings
+```
 
 ## 2. Install
 
