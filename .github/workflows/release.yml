@@ -145,7 +145,7 @@ jobs:
       - name: Generate man page
         shell: bash
         run: |
-          cargo run --locked --example generate-man --features cli -- target/generated-man/man/fmp-agent.1
+          cargo run --locked --release --example generate-man --features cli -- target/generated-man/man/fmp-agent.1
       - name: Build artifacts
         run: |
           # Actually do builds and make zips and whatnot
