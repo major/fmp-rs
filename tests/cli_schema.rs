@@ -72,13 +72,20 @@ fn schema_market_quote_leaf() {
 fn schema_leaf_is_not_api_key_required() {
     let body = schema_body();
     let commands = body["commands"].as_array().unwrap();
-    let schema_cmd = commands
-        .iter()
-        .find(|c| c["name"] == "schema" && c["path"] == serde_json::json!(["schema"]))
-        .expect("must have schema leaf");
 
-    assert_eq!(schema_cmd["api_key_required"], false);
-    assert_eq!(schema_cmd["preferred_path"], "schema");
+    // Metadata-only commands that do not need FMP_API_KEY
+    for &name in &["schema", "commands", "completions"] {
+        let cmd = commands
+            .iter()
+            .find(|c| c["name"] == name && c["path"] == serde_json::json!([name]))
+            .unwrap_or_else(|| panic!("must have {name} leaf"));
+
+        assert_eq!(
+            cmd["api_key_required"], false,
+            "{name} should not require an API key"
+        );
+        assert_eq!(cmd["preferred_path"], name);
+    }
 }
 
 #[test]

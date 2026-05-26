@@ -111,6 +111,18 @@ fn completions_fish_produces_output() {
 }
 
 #[test]
+fn completions_powershell_produces_output() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env_remove("FMP_API_KEY")
+        .args(["completions", "powershell"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Register-ArgumentCompleter"))
+        .stdout(predicate::str::contains("fmp-agent"));
+}
+
+#[test]
 fn invalid_shell_rejected_by_completions() {
     Command::cargo_bin("fmp-agent")
         .unwrap()

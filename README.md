@@ -44,7 +44,7 @@ fmp-agent market quote AAPL
 fmp-agent company profile AAPL
 ```
 
-Four single-token aliases are preserved for ergonomics: `quote` (market quote), `historical` (market historical), `profile` (company profile), and `earnings` (calendar earnings). Run `fmp-agent commands` to list all available leaf commands, `fmp-agent completions <shell>` for bash/zsh/fish completions, or `fmp-agent schema` for machine-readable JSON metadata. Everything else requires the two-level `<group> <subcommand>` form.
+Four single-token aliases are preserved for ergonomics: `quote` (market quote), `historical` (market historical), `profile` (company profile), and `earnings` (calendar earnings). Run `fmp-agent commands` to list all available leaf commands, `fmp-agent completions <shell>` for bash/zsh/fish/powershell completions, or `fmp-agent schema` for machine-readable JSON metadata. Everything else requires the two-level `<group> <subcommand>` form.
 
 ## Commands
 
@@ -75,6 +75,44 @@ Example leaf shape:
   "path": ["market", "quote"],
   "aliases": ["quote"],
   "preferred_path": ["market", "quote"],
+  "api_key_required": true
+}
+```
+
+### Agent and tool-calling integration
+
+When integrating `fmp-agent` into an LLM agent or tool-calling pipeline, use these discovery commands first (none require an API key):
+
+```bash
+fmp-agent schema              # JSON metadata: all commands, args, defaults, api_key_required
+fmp-agent commands            # sorted list of leaf command paths, one per line
+fmp-agent completions <shell> # shell completions (bash, elvish, fish, powershell, zsh)
+```
+
+**Command chooser by intent:** Use the command path to select the right group.
+
+| You want to... | Use this command |
+|---|---|
+| Get latest price or historical bars for a ticker | `market quote`, `market historical` |
+| Get company info, executives, peers, ratings | `company profile`, `company executives`, `company peers` |
+| Get income statements, balance sheets, ratios | `fundamentals income-statement`, `fundamentals balance-sheet` |
+| Get analyst price targets or grades | `analyst price-target-consensus`, `analyst grades` |
+| Get earnings calendar or economic data | `calendar earnings`, `macro treasury-rates` |
+| Get technical indicators (SMA) | `technical sma` |
+| Get SEC filings for a ticker | `sec filings` |
+| Get crypto or forex quotes | `crypto quote`, `forex quote` |
+| Get latest news (stock, general, crypto, forex) | `news stock`, `news general` |
+| Search for a ticker by name | `search` |
+
+**Shape-based dispatch:** Commands follow reusable argument shapes (Symbol, SymbolLimit, DateRange, Annual, etc.). The `schema` output includes per-command `args` with required/optional/default metadata so agents can construct valid invocations without consulting human docs.
+
+```json
+{
+  "name": "quote",
+  "path": ["market", "quote"],
+  "args": [
+    { "name": "symbol", "kind": "positional", "required": true, "default": null }
+  ],
   "api_key_required": true
 }
 ```

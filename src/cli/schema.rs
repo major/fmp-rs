@@ -32,7 +32,7 @@ pub(super) fn schema_payload() -> Value {
             // Top-level leaf: search, schema, or an alias.
             let path = vec![name.to_owned()];
             let preferred = preferred_path_for(name);
-            let api_key_required = name != "schema";
+            let api_key_required = name != "schema" && name != "commands" && name != "completions";
 
             commands.push(leaf_to_json(sub, path, preferred, &[], api_key_required));
         } else {
