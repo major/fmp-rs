@@ -8,7 +8,7 @@ fn missing_api_key_returns_exit_code_3() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
         .env("FMP_API_KEY", "")
-        .args(["market-quote", "AAPL"])
+        .args(["market", "quote", "AAPL"])
         .assert()
         .code(3);
 }
@@ -30,7 +30,7 @@ fn missing_argument_returns_exit_code_2() {
         .unwrap()
         .env("FMP_API_KEY", "test-key")
         .env("FMP_BASE_URL", format!("{}/", server.base_url()))
-        .args(["news-stock"])
+        .args(["news", "stock"])
         .assert()
         .code(2);
 }
@@ -41,7 +41,7 @@ fn http_error_returns_exit_code_4() {
         .unwrap()
         .env("FMP_API_KEY", "test-key")
         .env("FMP_BASE_URL", "http://127.0.0.1:1/")
-        .args(["market-quote", "AAPL"])
+        .args(["market", "quote", "AAPL"])
         .assert()
         .code(4);
 }
@@ -59,7 +59,7 @@ fn api_error_returns_exit_code_5() {
         .unwrap()
         .env("FMP_API_KEY", "test-key")
         .env("FMP_BASE_URL", format!("{}/", server.base_url()))
-        .args(["market-quote", "AAPL"])
+        .args(["market", "quote", "AAPL"])
         .assert()
         .code(5);
 }
@@ -80,7 +80,7 @@ fn etf_holdings_subscription_error_is_structured() {
         .unwrap()
         .env("FMP_API_KEY", "test-key")
         .env("FMP_BASE_URL", format!("{}/", server.base_url()))
-        .args(["etf-holdings", "SPY"])
+        .args(["etf", "holdings", "SPY"])
         .output()
         .unwrap();
 
@@ -112,7 +112,7 @@ fn json_parse_error_returns_exit_code_6() {
         .unwrap()
         .env("FMP_API_KEY", "test-key")
         .env("FMP_BASE_URL", format!("{}/", server.base_url()))
-        .args(["market-quote", "AAPL"])
+        .args(["market", "quote", "AAPL"])
         .assert()
         .code(6);
 }
@@ -132,7 +132,7 @@ fn success_returns_exit_code_0() {
         .unwrap()
         .env("FMP_API_KEY", "test-key")
         .env("FMP_BASE_URL", format!("{}/", server.base_url()))
-        .args(["market-quote", "AAPL"])
+        .args(["market", "quote", "AAPL"])
         .assert()
         .code(0);
 }

@@ -97,7 +97,7 @@ fn command_invocation_prints_compact_json() {
 }
 
 #[test]
-fn flat_command_help_present() {
+fn grouped_command_help_present() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
         .arg("--help")
@@ -105,20 +105,19 @@ fn flat_command_help_present() {
         .env("NO_COLOR", "1")
         .assert()
         .success()
-        .stdout(predicate::str::contains("company-profile"))
-        .stdout(predicate::str::contains("etf-holdings"))
-        .stdout(predicate::str::contains("market-quote"))
-        .stdout(predicate::str::contains("market-stock-list"))
-        .stdout(predicate::str::contains("economic-indicators"))
-        .stdout(predicate::str::contains("news-stock"))
-        .stdout(predicate::str::contains("sec-filings"))
-        .stdout(predicate::str::contains("earnings-calendar"))
-        .stdout(predicate::str::contains("treasury-rates"))
-        .stdout(predicate::str::contains("\n  company ").not());
+        .stdout(predicate::str::contains("company"))
+        .stdout(predicate::str::contains("market"))
+        .stdout(predicate::str::contains("fundamentals"))
+        .stdout(predicate::str::contains("macro"))
+        .stdout(predicate::str::contains("technical"))
+        .stdout(predicate::str::contains("news"))
+        .stdout(predicate::str::contains("quote"))
+        .stdout(predicate::str::contains("company-profile").not())
+        .stdout(predicate::str::contains("market-quote").not());
 }
 
 #[test]
-fn no_old_domain_groups_in_help() {
+fn no_flat_commands_in_help() {
     let output = Command::cargo_bin("fmp-agent")
         .unwrap()
         .arg("--help")
@@ -131,38 +130,46 @@ fn no_old_domain_groups_in_help() {
 
     let stdout = String::from_utf8(output.stdout).unwrap();
     for command in [
-        "company",
-        "market",
-        "fundamentals",
-        "analyst",
-        "calendar",
-        "rates",
-        "technical",
-        "filings",
-        "crypto",
-        "forex",
-        "news",
+        "company-profile",
+        "market-quote",
+        "fundamentals-income-statement",
+        "analyst-grades",
+        "economic-indicators",
+        "technical-sma",
+        "sec-filings",
+        "news-stock",
     ] {
         assert!(
             !stdout.contains(&format!("\n  {command} ")),
-            "old domain group should not appear as command entry: {command}"
+            "flat command should not appear as command entry: {command}"
         );
     }
 }
 
 #[test]
-fn flat_command_specific_help_present() {
-    for command in ["company-profile", "market-quote", "news-stock"] {
+fn grouped_command_specific_help_present() {
+    for (args, usage) in [
+        (
+            &["company", "profile", "--help"][..],
+            "Usage: fmp-agent company profile",
+        ),
+        (
+            &["market", "quote", "--help"][..],
+            "Usage: fmp-agent market quote",
+        ),
+        (
+            &["news", "stock", "--help"][..],
+            "Usage: fmp-agent news stock",
+        ),
+    ] {
         Command::cargo_bin("fmp-agent")
             .unwrap()
-            .args([command, "--help"])
+            .args(args)
             .env("CLAP_COLOR", "never")
             .env("NO_COLOR", "1")
             .assert()
             .success()
-            .stdout(predicate::str::contains(format!(
-                "Usage: fmp-agent {command}"
-            )));
+            .stdout(predicate::str::contains(usage));
     }
 }
 
@@ -170,7 +177,7 @@ fn flat_command_specific_help_present() {
 fn historical_rating_help_explains_limit_default() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
-        .args(["company-historical-rating", "--help"])
+        .args(["company", "historical-rating", "--help"])
         .env("CLAP_COLOR", "never")
         .env("NO_COLOR", "1")
         .assert()
@@ -182,7 +189,7 @@ fn historical_rating_help_explains_limit_default() {
 fn technical_sma_help_explains_defaults() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
-        .args(["technical-sma", "--help"])
+        .args(["technical", "sma", "--help"])
         .env("CLAP_COLOR", "never")
         .env("NO_COLOR", "1")
         .assert()
@@ -202,7 +209,7 @@ fn technical_sma_help_explains_defaults() {
 fn sec_filings_help_explains_required_default_date() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
-        .args(["sec-filings", "--help"])
+        .args(["sec", "filings", "--help"])
         .env("CLAP_COLOR", "never")
         .env("NO_COLOR", "1")
         .assert()
@@ -219,7 +226,7 @@ fn sec_filings_help_explains_required_default_date() {
 fn annual_help_explains_limit_default_via_clap_marker() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
-        .args(["fundamentals-income-statement", "--help"])
+        .args(["fundamentals", "income-statement", "--help"])
         .env("CLAP_COLOR", "never")
         .env("NO_COLOR", "1")
         .assert()
@@ -231,7 +238,7 @@ fn annual_help_explains_limit_default_via_clap_marker() {
 fn news_help_explains_limit_and_paging_defaults() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
-        .args(["news-general", "--help"])
+        .args(["news", "general", "--help"])
         .env("CLAP_COLOR", "never")
         .env("NO_COLOR", "1")
         .assert()
@@ -248,7 +255,7 @@ fn news_help_explains_limit_and_paging_defaults() {
 fn stock_news_help_explains_limit_default() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
-        .args(["news-stock", "--help"])
+        .args(["news", "stock", "--help"])
         .env("CLAP_COLOR", "never")
         .env("NO_COLOR", "1")
         .assert()

@@ -23,16 +23,34 @@ GitHub releases also provide cargo-dist archives and shell or PowerShell install
 For local development, install a Rust toolchain with Rust 1.95 or newer, then provide an API key with either `FMP_API_KEY` in the environment or a local `.env` file.
 
 ```bash
-FMP_API_KEY=your-key cargo run -- market-quote AAPL
+FMP_API_KEY=your-key cargo run -- market quote AAPL
 ```
 
 `FMP_BASE_URL` can override the default `https://financialmodelingprep.com/stable/` base URL for proxies or tests.
 
+## Migration from 0.3.x
+
+0.4.0 restructures the CLI into a git-like grouped command tree. Commands now take the form `fmp-agent <group> <subcommand>` instead of a single flat hyphenated verb.
+
+Old flat commands are no longer accepted. Use the grouped form instead:
+
+```bash
+# 0.3.x (no longer works)
+fmp-agent market-quote AAPL
+fmp-agent company-profile AAPL
+
+# 0.4.0 grouped form
+fmp-agent market quote AAPL
+fmp-agent company profile AAPL
+```
+
+Four single-token aliases are preserved for ergonomics: `quote` (market quote), `historical` (market historical), `profile` (company profile), and `earnings` (calendar earnings). Everything else requires the two-level `<group> <subcommand>` form.
+
 ## Commands
 
-See [`SKILL.md`](SKILL.md) for the full command reference and examples. Commands are flat, domain-prefixed verbs such as `company-profile`, `etf-holdings`, `market-quote`, `fundamentals-income-statement`, `economic-indicators`, and `news-stock`. Old grouped commands and legacy aliases are rejected.
+See [`SKILL.md`](SKILL.md) for the full command reference and examples. Commands follow a two-level grouped structure: a group name followed by a subcommand verb, such as `company profile`, `market quote`, `fundamentals income-statement`, `macro economic-indicators`, and `news stock`. The 13 groups are: `company`, `market`, `fundamentals`, `analyst`, `insider`, `calendar`, `macro`, `technical`, `sec`, `etf`, `crypto`, `forex`, and `news`.
 
-In the repo, use `cargo run -- <COMMAND>` with the same arguments before installing or after cleaning the build. After `cargo build`, run the built binary as `target/debug/fmp-agent`, for example `target/debug/fmp-agent market-quote AAPL`.
+In the repo, use `cargo run -- <GROUP> <SUBCOMMAND>` with the same arguments before installing or after cleaning the build. After `cargo build`, run the built binary as `target/debug/fmp-agent`, for example `target/debug/fmp-agent market quote AAPL`.
 
 Successful command responses are the raw FMP JSON payload on one line for shell pipelines, and runtime errors are JSON on stderr. Help and version output are human-readable text. The CLI does not provide output formatting or filtering options.
 
@@ -44,10 +62,21 @@ Running `fmp-agent` without a command prints the generic help text.
 
 ### Schema introspection
 
-`fmp-agent schema` dumps CLI metadata as JSON without contacting the FMP API and without requiring `FMP_API_KEY`. The output is experimental and may change between releases. Fields include `schema_version` (currently `1`), `binary`, `version`, and `commands` (a list of objects with `name`, `about`, `long_about`, and `args`). This is useful for LLM tool-calling setups that need to discover available commands programmatically.
+`fmp-agent schema` dumps CLI metadata as JSON without contacting the FMP API and without requiring `FMP_API_KEY`. The output is experimental and may change between releases. Fields include `schema_version` (currently `2`), `binary`, `version`, and `commands` (a list of group objects, each with leaf commands). Each leaf includes `path`, `aliases`, `preferred_path`, and `api_key_required`. This is useful for LLM tool-calling setups that need to discover available commands programmatically.
 
 ```bash
 fmp-agent schema | jq '.commands | length'
+```
+
+Example leaf shape:
+
+```json
+{
+  "path": ["market", "quote"],
+  "aliases": ["quote"],
+  "preferred_path": ["market", "quote"],
+  "api_key_required": true
+}
 ```
 
 ## Using as a library
@@ -56,7 +85,7 @@ Other Rust projects (for example an MCP server) can depend on `rusty-fmp` as an 
 
 ```toml
 [dependencies]
-rusty-fmp = { version = "0.3.0", default-features = false }
+rusty-fmp = { version = "0.4.0", default-features = false }
 ```
 
 This excludes `clap` and `dotenvy` and exposes `FmpClient`, `Endpoint`, `Error`, and `Result`. The `cli` feature (enabled by default) adds the `Cli` parser and the `run` entry point used by the `fmp-agent` binary.
@@ -94,6 +123,6 @@ Releases are driven by [release-plz](https://release-plz.dev). The `release-plz`
 
 ## Endpoint coverage
 
-Before adding a new CLI endpoint, check `docs/api-inventory.md`. The CLI should expose endpoints only after account access is confirmed there, except for intentionally denied commands such as `etf-holdings` that exist to exercise structured API-error handling. The inventory should be updated when new probes are performed.
+Before adding a new CLI endpoint, check `docs/api-inventory.md`. The CLI should expose endpoints only after account access is confirmed there, except for intentionally denied commands such as `etf holdings` that exist to exercise structured API-error handling. The inventory should be updated when new probes are performed.
 
 New endpoints are added by registering an `Endpoint` constant in `src/endpoint.rs`, adding command help text in `src/cli/help.rs`, and dispatching through the shape-based methods on `FmpClient` (`endpoint`, `query`, `by_symbol`, `by_symbol_limit`, `by_symbol_date_range`, `by_date_range`, `by_name_date_range`, `annual`, `annual_report_form`, `technical`, `news`, `paged`) and the matching `run_*` helper in `src/cli/dispatch.rs`. There are no per-endpoint client wrappers.
