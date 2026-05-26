@@ -47,6 +47,15 @@ pub async fn run(cli: Cli) -> Result<()> {
         return Ok(());
     }
 
+    // Commands listing is metadata-only and does not require an API key.
+    if let args::Command::Commands = &cli.command {
+        let cmd = <Cli as CommandFactory>::command();
+        for leaf in leaf_commands(&cmd) {
+            print_stdout_line(&leaf);
+        }
+        return Ok(());
+    }
+
     if let Some(group_name) = bare_group_name(&cli.command) {
         print_group_help(group_name)?;
         return Ok(());
@@ -82,6 +91,32 @@ fn bare_group_name(command: &args::Command) -> Option<&'static str> {
         args::Command::News { command: None } => Some("news"),
         _ => None,
     }
+}
+
+/// Collect leaf command paths from a clap command tree, one `group subcommand`
+/// string per leaf, sorted alphabetically.
+fn leaf_commands(cmd: &clap::Command) -> Vec<String> {
+    let mut leaves = Vec::new();
+    for sub in cmd.get_subcommands() {
+        if sub.get_name() == "help" {
+            continue;
+        }
+
+        let real_children: Vec<_> = sub
+            .get_subcommands()
+            .filter(|c| c.get_name() != "help")
+            .collect();
+
+        if real_children.is_empty() {
+            leaves.push(sub.get_name().to_owned());
+        } else {
+            for child in leaf_commands(sub) {
+                leaves.push(format!("{} {child}", sub.get_name()));
+            }
+        }
+    }
+    leaves.sort();
+    leaves
 }
 
 /// Prints the help text for a named group subcommand.

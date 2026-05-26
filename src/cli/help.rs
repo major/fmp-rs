@@ -176,6 +176,9 @@ pub(crate) const NEWS_CRYPTO_LONG: &str = "Get latest crypto news. Uses zero-bas
 pub(crate) const SCHEMA_ABOUT: &str = "Dump the CLI surface as machine-readable JSON.";
 pub(crate) const SCHEMA_LONG: &str = "Dump the CLI surface as machine-readable JSON. The output format is experimental and may change between versions. schema_version 2 is the grouped-command format.\n\nThis command does not require FMP_API_KEY and does not make any network requests.\n\nExamples:\n  fmp-agent schema\n  fmp-agent schema | jq '.commands | length'";
 
+pub(crate) const COMMANDS_ABOUT: &str = "List all available leaf commands.";
+pub(crate) const COMMANDS_LONG: &str = "List all available leaf commands, one per line. Output is sorted alphabetically.\n\nThis command does not require FMP_API_KEY and does not make any network requests.\n\nExamples:\n  fmp-agent commands\n  fmp-agent commands | grep quote";
+
 pub(crate) const SYMBOL: &str =
     "Symbol accepted by this command, such as a stock ticker, forex pair, or crypto pair.";
 pub(crate) const STOCK_SYMBOL: &str = "Stock ticker symbol, for example AAPL.";
