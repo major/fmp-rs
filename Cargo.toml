@@ -43,7 +43,7 @@ tokio = { version = "1.52", features = ["macros", "rt-multi-thread"] }
 httpmock = "=0.8.3"
 assert_cmd = "=2.2.2"
 predicates = "=3.1.4"
-clap_mangen = "0.3"
+clap_mangen = "=0.3.0"
 
 [lints.rust]
 unused = { level = "deny", priority = -1 }
