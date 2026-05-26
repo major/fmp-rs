@@ -36,7 +36,9 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
     match command {
         Command::Search { query } => run_query(client, SEARCH_SYMBOL, query).await,
         Command::Schema => unreachable!("Schema command is handled before execute() in run()"),
-        Command::Commands => unreachable!("Commands command is handled before execute() in run()"),
+        Command::Commands { .. } => {
+            unreachable!("Commands command is handled before execute() in run()")
+        }
         Command::Completions { .. } => {
             unreachable!("Completions command is handled before execute() in run()")
         }
