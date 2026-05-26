@@ -2,5 +2,4 @@
 .playwright-cli/
 /target/
 .sisyphus/
-/man/
 lcov.info

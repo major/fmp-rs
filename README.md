@@ -56,7 +56,7 @@ Successful command responses are the raw FMP JSON payload on one line for shell 
 
 Pass `--verbose` / `-v` for INFO logs, `-vv` for DEBUG, or `-vvv` for TRACE. Log output goes to stderr and does not appear without the flag. The `RUST_LOG` environment variable can also control log level.
 
-After installation, `man fmp-agent` shows the man page. Release packaging generates it explicitly with `cargo run --locked --example generate-man --features cli -- target/generated-man/man/fmp-agent.1` before cargo-dist builds artifacts.
+After installation, `man fmp-agent` shows the man page. The man page is committed at `man/fmp-agent.1` and regenerated with `cargo run --locked --release --example generate-man --features cli -- man/fmp-agent.1` when CLI arguments change.
 
 Running `fmp-agent` without a command prints the generic help text.
 

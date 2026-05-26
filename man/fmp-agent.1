@@ -1,0 +1,109 @@
+.ie \n(.g .ds Aq \(aq
+.el .ds Aq '
+.TH fmp-agent 1  "fmp-agent 0.4.0" 
+.SH NAME
+fmp\-agent \- Financial Modeling Prep API CLI. Commands are organized into groups, run `fmp\-agent <group>` to explore, or `fmp\-agent <group> <command> [args]` to execute.
+
+Examples:
+  fmp\-agent market quote AAPL
+  fmp\-agent company profile AAPL
+.SH SYNOPSIS
+\fBfmp\-agent\fR [\fB\-\-api\-key\fR] [\fB\-\-base\-url\fR] [\fB\-v\fR|\fB\-\-verbose\fR]... [\fB\-q\fR|\fB\-\-quiet\fR]... [\fB\-h\fR|\fB\-\-help\fR] [\fB\-V\fR|\fB\-\-version\fR] <\fIsubcommands\fR>
+.SH DESCRIPTION
+Financial Modeling Prep API CLI. Commands are organized into groups, run `fmp\-agent <group>` to explore, or `fmp\-agent <group> <command> [args]` to execute.
+.PP
+Examples:
+  fmp\-agent market quote AAPL
+  fmp\-agent company profile AAPL
+.SH OPTIONS
+.TP
+\fB\-\-api\-key\fR \fI<API_KEY>\fR
+FMP API key. Prefer FMP_API_KEY in .env or the environment so shells do not record it.
+.TP
+\fB\-\-base\-url\fR \fI<BASE_URL>\fR [default: https://financialmodelingprep.com/stable/]
+FMP stable API base URL. Override for tests or proxies.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Increase logging verbosity
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Decrease logging verbosity
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print help
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version
+.SH SUBCOMMANDS
+.TP
+fmp\-agent\-search(1)
+Search for tradable stock symbols by ticker or company name.
+.TP
+fmp\-agent\-schema(1)
+Dump the CLI surface as machine\-readable JSON.
+.TP
+fmp\-agent\-quote(1)
+Get the latest market quote; alias for market quote.
+.TP
+fmp\-agent\-historical(1)
+Get historical end\-of\-day price bars; alias for market historical.
+.TP
+fmp\-agent\-profile(1)
+Get company profile data; alias for company profile.
+.TP
+fmp\-agent\-earnings(1)
+Get earnings calendar rows; alias for calendar earnings.
+.TP
+fmp\-agent\-company(1)
+Company data command group.
+.TP
+fmp\-agent\-market(1)
+Market data command group.
+.TP
+fmp\-agent\-fundamentals(1)
+Fundamentals command group.
+.TP
+fmp\-agent\-analyst(1)
+Analyst command group.
+.TP
+fmp\-agent\-insider(1)
+Insider command group.
+.TP
+fmp\-agent\-calendar(1)
+Calendar command group.
+.TP
+fmp\-agent\-macro(1)
+Macro command group.
+.TP
+fmp\-agent\-technical(1)
+Technical analysis command group.
+.TP
+fmp\-agent\-sec(1)
+SEC command group.
+.TP
+fmp\-agent\-etf(1)
+ETF command group.
+.TP
+fmp\-agent\-crypto(1)
+Cryptocurrency command group.
+.TP
+fmp\-agent\-forex(1)
+Forex command group.
+.TP
+fmp\-agent\-news(1)
+News command group.
+.TP
+fmp\-agent\-help(1)
+Print this message or the help of the given subcommand(s)
+.SH EXTRA
+EXIT CODES:
+  0  Success
+  2  Usage error (bad flags or arguments)
+  3  Configuration error (missing API key or invalid base URL)
+  4  Network error (HTTP request failed)
+  5  API error (server returned an error response)
+  6  Parse error (JSON deserialization failed)
+
+Parse errors use Clap\*(Aqs native human\-readable usage text on stderr for exit code 2. Runtime errors use the JSON envelope on stderr: {"ok":false,...} for exit codes 3\-6. To distinguish programmatically, check the exit code first, then parse stderr only for exit codes 3\-6.
+.SH VERSION
+v0.4.0
