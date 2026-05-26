@@ -11,7 +11,8 @@ LLMs and tool runners should discover the command surface from the binary itself
 ```bash
 fmp-agent schema             # versioned JSON: { schema_version, binary, version, commands[] }
 fmp-agent --help             # human-readable top-level help
-fmp-agent <COMMAND> --help   # human-readable per-command help, includes Examples
+fmp-agent <GROUP> --help     # human-readable per-group help
+fmp-agent <GROUP> <CMD> --help  # human-readable per-command help, includes Examples
 ```
 
 `fmp-agent schema`:
@@ -27,12 +28,12 @@ fmp-agent <COMMAND> --help   # human-readable per-command help, includes Example
 cargo install rusty-fmp --locked
 ```
 
-GitHub releases also publish cargo-dist archives and shell or PowerShell installers. The Cargo package is `rusty-fmp`; the installed binary is `fmp-agent`. From a repo checkout, substitute `cargo run -- <COMMAND>` for `fmp-agent <COMMAND>`.
+GitHub releases also publish cargo-dist archives and shell or PowerShell installers. The Cargo package is `rusty-fmp`; the installed binary is `fmp-agent`. From a repo checkout, substitute `cargo run -- <GROUP> <CMD>` for `fmp-agent <GROUP> <CMD>`.
 
 ## 3. Invocation contract
 
 ```bash
-fmp-agent [OPTIONS] <COMMAND> [ARGS]
+fmp-agent [OPTIONS] <GROUP> <CMD> [ARGS]
 ```
 
 Stable behavior callers can rely on:
@@ -76,7 +77,7 @@ Commands fall into a small set of reusable argument shapes. Pattern-matching on 
 
 | Shape                  | Positional | Options                                                  | Typical use                            |
 | ---------------------- | ---------- | -------------------------------------------------------- | -------------------------------------- |
-| `Endpoint`             | (none)     | (none)                                                   | List endpoints (`market-stock-list`).  |
+| `Endpoint`             | (none)     | (none)                                                   | List endpoints (`market stock-list`).  |
 | `Query`                | `<QUERY>`  | (none)                                                   | Free-text search.                      |
 | `Symbol`               | `<SYMBOL>` | (none)                                                   | Reference data for one ticker.         |
 | `SymbolLimit`          | `<SYMBOL>` | `--limit <N>`                                            | Recent rows for one ticker.            |
@@ -95,21 +96,21 @@ All date arguments are inclusive `YYYY-MM-DD`. Symbols are FMP-style tickers (`A
 
 These defaults are emitted by Clap (`[default: N]`) in `--help` and reflected in `schema` output. Listed once here for convenience.
 
-| Argument                                          | Default         |
-| ------------------------------------------------- | --------------- |
-| `Annual --limit`                                  | 5               |
-| `SymbolLimit --limit` (`company-historical-rating`)| 5              |
-| `StockNews --limit`                               | 10              |
-| `Paged --page`                                    | 0               |
-| `Paged --limit`                                   | 10              |
-| `AnnualReportForm --period`                       | `FY`            |
-| `TechnicalSma --period-length`                    | 10              |
-| `TechnicalSma --timeframe`                        | `1day`          |
-| `sec-filings --from` (computed at runtime)        | 90 days ago     |
+| Argument                                              | Default         |
+| ----------------------------------------------------- | --------------- |
+| `Annual --limit`                                      | 5               |
+| `SymbolLimit --limit` (`company historical-rating`)   | 5               |
+| `StockNews --limit`                                   | 10              |
+| `Paged --page`                                        | 0               |
+| `Paged --limit`                                       | 10              |
+| `AnnualReportForm --period`                           | `FY`            |
+| `TechnicalSma --period-length`                        | 10              |
+| `TechnicalSma --timeframe`                            | `1day`          |
+| `sec filings --from` (computed at runtime)            | 90 days ago     |
 
 ## 6. Command catalog
 
-Commands are flat and domain-prefixed; old grouped forms (`market quote`) and legacy aliases (`quote`) are rejected. Each command is annotated with its argument shape from section 5.
+Commands use the `<group> <verb>` form introduced in 0.4.0. See the README migration note for the 0.4.0 restructure.
 
 ### Discovery
 
@@ -120,88 +121,88 @@ Commands are flat and domain-prefixed; old grouped forms (`market quote`) and le
 
 ### Company reference
 
-| Command                                | Shape          |
-| -------------------------------------- | -------------- |
-| `company-profile <SYMBOL>`             | `Symbol`       |
-| `company-executives <SYMBOL>`          | `Symbol`       |
-| `company-peers <SYMBOL>`               | `Symbol`       |
-| `company-financial-scores <SYMBOL>`    | `Symbol`       |
-| `company-share-float <SYMBOL>`         | `Symbol`       |
-| `company-rating <SYMBOL>`              | `Symbol`       |
-| `company-historical-rating <SYMBOL>`   | `SymbolLimit`  |
+| Command                                        | Shape          |
+| ---------------------------------------------- | -------------- |
+| `company profile <SYMBOL>`                     | `Symbol`       |
+| `company executives <SYMBOL>`                  | `Symbol`       |
+| `company peers <SYMBOL>`                       | `Symbol`       |
+| `company scores <SYMBOL>`                      | `Symbol`       |
+| `company float <SYMBOL>`                       | `Symbol`       |
+| `company rating <SYMBOL>`                      | `Symbol`       |
+| `company historical-rating <SYMBOL>`           | `SymbolLimit`  |
 
 ### Market data
 
-| Command                                 | Shape              |
-| --------------------------------------- | ------------------ |
-| `market-quote <SYMBOL>`                 | `Symbol`           |
-| `market-historical <SYMBOL>`            | `SymbolDateRange`  |
-| `market-dividends <SYMBOL>`             | `Symbol`           |
-| `market-splits <SYMBOL>`                | `Symbol`           |
-| `market-price-change <SYMBOL>`          | `Symbol`           |
-| `market-stock-list`                     | `Endpoint`         |
-| `etf-holdings <SYMBOL>`                 | `Symbol` *         |
+| Command                                        | Shape              |
+| ---------------------------------------------- | ------------------ |
+| `market quote <SYMBOL>`                        | `Symbol`           |
+| `market historical <SYMBOL>`                   | `SymbolDateRange`  |
+| `market dividends <SYMBOL>`                    | `Symbol`           |
+| `market splits <SYMBOL>`                       | `Symbol`           |
+| `market price-change <SYMBOL>`                 | `Symbol`           |
+| `market stock-list`                            | `Endpoint`         |
+| `etf holdings <SYMBOL>`                        | `Symbol` *         |
 
-\* `etf-holdings` is intentionally exposed even though Starter accounts receive an API error; it exercises the structured error path (exit code 5).
+\* `etf holdings` is intentionally exposed even though Starter accounts receive an API error; it exercises the structured error path (exit code 5).
 
 ### Crypto and forex
 
-| Command                                 | Shape              |
-| --------------------------------------- | ------------------ |
-| `crypto-list`                           | `Endpoint`         |
-| `crypto-quote <SYMBOL>`                 | `Symbol`           |
-| `crypto-historical <SYMBOL>`            | `SymbolDateRange`  |
-| `forex-quote <SYMBOL>`                  | `Symbol`           |
-| `forex-historical <SYMBOL>`             | `SymbolDateRange`  |
+| Command                                        | Shape              |
+| ---------------------------------------------- | ------------------ |
+| `crypto list`                                  | `Endpoint`         |
+| `crypto quote <SYMBOL>`                        | `Symbol`           |
+| `crypto historical <SYMBOL>`                   | `SymbolDateRange`  |
+| `forex quote <SYMBOL>`                         | `Symbol`           |
+| `forex historical <SYMBOL>`                    | `SymbolDateRange`  |
 
 ### Fundamentals
 
-| Command                                                  | Shape               |
-| -------------------------------------------------------- | ------------------- |
-| `fundamentals-income-statement <SYMBOL>`                 | `Annual`            |
-| `fundamentals-income-statement-as-reported <SYMBOL>`     | `Annual`            |
-| `fundamentals-balance-sheet <SYMBOL>`                    | `Annual`            |
-| `fundamentals-cash-flow <SYMBOL>`                        | `Annual`            |
-| `fundamentals-ratios <SYMBOL>`                           | `Annual`            |
-| `fundamentals-metrics <SYMBOL>`                          | `Annual`            |
-| `fundamentals-income-statement-growth <SYMBOL>`          | `Annual`            |
-| `fundamentals-balance-sheet-growth <SYMBOL>`             | `Annual`            |
-| `fundamentals-cash-flow-growth <SYMBOL>`                 | `Annual`            |
-| `fundamentals-enterprise-values <SYMBOL>`                | `Annual`            |
-| `fundamentals-analyst-estimates <SYMBOL>`                | `Annual`            |
-| `fundamentals-report-dates <SYMBOL>`                     | `Symbol`            |
-| `fundamentals-annual-report-form <SYMBOL> --year <YEAR>` | `AnnualReportForm`  |
+| Command                                                          | Shape               |
+| ---------------------------------------------------------------- | ------------------- |
+| `fundamentals income-statement <SYMBOL>`                         | `Annual`            |
+| `fundamentals income-statement-as-reported <SYMBOL>`             | `Annual`            |
+| `fundamentals balance-sheet <SYMBOL>`                            | `Annual`            |
+| `fundamentals cash-flow <SYMBOL>`                                | `Annual`            |
+| `fundamentals ratios <SYMBOL>`                                   | `Annual`            |
+| `fundamentals metrics <SYMBOL>`                                  | `Annual`            |
+| `fundamentals income-statement-growth <SYMBOL>`                  | `Annual`            |
+| `fundamentals balance-sheet-growth <SYMBOL>`                     | `Annual`            |
+| `fundamentals cash-flow-growth <SYMBOL>`                         | `Annual`            |
+| `fundamentals enterprise-values <SYMBOL>`                        | `Annual`            |
+| `fundamentals analyst-estimates <SYMBOL>`                        | `Annual`            |
+| `fundamentals report-dates <SYMBOL>`                             | `Symbol`            |
+| `fundamentals annual-report-form <SYMBOL> --year <YEAR>`         | `AnnualReportForm`  |
 
 ### Analyst
 
-| Command                                  | Shape    |
-| ---------------------------------------- | -------- |
-| `analyst-price-target-consensus <SYMBOL>`| `Symbol` |
-| `analyst-price-target-summary <SYMBOL>`  | `Symbol` |
-| `analyst-grades <SYMBOL>`                | `Symbol` |
+| Command                                          | Shape    |
+| ------------------------------------------------ | -------- |
+| `analyst price-target-consensus <SYMBOL>`        | `Symbol` |
+| `analyst price-target-summary <SYMBOL>`          | `Symbol` |
+| `analyst grades <SYMBOL>`                        | `Symbol` |
 
 ### Calendars, rates, technicals, filings
 
-| Command                                    | Shape              |
-| ------------------------------------------ | ------------------ |
-| `earnings-calendar`                        | `DateRange`        |
-| `treasury-rates`                           | `DateRange`        |
-| `economic-indicators <NAME>`               | `NameDateRange`    |
-| `technical-sma <SYMBOL>`                   | `TechnicalSma`     |
-| `sec-filings <SYMBOL>`                     | `SymbolDateRange`  |
-| `insider-trading-latest`                   | `Paged`            |
+| Command                                          | Shape              |
+| ------------------------------------------------ | ------------------ |
+| `calendar earnings`                              | `DateRange`        |
+| `macro treasury-rates`                           | `DateRange`        |
+| `macro economic-indicators <NAME>`               | `NameDateRange`    |
+| `technical sma <SYMBOL>`                         | `TechnicalSma`     |
+| `sec filings <SYMBOL>`                           | `SymbolDateRange`  |
+| `insider latest`                                 | `Paged`            |
 
-`economic-indicators` takes an FMP indicator name as the positional, e.g. `GDP`, `CPI`.
+`macro economic-indicators` takes an FMP indicator name as the positional, e.g. `GDP`, `CPI`.
 
 ### News
 
 | Command                  | Shape       |
 | ------------------------ | ----------- |
-| `news-stock <SYMBOL>`    | `StockNews` |
-| `news-general`           | `Paged`     |
-| `news-articles`          | `Paged`     |
-| `news-forex`             | `Paged`     |
-| `news-crypto`            | `Paged`     |
+| `news stock <SYMBOL>`    | `StockNews` |
+| `news general`           | `Paged`     |
+| `news articles`          | `Paged`     |
+| `news forex`             | `Paged`     |
+| `news crypto`            | `Paged`     |
 
 ## 7. Examples
 
@@ -211,32 +212,32 @@ fmp-agent schema | jq '.commands | map(.name)'
 fmp-agent search Apple
 
 # Reference data
-FMP_API_KEY=your-key fmp-agent market-quote AAPL
-fmp-agent company-profile AAPL
-fmp-agent company-historical-rating AAPL --limit 20
+FMP_API_KEY=your-key fmp-agent market quote AAPL
+fmp-agent company profile AAPL
+fmp-agent company historical-rating AAPL --limit 20
 
 # Time series
-fmp-agent market-historical AAPL --from 2025-01-01 --to 2025-01-31
-fmp-agent crypto-historical BTCUSD --from 2025-01-01 --to 2025-01-03
-fmp-agent forex-historical EURUSD --from 2025-01-01 --to 2025-01-03
-fmp-agent technical-sma AAPL --period-length 20 --timeframe 1day
+fmp-agent market historical AAPL --from 2025-01-01 --to 2025-01-31
+fmp-agent crypto historical BTCUSD --from 2025-01-01 --to 2025-01-03
+fmp-agent forex historical EURUSD --from 2025-01-01 --to 2025-01-03
+fmp-agent technical sma AAPL --period-length 20 --timeframe 1day
 
 # Fundamentals
-fmp-agent fundamentals-income-statement AAPL --limit 5
-fmp-agent fundamentals-annual-report-form AAPL --year 2022
+fmp-agent fundamentals income-statement AAPL --limit 5
+fmp-agent fundamentals annual-report-form AAPL --year 2022
 
 # Calendars and macros
-fmp-agent earnings-calendar --from 2026-01-01 --to 2026-01-31
-fmp-agent treasury-rates --from 2025-01-01 --to 2025-01-31
-fmp-agent economic-indicators GDP --from 2025-01-01 --to 2025-12-31
+fmp-agent calendar earnings --from 2026-01-01 --to 2026-01-31
+fmp-agent macro treasury-rates --from 2025-01-01 --to 2025-01-31
+fmp-agent macro economic-indicators GDP --from 2025-01-01 --to 2025-12-31
 
 # Filings and news
-fmp-agent sec-filings AAPL --from 2024-01-01 --to 2024-03-01
-fmp-agent news-stock AAPL --limit 10
-fmp-agent news-general --page 0 --limit 10
+fmp-agent sec filings AAPL --from 2024-01-01 --to 2024-03-01
+fmp-agent news stock AAPL --limit 10
+fmp-agent news general --page 0 --limit 10
 
 # Verbose logging to stderr (does not affect stdout JSON)
-fmp-agent -vv market-quote AAPL 2> debug.log
+fmp-agent -vv market quote AAPL 2> debug.log
 ```
 
 ## 8. Library use
