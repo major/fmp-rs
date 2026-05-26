@@ -2,6 +2,8 @@ use assert_cmd::Command;
 use predicates::prelude::*;
 
 fn assert_bare_group_help(group: &str) {
+    let usage = format!("fmp-agent {group}");
+
     Command::cargo_bin("fmp-agent")
         .unwrap()
         .env_remove("FMP_API_KEY")
@@ -9,7 +11,11 @@ fn assert_bare_group_help(group: &str) {
         .assert()
         .success()
         .stdout(predicate::str::contains("Usage:"))
-        .stdout(predicate::str::contains(group));
+        // The usage line includes the full binary-qualified path with
+        // [OPTIONS] and [COMMAND], matching `fmp-agent <group> --help`.
+        .stdout(predicate::str::contains(&usage))
+        .stdout(predicate::str::contains("[OPTIONS]"))
+        .stdout(predicate::str::contains("[COMMAND]"));
 }
 
 #[test]

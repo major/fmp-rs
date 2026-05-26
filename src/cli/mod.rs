@@ -138,14 +138,16 @@ pub(crate) fn print_group_help(group_name: &str) -> Result<()> {
         return Err(Error::MissingArgument("group"));
     };
 
-    group
-        .print_help()
-        .map_err(|_| Error::MissingArgument("group"))?;
-    if let Err(e) = writeln!(io::stdout())
-        && e.kind() != io::ErrorKind::BrokenPipe
-    {
-        panic!("failed printing to stdout: {e}");
-    }
+    // Override usage to include the full binary-qualified path and [OPTIONS],
+    // matching the format shown by `fmp-agent <group> --help`. Without this,
+    // a bare group invocation shows only the subcommand name (e.g. `market`).
+    let help = group
+        .clone()
+        .override_usage(format!("fmp-agent {group_name} [OPTIONS] [COMMAND]"))
+        .render_help()
+        .to_string();
+
+    print_stdout_line(&help);
 
     Ok(())
 }
