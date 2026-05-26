@@ -39,7 +39,42 @@ Keep `AGENTS.md`, `README.md`, and `SKILL.md` updated with code changes. Stale d
 - Security audit lives in `.github/workflows/audit.yml` and runs on `Cargo.toml`/`Cargo.lock` changes plus a daily schedule.
 - Unused-dependency check runs as the `machete` job in `.github/workflows/ci.yml` via `cargo machete`.
 - `Cargo.toml` has a `[lints.rust]` table that denies the `unused` lint group declaratively, so `cargo build` and `cargo check` also reject unused imports, unused variables, and dead code without needing `-D warnings`. Per-item `#[allow(...)]` still works because the group is set with `priority = -1`.
-- Release automation is split across release-plz and cargo-dist. `release-plz.toml` plus `.github/workflows/release-plz.yml` (jobs `release-plz-pr` and `release-plz-release`) open and maintain the release PR (version bump in `Cargo.toml`, regenerated `CHANGELOG.md` via `cliff.toml`); merging that PR pushes a `v<version>` tag using `RELEASE_PLZ_TOKEN` so the tag triggers downstream workflows. The tag fires `.github/workflows/release.yml` (cargo-dist), which uses `dist-workspace.toml` to build artifacts, create the GitHub Release, and publish to crates.io via OIDC trusted publishing. `release-plz.toml` sets `publish = false` and `git_release_enable = false` so the two systems do not race. Release CI runs `cargo run --locked --example generate-man --features cli -- target/generated-man/man/fmp-agent.1` before `dist build` so archives include the man page without a build-script side effect. There is no longer a manual `/make-release` step; releases happen entirely by merging the release-plz PR.
+- Release automation is split across release-plz and cargo-dist. `release-plz.toml` plus `.github/workflows/release-plz.yml` (jobs `release-plz-pr` and `release-plz-release`) open and maintain the release PR (version bump in `Cargo.toml`, regenerated `CHANGELOG.md` via `cliff.toml`); merging that PR pushes a `v<version>` tag using `RELEASE_PLZ_TOKEN` so the tag triggers downstream workflows. The tag fires `.github/workflows/release.yml` (cargo-dist), which uses `dist-workspace.toml` to build artifacts, create the GitHub Release, and publish to crates.io via OIDC trusted publishing. `release-plz.toml` sets `publish = false` and `git_release_enable = false` so the two systems do not race. Release CI runs `cargo run --locked --example generate-man --features cli -- target/generated-man/man/fmp-agent.1` before `dist build` so archives include the man page without a build-script side effect. There is no longer a manual `/make-release` step; releases happen entirely by merging the release-plz PR. The end-to-end flow:
+
+```text
+   conventional commits land on main
+                  |
+                  v
+   +-----------------------------------+
+   | release-plz-pr (push to main)     |
+   |  - bumps Cargo.toml version       |
+   |  - regenerates CHANGELOG.md       |
+   |    via cliff.toml                 |
+   +-----------------+-----------------+
+                     |
+                     v
+            release PR opened
+            (chore: release v<ver>,
+             branch release-plz-*)
+                     |
+                     v   (human merges)
+   +-----------------------------------+
+   | release-plz-release               |
+   |  - pushes v<ver> annotated tag    |
+   |    via RELEASE_PLZ_TOKEN          |
+   +-----------------+-----------------+
+                     |
+                     v   (tag push event)
+   +-----------------------------------+
+   | release.yml (cargo-dist)          |
+   |  - generates fmp-agent.1 man page |
+   |  - builds binaries (5 targets)    |
+   |  - creates GitHub Release         |
+   |  - publishes to crates.io via     |
+   |    OIDC trusted publishing        |
+   +-----------------------------------+
+```
+
 - CodeRabbit uses `.coderabbit.yaml`. Keep its path instructions aligned with this repo's JSON CLI, library-only feature support, and endpoint inventory rules.
 - `rust-toolchain.toml` pins Rust 1.95 for local consistency with the MSRV workflow.
 
