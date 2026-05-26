@@ -52,6 +52,9 @@ reviews:
         Rust CLI and library review:
         - This crate exposes both a `fmp-agent` JSON CLI and a library API for Financial Modeling Prep.
         - Preserve the default `cli` feature and the library-only `default-features = false` build.
+        - CLI commands are two-level grouped subcommands: a group name followed by a subcommand verb (e.g., `fmp-agent market quote AAPL`, `fmp-agent company profile AAPL`, `fmp-agent fundamentals income-statement AAPL`). Flat single-token commands are rejected; the old flat domain-prefixed style is gone.
+        - Group modules live under `src/cli/groups/<name>.rs`. Each group module defines a `Cmd` enum and a `dispatch()` function. New endpoints go into the appropriate group module, not into a top-level flat command.
+        - Four top-level aliases (`quote`, `historical`, `profile`, `earnings`) are shortcuts to common leaf commands and are the only accepted single-token commands besides `search` and `schema`.
         - CLI output must stay predictable JSON: successes are the raw FMP JSON payload on one stdout line, and failures use `{ ok: false, error: { kind, message } }` on stderr.
         - Keep API keys out of logs, errors, tests, and docs.
         - New user-facing endpoints must be confirmed in `docs/api-inventory.md` before they are exposed, except intentionally denied endpoints that exist to verify structured subscription-error handling.
