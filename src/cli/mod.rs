@@ -3,6 +3,7 @@
 mod args;
 mod commands;
 mod dispatch;
+mod groups;
 mod help;
 mod output;
 mod schema;
