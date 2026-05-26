@@ -95,6 +95,13 @@ fn print_group_help_unknown_group_returns_err() {
 }
 
 #[test]
+fn print_group_help_market_returns_ok() {
+    let result = super::print_group_help("market");
+
+    assert!(result.is_ok());
+}
+
+#[test]
 fn parses_bare_group_as_none() {
     let cli = Cli::parse_from(["fmp", "market"]);
 

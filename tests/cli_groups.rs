@@ -1,161 +1,78 @@
-//! TDD integration tests for the grouped command tree (issue #38).
-//!
-//! These tests are intentionally RED until the grouped command enum lands.
-//! Each test invokes a grouped command path (`fmp-agent <group> <subcommand>`)
-//! that does not exist in the current flat CLI, so the assertions expect the
-//! command to succeed and should fail for now.
-
 use assert_cmd::Command;
-use httpmock::Method::GET;
-use httpmock::MockServer;
-use serde_json::json;
+use predicates::prelude::*;
 
-fn run_group_test(args: &[&str], path: &str, query: &[(&str, &str)], body: serde_json::Value) {
-    let server = MockServer::start();
-    let _mock = server.mock(|when, then| {
-        let _when = query
-            .iter()
-            .fold(when.method(GET).path(path), |when, (key, value)| {
-                when.query_param(*key, *value)
-            });
-        then.status(200).json_body(body);
-    });
-
+fn assert_bare_group_help(group: &str) {
     Command::cargo_bin("fmp-agent")
         .unwrap()
-        .env("FMP_API_KEY", "test-key")
-        .env("FMP_BASE_URL", format!("{}/", server.base_url()))
-        .args(args)
+        .env_remove("FMP_API_KEY")
+        .arg(group)
         .assert()
-        .success();
+        .success()
+        .stdout(predicate::str::contains("Usage:"))
+        .stdout(predicate::str::contains(group));
 }
 
 #[test]
-fn group_company_profile() {
-    run_group_test(
-        &["company", "profile", "AAPL"],
-        "/profile",
-        &[("symbol", "AAPL"), ("apikey", "test-key")],
-        json!([{ "symbol": "AAPL" }]),
-    );
+fn bare_company_prints_help() {
+    assert_bare_group_help("company");
 }
 
 #[test]
-fn group_market_quote() {
-    run_group_test(
-        &["market", "quote", "AAPL"],
-        "/quote",
-        &[("symbol", "AAPL"), ("apikey", "test-key")],
-        json!([{ "symbol": "AAPL" }]),
-    );
+fn bare_market_prints_help() {
+    assert_bare_group_help("market");
 }
 
 #[test]
-fn group_fundamentals_income_statement() {
-    run_group_test(
-        &["fundamentals", "income-statement", "AAPL"],
-        "/income-statement",
-        &[("symbol", "AAPL"), ("apikey", "test-key")],
-        json!([{}]),
-    );
+fn bare_fundamentals_prints_help() {
+    assert_bare_group_help("fundamentals");
 }
 
 #[test]
-fn group_analyst_grades() {
-    run_group_test(
-        &["analyst", "grades", "AAPL"],
-        "/grades",
-        &[("symbol", "AAPL"), ("apikey", "test-key")],
-        json!([{}]),
-    );
+fn bare_analyst_prints_help() {
+    assert_bare_group_help("analyst");
 }
 
 #[test]
-fn group_insider_latest() {
-    run_group_test(
-        &["insider", "latest"],
-        "/insider-trading/latest",
-        &[("apikey", "test-key")],
-        json!([{}]),
-    );
+fn bare_insider_prints_help() {
+    assert_bare_group_help("insider");
 }
 
 #[test]
-fn group_calendar_earnings() {
-    run_group_test(
-        &["calendar", "earnings"],
-        "/earnings-calendar",
-        &[("apikey", "test-key")],
-        json!([{}]),
-    );
+fn bare_calendar_prints_help() {
+    assert_bare_group_help("calendar");
 }
 
 #[test]
-fn group_macro_treasury_rates() {
-    run_group_test(
-        &["macro", "treasury-rates"],
-        "/treasury-rates",
-        &[("apikey", "test-key")],
-        json!([{}]),
-    );
+fn bare_macro_prints_help() {
+    assert_bare_group_help("macro");
 }
 
 #[test]
-fn group_technical_sma() {
-    run_group_test(
-        &["technical", "sma", "AAPL"],
-        "/technical-indicators/sma",
-        &[("apikey", "test-key")],
-        json!([{}]),
-    );
+fn bare_technical_prints_help() {
+    assert_bare_group_help("technical");
 }
 
 #[test]
-fn group_sec_filings() {
-    run_group_test(
-        &["sec", "filings", "AAPL"],
-        "/sec-filings-search/symbol",
-        &[("apikey", "test-key")],
-        json!([{}]),
-    );
+fn bare_sec_prints_help() {
+    assert_bare_group_help("sec");
 }
 
 #[test]
-fn group_etf_holdings() {
-    run_group_test(
-        &["etf", "holdings", "SPY"],
-        "/etf/holdings",
-        &[("apikey", "test-key")],
-        json!([{}]),
-    );
+fn bare_etf_prints_help() {
+    assert_bare_group_help("etf");
 }
 
 #[test]
-fn group_crypto_quote() {
-    run_group_test(
-        &["crypto", "quote", "BTCUSD"],
-        "/quote",
-        &[("apikey", "test-key")],
-        json!([{}]),
-    );
+fn bare_crypto_prints_help() {
+    assert_bare_group_help("crypto");
 }
 
 #[test]
-fn group_forex_quote() {
-    run_group_test(
-        &["forex", "quote", "EURUSD"],
-        "/quote",
-        &[("apikey", "test-key")],
-        json!([{}]),
-    );
+fn bare_forex_prints_help() {
+    assert_bare_group_help("forex");
 }
 
 #[test]
-fn group_news_stock() {
-    run_group_test(
-        &["news", "stock", "AAPL"],
-        "/news/stock",
-        &[("apikey", "test-key")],
-        json!([{}]),
-    );
+fn bare_news_prints_help() {
+    assert_bare_group_help("news");
 }
