@@ -8,7 +8,7 @@
 //! Library-only consumers should disable default features:
 //!
 //! ```toml
-//! rusty-fmp = { version = "0.4.0", default-features = false }
+//! rusty-fmp = { default-features = false }
 //! ```
 //!
 //! This crate emits log records via the [`log`] crate. Callers control output
