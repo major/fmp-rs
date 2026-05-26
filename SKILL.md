@@ -18,8 +18,8 @@ fmp-agent <GROUP> <CMD> --help  # human-readable per-command help, includes Exam
 `fmp-agent schema`:
 
 - Does **not** require `FMP_API_KEY` and makes **no** network requests.
-- Emits `schema_version: 1` today; the shape is experimental and may change between releases.
-- Each command entry has `name`, `about`, `long_about`, and `args` (with `name`, `kind`, defaults, value names).
+- Emits `schema_version: 2` today; the shape is experimental and may change between releases.
+- Each command entry has `name`, `path`, `aliases`, `preferred_path`, `api_key_required`, `about`, `long_about`, and `args` (with `name`, `kind`, defaults, value names).
 - Use this as the source of truth for available commands and arguments; treat the catalog in section 6 as a curated index.
 
 ## 2. Install
