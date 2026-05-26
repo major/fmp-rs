@@ -1,3 +1,4 @@
+use std::io::{self, Write};
 use std::process::ExitCode;
 
 use clap::error::ErrorKind;
@@ -14,7 +15,12 @@ async fn main() -> ExitCode {
         Err(error) if error.kind() == ErrorKind::MissingSubcommand && no_cli_args() => {
             let mut command = Cli::command();
             command.set_bin_name("fmp-agent");
-            print!("{}", command.render_help());
+            let help = command.render_help();
+            if let Err(e) = write!(io::stdout(), "{help}")
+                && e.kind() != io::ErrorKind::BrokenPipe
+            {
+                panic!("failed printing to stdout: {e}");
+            }
             return ExitCode::SUCCESS;
         }
         Err(error) => error.exit(),

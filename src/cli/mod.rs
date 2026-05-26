@@ -1,5 +1,7 @@
 //! Command line parsing and output rendering.
 
+use std::io::{self, Write};
+
 mod args;
 mod commands;
 mod dispatch;
@@ -21,6 +23,16 @@ use output::render_output;
 use crate::client::FmpClient;
 use crate::error::{Error, Result};
 
+/// Writes `output` to stdout followed by a newline, suppressing broken pipe
+/// errors so the CLI exits cleanly when a downstream consumer closes the pipe.
+fn print_stdout_line(output: &str) {
+    if let Err(e) = writeln!(io::stdout(), "{output}")
+        && e.kind() != io::ErrorKind::BrokenPipe
+    {
+        panic!("failed printing to stdout: {e}");
+    }
+}
+
 /// Runs a parsed CLI invocation.
 ///
 /// # Errors
@@ -31,7 +43,7 @@ pub async fn run(cli: Cli) -> Result<()> {
     if let args::Command::Schema = &cli.command {
         let data = schema::schema_payload();
         let output = serde_json::to_string(&data).map_err(crate::error::Error::Json)?;
-        println!("{output}");
+        print_stdout_line(&output);
         return Ok(());
     }
 
@@ -47,7 +59,7 @@ pub async fn run(cli: Cli) -> Result<()> {
     let client = FmpClient::with_base_url(api_key, &cli.base_url)?;
     let payload = execute(&client, &cli.command).await?;
     if let Some(output) = render_output(payload)? {
-        println!("{output}");
+        print_stdout_line(&output);
     }
 
     Ok(())
@@ -84,7 +96,11 @@ pub(crate) fn print_group_help(group_name: &str) -> Result<()> {
     group
         .print_help()
         .map_err(|_| Error::MissingArgument("group"))?;
-    println!();
+    if let Err(e) = writeln!(io::stdout())
+        && e.kind() != io::ErrorKind::BrokenPipe
+    {
+        panic!("failed printing to stdout: {e}");
+    }
 
     Ok(())
 }
