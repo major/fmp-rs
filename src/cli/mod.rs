@@ -5,6 +5,7 @@ mod commands;
 mod dispatch;
 mod help;
 mod output;
+mod schema;
 
 #[cfg(test)]
 mod tests;
@@ -23,6 +24,14 @@ use crate::error::{Error, Result};
 ///
 /// Returns an error when configuration is missing, an API call fails, or JSON output cannot be rendered.
 pub async fn run(cli: Cli) -> Result<()> {
+    // Schema is metadata-only and does not require an API key.
+    if let args::Command::Schema = &cli.command {
+        let data = schema::schema_payload();
+        let output = serde_json::to_string(&data).map_err(crate::error::Error::Json)?;
+        println!("{output}");
+        return Ok(());
+    }
+
     let Some(api_key) = cli.api_key.filter(|key| !key.trim().is_empty()) else {
         return Err(Error::MissingApiKey);
     };

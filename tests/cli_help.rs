@@ -37,6 +37,24 @@ fn invalid_argument_uses_clap_error_path() {
 }
 
 #[test]
+fn help_explains_clap_and_json_error_paths() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .arg("--help")
+        .env("CLAP_COLOR", "never")
+        .env("NO_COLOR", "1")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("JSON envelope"))
+        .stdout(predicate::str::contains(
+            "Clap's native human-readable usage text",
+        ))
+        .stdout(predicate::str::contains(
+            "check the exit code first, then parse stderr only for exit codes 3-6",
+        ));
+}
+
+#[test]
 fn command_invocation_prints_compact_json() {
     let server = MockServer::start();
     let mock = server.mock(|when, then| {
@@ -149,6 +167,18 @@ fn flat_command_specific_help_present() {
 }
 
 #[test]
+fn historical_rating_help_explains_limit_default() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .args(["company-historical-rating", "--help"])
+        .env("CLAP_COLOR", "never")
+        .env("NO_COLOR", "1")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("[default: 10]"));
+}
+
+#[test]
 fn technical_sma_help_explains_defaults() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
@@ -186,7 +216,7 @@ fn sec_filings_help_explains_required_default_date() {
 }
 
 #[test]
-fn annual_help_explains_limit_default_without_parser_default() {
+fn annual_help_explains_limit_default_via_clap_marker() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
         .args(["fundamentals-income-statement", "--help"])
@@ -194,27 +224,11 @@ fn annual_help_explains_limit_default_without_parser_default() {
         .env("NO_COLOR", "1")
         .assert()
         .success()
-        .stdout(predicate::str::contains(
-            "Maximum number of annual rows to return. Defaults to 5 when omitted.",
-        ));
+        .stdout(predicate::str::contains("[default: 5]"));
 }
 
 #[test]
 fn news_help_explains_limit_and_paging_defaults() {
-    Command::cargo_bin("fmp-agent")
-        .unwrap()
-        .args(["news-stock", "--help"])
-        .env("CLAP_COLOR", "never")
-        .env("NO_COLOR", "1")
-        .assert()
-        .success()
-        .stdout(predicate::str::contains(
-            "Defaults to 10 news items when --limit is omitted.",
-        ))
-        .stdout(predicate::str::contains(
-            "Maximum number of news items to return. Defaults to 10 when omitted.",
-        ));
-
     Command::cargo_bin("fmp-agent")
         .unwrap()
         .args(["news-general", "--help"])
@@ -222,13 +236,22 @@ fn news_help_explains_limit_and_paging_defaults() {
         .env("NO_COLOR", "1")
         .assert()
         .success()
+        .stdout(predicate::str::contains("[default: 0]"))
+        .stdout(predicate::str::contains("[default: 10]"))
+        .stdout(predicate::str::contains("Zero-based result page."))
         .stdout(predicate::str::contains(
-            "Uses zero-based paging and defaults to page 0 with 10 items when paging flags are omitted.",
-        ))
-        .stdout(predicate::str::contains(
-            "Zero-based result page. Defaults to 0 when omitted.",
-        ))
-        .stdout(predicate::str::contains(
-            "Maximum number of items to return. Defaults to 10 when omitted.",
+            "Maximum number of items to return.",
         ));
+}
+
+#[test]
+fn stock_news_help_explains_limit_default() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .args(["news-stock", "--help"])
+        .env("CLAP_COLOR", "never")
+        .env("NO_COLOR", "1")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("[default: 10]"));
 }

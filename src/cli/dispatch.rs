@@ -3,7 +3,7 @@
 use serde_json::json;
 
 use crate::client::FmpClient;
-use crate::endpoint::{ANNUAL_PERIOD, Endpoint, NEWS_LIMIT, PAGE};
+use crate::endpoint::{ANNUAL_PERIOD, Endpoint};
 use crate::error::Result;
 
 use super::output::CommandPayload;
@@ -43,9 +43,11 @@ pub(super) async fn run_by_symbol_limit(
     client: &FmpClient,
     endpoint: Endpoint,
     symbol: &str,
-    limit: Option<u16>,
+    limit: u16,
 ) -> Result<CommandPayload> {
-    let data = client.by_symbol_limit(endpoint, symbol, limit).await?;
+    let data = client
+        .by_symbol_limit(endpoint, symbol, Some(limit))
+        .await?;
     Ok(CommandPayload::new(
         endpoint.path(),
         json!({ "symbol": symbol, "limit": limit }),
@@ -107,9 +109,9 @@ pub(super) async fn run_annual(
     client: &FmpClient,
     endpoint: Endpoint,
     symbol: &str,
-    limit: Option<u16>,
+    limit: u16,
 ) -> Result<CommandPayload> {
-    let data = client.annual(endpoint, symbol, limit).await?;
+    let data = client.annual(endpoint, symbol, Some(limit)).await?;
     Ok(CommandPayload::new(
         endpoint.path(),
         json!({ "symbol": symbol, "period": ANNUAL_PERIOD, "limit": limit }),
@@ -159,9 +161,9 @@ pub(super) async fn run_news(
     client: &FmpClient,
     endpoint: Endpoint,
     symbol: &str,
-    limit: Option<u16>,
+    limit: u16,
 ) -> Result<CommandPayload> {
-    let data = client.news(endpoint, symbol, limit).await?;
+    let data = client.news(endpoint, symbol, Some(limit)).await?;
     Ok(CommandPayload::new(
         endpoint.path(),
         json!({ "symbol": symbol, "limit": limit }),
@@ -172,12 +174,10 @@ pub(super) async fn run_news(
 pub(super) async fn run_paged(
     client: &FmpClient,
     endpoint: Endpoint,
-    page: Option<u16>,
-    limit: Option<u16>,
+    page: u16,
+    limit: u16,
 ) -> Result<CommandPayload> {
-    let data = client.paged(endpoint, page, limit).await?;
-    let page = page.unwrap_or(PAGE);
-    let limit = limit.unwrap_or(NEWS_LIMIT);
+    let data = client.paged(endpoint, Some(page), Some(limit)).await?;
     Ok(CommandPayload::new(
         endpoint.path(),
         json!({ "page": page, "limit": limit }),

@@ -25,7 +25,7 @@ fn symbol(symbol: &str) -> SymbolArgs {
 fn symbol_limit(symbol: &str) -> SymbolLimitArgs {
     SymbolLimitArgs {
         symbol: symbol.to_owned(),
-        limit: None,
+        limit: 10,
     }
 }
 
@@ -48,7 +48,7 @@ fn name_date_range(name: &str) -> NameDateRangeArgs {
 fn annual(symbol: &str) -> AnnualArgs {
     AnnualArgs {
         symbol: symbol.to_owned(),
-        limit: None,
+        limit: 5,
     }
 }
 
@@ -78,15 +78,12 @@ fn optional_symbol_date_range(symbol: &str) -> SymbolDateRangeArgs {
 fn stock_news(symbol: &str) -> StockNewsArgs {
     StockNewsArgs {
         symbol: symbol.to_owned(),
-        limit: None,
+        limit: 10,
     }
 }
 
 fn paged() -> PagedArgs {
-    PagedArgs {
-        page: Some(0),
-        limit: Some(3),
-    }
+    PagedArgs { page: 0, limit: 3 }
 }
 
 #[test]
@@ -170,7 +167,7 @@ fn parses_grouped_news_command() {
         panic!("expected stock news command");
     };
     assert_eq!(args.symbol, "AAPL");
-    assert_eq!(args.limit, Some(3));
+    assert_eq!(args.limit, 3);
 }
 
 #[test]
@@ -201,8 +198,8 @@ fn parses_paginated_news_commands() {
             Command::NewsCrypto(args) if expected == "crypto" => args,
             _ => panic!("unexpected news command"),
         };
-        assert_eq!(args.page, Some(0));
-        assert_eq!(args.limit, Some(3));
+        assert_eq!(args.page, 0);
+        assert_eq!(args.limit, 3);
     }
 }
 
@@ -224,7 +221,7 @@ fn parses_new_endpoint_commands() {
         panic!("expected historical rating command");
     };
     assert_eq!(args.symbol, "AAPL");
-    assert_eq!(args.limit, Some(3));
+    assert_eq!(args.limit, 3);
 
     let annual_report = Cli::parse_from([
         "fmp",
@@ -452,7 +449,7 @@ async fn execute_annual_command_uses_endpoint_descriptor() {
         assert_eq!(payload.endpoint, expected_path);
         assert_eq!(
             payload.query,
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null })
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 })
         );
         assert_eq!(payload.data[0]["symbol"], "AAPL");
     }
@@ -471,7 +468,7 @@ async fn execute_symbol_commands_use_endpoint_descriptors() {
         (
             "ratings-historical",
             Command::CompanyHistoricalRating(SymbolLimitArgs {
-                limit: Some(3),
+                limit: 3,
                 ..symbol_limit("AAPL")
             }),
         ),
@@ -719,12 +716,12 @@ async fn execute_news_commands_use_endpoint_descriptor() {
     let client = test_client(&server);
     let commands = [
         Command::NewsStock(StockNewsArgs {
-            limit: Some(3),
+            limit: 3,
             ..stock_news("AAPL")
         }),
         Command::NewsStock(StockNewsArgs {
             symbol: "MSFT".to_owned(),
-            limit: Some(3),
+            limit: 3,
         }),
     ];
 
@@ -754,10 +751,7 @@ async fn execute_paginated_news_commands_use_endpoint_descriptors() {
             "news/general-latest",
             0,
             10,
-            Command::NewsGeneral(PagedArgs {
-                page: None,
-                limit: None,
-            }),
+            Command::NewsGeneral(PagedArgs { page: 0, limit: 10 }),
         ),
     ];
     let mut mocks = Vec::new();
@@ -948,52 +942,52 @@ async fn execute_flat_commands_use_endpoint_descriptors() {
         (
             "income-statement",
             Command::FundamentalsIncomeStatement(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "income-statement-as-reported",
             Command::FundamentalsIncomeStatementAsReported(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "balance-sheet-statement",
             Command::FundamentalsBalanceSheet(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "cash-flow-statement",
             Command::FundamentalsCashFlow(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "ratios",
             Command::FundamentalsRatios(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "key-metrics",
             Command::FundamentalsMetrics(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "income-statement-growth",
             Command::FundamentalsIncomeStatementGrowth(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "balance-sheet-statement-growth",
             Command::FundamentalsBalanceSheetGrowth(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "cash-flow-statement-growth",
             Command::FundamentalsCashFlowGrowth(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "enterprise-values",
             Command::FundamentalsEnterpriseValues(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "financial-reports-json",
@@ -1008,7 +1002,7 @@ async fn execute_flat_commands_use_endpoint_descriptors() {
         (
             "ratings-historical",
             Command::CompanyHistoricalRating(symbol_limit("AAPL")),
-            json!({ "symbol": "AAPL", "limit": null }),
+            json!({ "symbol": "AAPL", "limit": 10 }),
         ),
         (
             "insider-trading/latest",
@@ -1023,12 +1017,12 @@ async fn execute_flat_commands_use_endpoint_descriptors() {
         (
             "analyst-estimates",
             Command::FundamentalsAnalystEstimates(annual("AAPL")),
-            json!({ "symbol": "AAPL", "period": "annual", "limit": null }),
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
             "news/stock",
             Command::NewsStock(stock_news("AAPL")),
-            json!({ "symbol": "AAPL", "limit": null }),
+            json!({ "symbol": "AAPL", "limit": 10 }),
         ),
     ];
     for (path, _, _) in &cases {
@@ -1435,4 +1429,11 @@ fn rejects_old_aliases() {
             args[3..].join(" ")
         );
     }
+}
+
+#[tokio::test]
+#[should_panic(expected = "Schema command is handled before execute() in run()")]
+async fn schema_arm_in_execute_panics() {
+    let client = FmpClient::with_base_url("dummy", "http://localhost:1/").unwrap();
+    execute(&client, &Command::Schema).await.unwrap();
 }

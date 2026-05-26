@@ -31,7 +31,7 @@ pub struct Cli {
 #[derive(Debug, Subcommand)]
 pub enum Command {
     /// Search command.
-    #[command(about = help::SEARCH_ABOUT)]
+    #[command(about = help::SEARCH_ABOUT, long_about = help::SEARCH_LONG)]
     Search {
         /// Search query.
         #[arg(help = help::SEARCH_QUERY)]
@@ -39,123 +39,123 @@ pub enum Command {
     },
 
     /// Company profile command.
-    #[command(about = help::COMPANY_PROFILE_ABOUT)]
+    #[command(about = help::COMPANY_PROFILE_ABOUT, long_about = help::COMPANY_PROFILE_LONG)]
     CompanyProfile(SymbolArgs),
 
     /// Company executives command.
-    #[command(about = help::COMPANY_EXECUTIVES_ABOUT)]
+    #[command(about = help::COMPANY_EXECUTIVES_ABOUT, long_about = help::COMPANY_EXECUTIVES_LONG)]
     CompanyExecutives(SymbolArgs),
 
     /// Company peers command.
-    #[command(about = help::COMPANY_PEERS_ABOUT)]
+    #[command(about = help::COMPANY_PEERS_ABOUT, long_about = help::COMPANY_PEERS_LONG)]
     CompanyPeers(SymbolArgs),
 
     /// Stock list command.
-    #[command(about = help::MARKET_STOCK_LIST_ABOUT)]
+    #[command(about = help::MARKET_STOCK_LIST_ABOUT, long_about = help::MARKET_STOCK_LIST_LONG)]
     MarketStockList,
 
     /// ETF holdings command.
-    #[command(about = help::ETF_HOLDINGS_ABOUT)]
+    #[command(about = help::ETF_HOLDINGS_ABOUT, long_about = help::ETF_HOLDINGS_LONG)]
     EtfHoldings(SymbolArgs),
 
     /// Company financial scores command.
-    #[command(about = help::COMPANY_FINANCIAL_SCORES_ABOUT)]
+    #[command(about = help::COMPANY_FINANCIAL_SCORES_ABOUT, long_about = help::COMPANY_FINANCIAL_SCORES_LONG)]
     CompanyFinancialScores(SymbolArgs),
 
     /// Company share float command.
-    #[command(about = help::COMPANY_SHARE_FLOAT_ABOUT)]
+    #[command(about = help::COMPANY_SHARE_FLOAT_ABOUT, long_about = help::COMPANY_SHARE_FLOAT_LONG)]
     CompanyShareFloat(SymbolArgs),
 
     /// Company rating command.
-    #[command(about = help::COMPANY_RATING_ABOUT)]
+    #[command(about = help::COMPANY_RATING_ABOUT, long_about = help::COMPANY_RATING_LONG)]
     CompanyRating(SymbolArgs),
 
     /// Company historical rating command.
-    #[command(about = help::COMPANY_HISTORICAL_RATING_ABOUT)]
+    #[command(about = help::COMPANY_HISTORICAL_RATING_ABOUT, long_about = help::COMPANY_HISTORICAL_RATING_LONG)]
     CompanyHistoricalRating(SymbolLimitArgs),
 
     /// Market quote command.
-    #[command(about = help::MARKET_QUOTE_ABOUT)]
+    #[command(about = help::MARKET_QUOTE_ABOUT, long_about = help::MARKET_QUOTE_LONG)]
     MarketQuote(SymbolArgs),
 
     /// Market historical prices command.
-    #[command(about = help::MARKET_HISTORICAL_ABOUT)]
+    #[command(about = help::MARKET_HISTORICAL_ABOUT, long_about = help::MARKET_HISTORICAL_LONG)]
     MarketHistorical(SymbolDateRangeArgs),
 
     /// Market dividends command.
-    #[command(about = help::MARKET_DIVIDENDS_ABOUT)]
+    #[command(about = help::MARKET_DIVIDENDS_ABOUT, long_about = help::MARKET_DIVIDENDS_LONG)]
     MarketDividends(SymbolArgs),
 
     /// Market splits command.
-    #[command(about = help::MARKET_SPLITS_ABOUT)]
+    #[command(about = help::MARKET_SPLITS_ABOUT, long_about = help::MARKET_SPLITS_LONG)]
     MarketSplits(SymbolArgs),
 
     /// Market price change command.
-    #[command(about = help::MARKET_PRICE_CHANGE_ABOUT)]
+    #[command(about = help::MARKET_PRICE_CHANGE_ABOUT, long_about = help::MARKET_PRICE_CHANGE_LONG)]
     MarketPriceChange(SymbolArgs),
 
     /// Income statement command.
-    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_ABOUT, long_about = help::FUNDAMENTALS_INCOME_STATEMENT_LONG)]
     FundamentalsIncomeStatement(AnnualArgs),
 
     /// As-reported income statement command.
-    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_AS_REPORTED_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_AS_REPORTED_ABOUT, long_about = help::FUNDAMENTALS_INCOME_STATEMENT_AS_REPORTED_LONG)]
     FundamentalsIncomeStatementAsReported(AnnualArgs),
 
     /// Balance sheet command.
-    #[command(about = help::FUNDAMENTALS_BALANCE_SHEET_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_BALANCE_SHEET_ABOUT, long_about = help::FUNDAMENTALS_BALANCE_SHEET_LONG)]
     FundamentalsBalanceSheet(AnnualArgs),
 
     /// Cash flow command.
-    #[command(about = help::FUNDAMENTALS_CASH_FLOW_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_CASH_FLOW_ABOUT, long_about = help::FUNDAMENTALS_CASH_FLOW_LONG)]
     FundamentalsCashFlow(AnnualArgs),
 
     /// Ratios command.
-    #[command(about = help::FUNDAMENTALS_RATIOS_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_RATIOS_ABOUT, long_about = help::FUNDAMENTALS_RATIOS_LONG)]
     FundamentalsRatios(AnnualArgs),
 
     /// Metrics command.
-    #[command(about = help::FUNDAMENTALS_METRICS_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_METRICS_ABOUT, long_about = help::FUNDAMENTALS_METRICS_LONG)]
     FundamentalsMetrics(AnnualArgs),
 
     /// Income statement growth command.
-    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_GROWTH_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_INCOME_STATEMENT_GROWTH_ABOUT, long_about = help::FUNDAMENTALS_INCOME_STATEMENT_GROWTH_LONG)]
     FundamentalsIncomeStatementGrowth(AnnualArgs),
 
     /// Balance sheet growth command.
-    #[command(about = help::FUNDAMENTALS_BALANCE_SHEET_GROWTH_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_BALANCE_SHEET_GROWTH_ABOUT, long_about = help::FUNDAMENTALS_BALANCE_SHEET_GROWTH_LONG)]
     FundamentalsBalanceSheetGrowth(AnnualArgs),
 
     /// Cash flow growth command.
-    #[command(about = help::FUNDAMENTALS_CASH_FLOW_GROWTH_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_CASH_FLOW_GROWTH_ABOUT, long_about = help::FUNDAMENTALS_CASH_FLOW_GROWTH_LONG)]
     FundamentalsCashFlowGrowth(AnnualArgs),
 
     /// Enterprise values command.
-    #[command(about = help::FUNDAMENTALS_ENTERPRISE_VALUES_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_ENTERPRISE_VALUES_ABOUT, long_about = help::FUNDAMENTALS_ENTERPRISE_VALUES_LONG)]
     FundamentalsEnterpriseValues(AnnualArgs),
 
     /// Analyst estimates command.
-    #[command(about = help::FUNDAMENTALS_ANALYST_ESTIMATES_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_ANALYST_ESTIMATES_ABOUT, long_about = help::FUNDAMENTALS_ANALYST_ESTIMATES_LONG)]
     FundamentalsAnalystEstimates(AnnualArgs),
 
     /// Financial report dates command.
-    #[command(about = help::FUNDAMENTALS_REPORT_DATES_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_REPORT_DATES_ABOUT, long_about = help::FUNDAMENTALS_REPORT_DATES_LONG)]
     FundamentalsReportDates(SymbolArgs),
 
     /// Annual report form command.
-    #[command(about = help::FUNDAMENTALS_ANNUAL_REPORT_FORM_ABOUT)]
+    #[command(about = help::FUNDAMENTALS_ANNUAL_REPORT_FORM_ABOUT, long_about = help::FUNDAMENTALS_ANNUAL_REPORT_FORM_LONG)]
     FundamentalsAnnualReportForm(AnnualReportFormArgs),
 
     /// Price target consensus command.
-    #[command(about = help::ANALYST_PRICE_TARGET_CONSENSUS_ABOUT)]
+    #[command(about = help::ANALYST_PRICE_TARGET_CONSENSUS_ABOUT, long_about = help::ANALYST_PRICE_TARGET_CONSENSUS_LONG)]
     AnalystPriceTargetConsensus(SymbolArgs),
 
     /// Price target summary command.
-    #[command(about = help::ANALYST_PRICE_TARGET_SUMMARY_ABOUT)]
+    #[command(about = help::ANALYST_PRICE_TARGET_SUMMARY_ABOUT, long_about = help::ANALYST_PRICE_TARGET_SUMMARY_LONG)]
     AnalystPriceTargetSummary(SymbolArgs),
 
     /// Analyst grades command.
-    #[command(about = help::ANALYST_GRADES_ABOUT)]
+    #[command(about = help::ANALYST_GRADES_ABOUT, long_about = help::ANALYST_GRADES_LONG)]
     AnalystGrades(SymbolArgs),
 
     /// Insider trading command.
@@ -163,15 +163,15 @@ pub enum Command {
     InsiderTradingLatest(PagedArgs),
 
     /// Earnings calendar command.
-    #[command(about = help::EARNINGS_CALENDAR_ABOUT)]
+    #[command(about = help::EARNINGS_CALENDAR_ABOUT, long_about = help::EARNINGS_CALENDAR_LONG)]
     EarningsCalendar(DateRangeArgs),
 
     /// Treasury rates command.
-    #[command(about = help::TREASURY_RATES_ABOUT)]
+    #[command(about = help::TREASURY_RATES_ABOUT, long_about = help::TREASURY_RATES_LONG)]
     TreasuryRates(DateRangeArgs),
 
     /// Economic indicators command.
-    #[command(about = help::ECONOMIC_INDICATORS_ABOUT)]
+    #[command(about = help::ECONOMIC_INDICATORS_ABOUT, long_about = help::ECONOMIC_INDICATORS_LONG)]
     EconomicIndicators(NameDateRangeArgs),
 
     /// Technical SMA command.
@@ -183,23 +183,23 @@ pub enum Command {
     SecFilings(SymbolDateRangeArgs),
 
     /// Cryptocurrency list command.
-    #[command(about = help::CRYPTO_LIST_ABOUT)]
+    #[command(about = help::CRYPTO_LIST_ABOUT, long_about = help::CRYPTO_LIST_LONG)]
     CryptoList,
 
     /// Cryptocurrency quote command.
-    #[command(about = help::CRYPTO_QUOTE_ABOUT)]
+    #[command(about = help::CRYPTO_QUOTE_ABOUT, long_about = help::CRYPTO_QUOTE_LONG)]
     CryptoQuote(SymbolArgs),
 
     /// Cryptocurrency historical prices command.
-    #[command(about = help::CRYPTO_HISTORICAL_ABOUT)]
+    #[command(about = help::CRYPTO_HISTORICAL_ABOUT, long_about = help::CRYPTO_HISTORICAL_LONG)]
     CryptoHistorical(SymbolDateRangeArgs),
 
     /// Forex quote command.
-    #[command(about = help::FOREX_QUOTE_ABOUT)]
+    #[command(about = help::FOREX_QUOTE_ABOUT, long_about = help::FOREX_QUOTE_LONG)]
     ForexQuote(SymbolArgs),
 
     /// Forex historical prices command.
-    #[command(about = help::FOREX_HISTORICAL_ABOUT)]
+    #[command(about = help::FOREX_HISTORICAL_ABOUT, long_about = help::FOREX_HISTORICAL_LONG)]
     ForexHistorical(SymbolDateRangeArgs),
 
     /// Stock news command.
@@ -221,6 +221,10 @@ pub enum Command {
     /// Crypto news command.
     #[command(about = help::NEWS_CRYPTO_ABOUT, long_about = help::NEWS_CRYPTO_LONG)]
     NewsCrypto(PagedArgs),
+
+    /// Schema dump command.
+    #[command(about = help::SCHEMA_ABOUT, long_about = help::SCHEMA_LONG)]
+    Schema,
 }
 
 /// Shared command symbol argument.
@@ -239,8 +243,8 @@ pub struct SymbolLimitArgs {
     pub symbol: String,
 
     /// Maximum number of rows to return.
-    #[arg(long, help = help::LIMIT_ROWS)]
-    pub limit: Option<u16>,
+    #[arg(long, default_value_t = 10, help = help::LIMIT_ROWS)]
+    pub limit: u16,
 }
 
 /// Annual report form arguments.
@@ -311,8 +315,8 @@ pub struct AnnualArgs {
     pub symbol: String,
 
     /// Maximum number of annual rows to return.
-    #[arg(long, help = help::ANNUAL_LIMIT)]
-    pub limit: Option<u16>,
+    #[arg(long, default_value_t = 5, help = help::ANNUAL_LIMIT)]
+    pub limit: u16,
 }
 
 /// Simple moving average arguments.
@@ -339,18 +343,18 @@ pub struct StockNewsArgs {
     pub symbol: String,
 
     /// Maximum number of news items to return.
-    #[arg(long, help = help::NEWS_LIMIT)]
-    pub limit: Option<u16>,
+    #[arg(long, default_value_t = 10, help = help::LIMIT_ROWS)]
+    pub limit: u16,
 }
 
 /// Shared paginated endpoint arguments.
 #[derive(Debug, Args)]
 pub struct PagedArgs {
     /// Zero-based result page.
-    #[arg(long, help = help::PAGE)]
-    pub page: Option<u16>,
+    #[arg(long, default_value_t = 0, help = help::PAGE)]
+    pub page: u16,
 
     /// Maximum number of items to return.
-    #[arg(long, help = help::PAGE_LIMIT)]
-    pub limit: Option<u16>,
+    #[arg(long, default_value_t = 10, help = help::PAGE_LIMIT)]
+    pub limit: u16,
 }
