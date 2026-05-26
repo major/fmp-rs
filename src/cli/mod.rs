@@ -1,5 +1,7 @@
 //! Command line parsing and output rendering.
 
+use std::io::{self, Write};
+
 mod args;
 mod commands;
 mod dispatch;
@@ -21,6 +23,16 @@ use output::render_output;
 use crate::client::FmpClient;
 use crate::error::{Error, Result};
 
+/// Writes `output` to stdout followed by a newline, suppressing broken pipe
+/// errors so the CLI exits cleanly when a downstream consumer closes the pipe.
+fn print_stdout_line(output: &str) {
+    if let Err(e) = writeln!(io::stdout(), "{output}")
+        && e.kind() != io::ErrorKind::BrokenPipe
+    {
+        panic!("failed printing to stdout: {e}");
+    }
+}
+
 /// Runs a parsed CLI invocation.
 ///
 /// # Errors
@@ -31,7 +43,26 @@ pub async fn run(cli: Cli) -> Result<()> {
     if let args::Command::Schema = &cli.command {
         let data = schema::schema_payload();
         let output = serde_json::to_string(&data).map_err(crate::error::Error::Json)?;
-        println!("{output}");
+        print_stdout_line(&output);
+        return Ok(());
+    }
+
+    // Commands listing is metadata-only and does not require an API key.
+    if let args::Command::Commands = &cli.command {
+        let cmd = <Cli as CommandFactory>::command();
+        for leaf in leaf_commands(&cmd) {
+            print_stdout_line(&leaf);
+        }
+        return Ok(());
+    }
+
+    // Shell completions are metadata-only and do not require an API key.
+    if let args::Command::Completions { shell } = &cli.command {
+        let mut cmd = <Cli as CommandFactory>::command();
+        let mut buf = Vec::new();
+        clap_complete::generate(shell.to_owned(), &mut cmd, "fmp-agent", &mut buf);
+        let output = String::from_utf8(buf).expect("completions output is valid UTF-8");
+        print_stdout_line(&output);
         return Ok(());
     }
 
@@ -47,7 +78,7 @@ pub async fn run(cli: Cli) -> Result<()> {
     let client = FmpClient::with_base_url(api_key, &cli.base_url)?;
     let payload = execute(&client, &cli.command).await?;
     if let Some(output) = render_output(payload)? {
-        println!("{output}");
+        print_stdout_line(&output);
     }
 
     Ok(())
@@ -72,6 +103,32 @@ fn bare_group_name(command: &args::Command) -> Option<&'static str> {
     }
 }
 
+/// Collect leaf command paths from a clap command tree, one `group subcommand`
+/// string per leaf, sorted alphabetically.
+fn leaf_commands(cmd: &clap::Command) -> Vec<String> {
+    let mut leaves = Vec::new();
+    for sub in cmd.get_subcommands() {
+        if sub.get_name() == "help" {
+            continue;
+        }
+
+        let real_children: Vec<_> = sub
+            .get_subcommands()
+            .filter(|c| c.get_name() != "help")
+            .collect();
+
+        if real_children.is_empty() {
+            leaves.push(sub.get_name().to_owned());
+        } else {
+            for child in leaf_commands(sub) {
+                leaves.push(format!("{} {child}", sub.get_name()));
+            }
+        }
+    }
+    leaves.sort();
+    leaves
+}
+
 /// Prints the help text for a named group subcommand.
 ///
 /// Called when the user invokes `fmp-agent <group>` without a subcommand.
@@ -84,7 +141,11 @@ pub(crate) fn print_group_help(group_name: &str) -> Result<()> {
     group
         .print_help()
         .map_err(|_| Error::MissingArgument("group"))?;
-    println!();
+    if let Err(e) = writeln!(io::stdout())
+        && e.kind() != io::ErrorKind::BrokenPipe
+    {
+        panic!("failed printing to stdout: {e}");
+    }
 
     Ok(())
 }

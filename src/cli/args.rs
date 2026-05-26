@@ -42,6 +42,18 @@ pub(crate) enum Command {
     #[command(about = help::SCHEMA_ABOUT, long_about = help::SCHEMA_LONG)]
     Schema,
 
+    /// Commands list command.
+    #[command(about = help::COMMANDS_ABOUT, long_about = help::COMMANDS_LONG)]
+    Commands,
+
+    /// Shell completions command.
+    #[command(about = help::COMPLETIONS_ABOUT, long_about = help::COMPLETIONS_LONG)]
+    Completions {
+        /// Target shell.
+        #[arg(value_enum)]
+        shell: clap_complete::Shell,
+    },
+
     /// Top-level alias for `market quote`.
     #[command(about = help::QUOTE_ALIAS_ABOUT, long_about = help::QUOTE_ALIAS_LONG)]
     Quote(SymbolArgs),

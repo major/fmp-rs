@@ -45,9 +45,11 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["historical"],
     &["profile"],
     &["earnings"],
-    // Top-level standalone (2)
+    // Top-level standalone (4)
     &["search"],
     &["schema"],
+    &["commands"],
+    &["completions"],
     // company (7)
     &["company", "profile"],
     &["company", "executives"],
