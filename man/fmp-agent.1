@@ -1,12 +1,21 @@
 .ie \n(.g .ds Aq \(aq
 .el .ds Aq '
-.TH fmp-agent 1  "fmp-agent 0.4.0" 
+.TH fmp-agent 1  "fmp-agent 0.4.1" 
 .SH NAME
 fmp\-agent \- Financial Modeling Prep API CLI. Commands are organized into groups, run `fmp\-agent <group>` to explore, or `fmp\-agent <group> <command> [args]` to execute.
 
 Examples:
   fmp\-agent market quote AAPL
   fmp\-agent company profile AAPL
+
+Shortcuts:
+  fmp\-agent commands           List all leaf commands
+  fmp\-agent completions <shell> Generate shell completions (bash/zsh/fish/powershell)
+  fmp\-agent schema             Dump CLI metadata as JSON
+  fmp\-agent quote AAPL         Alias for market quote
+  fmp\-agent historical AAPL    Alias for market historical
+  fmp\-agent profile AAPL       Alias for company profile
+  fmp\-agent earnings           Alias for calendar earnings
 .SH SYNOPSIS
 \fBfmp\-agent\fR [\fB\-\-api\-key\fR] [\fB\-\-base\-url\fR] [\fB\-v\fR|\fB\-\-verbose\fR]... [\fB\-q\fR|\fB\-\-quiet\fR]... [\fB\-h\fR|\fB\-\-help\fR] [\fB\-V\fR|\fB\-\-version\fR] <\fIsubcommands\fR>
 .SH DESCRIPTION
@@ -15,6 +24,15 @@ Financial Modeling Prep API CLI. Commands are organized into groups, run `fmp\-a
 Examples:
   fmp\-agent market quote AAPL
   fmp\-agent company profile AAPL
+.PP
+Shortcuts:
+  fmp\-agent commands           List all leaf commands
+  fmp\-agent completions <shell> Generate shell completions (bash/zsh/fish/powershell)
+  fmp\-agent schema             Dump CLI metadata as JSON
+  fmp\-agent quote AAPL         Alias for market quote
+  fmp\-agent historical AAPL    Alias for market historical
+  fmp\-agent profile AAPL       Alias for company profile
+  fmp\-agent earnings           Alias for calendar earnings
 .SH OPTIONS
 .TP
 \fB\-\-api\-key\fR \fI<API_KEY>\fR
@@ -41,6 +59,12 @@ Search for tradable stock symbols by ticker or company name.
 .TP
 fmp\-agent\-schema(1)
 Dump the CLI surface as machine\-readable JSON.
+.TP
+fmp\-agent\-commands(1)
+List all available leaf commands.
+.TP
+fmp\-agent\-completions(1)
+Generate shell completions for bash, zsh, fish, or powershell.
 .TP
 fmp\-agent\-quote(1)
 Get the latest market quote; alias for market quote.
@@ -106,4 +130,4 @@ EXIT CODES:
 
 Parse errors use Clap\*(Aqs native human\-readable usage text on stderr for exit code 2. Runtime errors use the JSON envelope on stderr: {"ok":false,...} for exit codes 3\-6. To distinguish programmatically, check the exit code first, then parse stderr only for exit codes 3\-6.
 .SH VERSION
-v0.4.0
+v0.4.1

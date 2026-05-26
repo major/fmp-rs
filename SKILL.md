@@ -10,7 +10,7 @@ LLMs and tool runners should discover the command surface from the binary itself
 
 ```bash
 fmp-agent commands           # list all leaf command paths, one per line
-fmp-agent completions <shell> # generate bash/zsh/fish completions script
+fmp-agent completions <shell> # generate bash/zsh/fish/powershell completions script
 fmp-agent schema             # versioned JSON: { schema_version, binary, version, commands[] }
 fmp-agent --help             # human-readable top-level help
 fmp-agent <GROUP> --help     # human-readable per-group help
@@ -21,7 +21,7 @@ fmp-agent <GROUP> <CMD> --help  # human-readable per-command help, includes Exam
 
 - Do **not** require `FMP_API_KEY` and make **no** network requests.
 - `commands` prints one leaf path per line, sorted alphabetically (e.g. `analyst grades`, `company profile`).
-- `completions` generates a shell completions script (bash/zsh/fish) on stdout.
+- `completions` generates a shell completions script (bash/zsh/fish/powershell) on stdout.
 - `schema` emits `schema_version: 2` today; the shape is experimental and may change between releases.
 - Each schema command entry has `name`, `path`, `aliases`, `preferred_path`, `api_key_required`, `about`, `long_about`, and `args` (with `name`, `kind`, defaults, value names).
 - Use these as the source of truth for available commands and arguments; treat the catalog in section 6 as a curated index.

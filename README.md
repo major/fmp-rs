@@ -44,7 +44,7 @@ fmp-agent market quote AAPL
 fmp-agent company profile AAPL
 ```
 
-Four single-token aliases are preserved for ergonomics: `quote` (market quote), `historical` (market historical), `profile` (company profile), and `earnings` (calendar earnings). Run `fmp-agent commands` to list all available leaf commands, `fmp-agent completions <shell>` for bash/zsh/fish completions, or `fmp-agent schema` for machine-readable JSON metadata. Everything else requires the two-level `<group> <subcommand>` form.
+Four single-token aliases are preserved for ergonomics: `quote` (market quote), `historical` (market historical), `profile` (company profile), and `earnings` (calendar earnings). Run `fmp-agent commands` to list all available leaf commands, `fmp-agent completions <shell>` for bash/zsh/fish/powershell completions, or `fmp-agent schema` for machine-readable JSON metadata. Everything else requires the two-level `<group> <subcommand>` form.
 
 ## Commands
 
