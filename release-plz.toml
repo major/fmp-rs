@@ -1,0 +1,15 @@
+# release-plz configuration.
+# See https://release-plz.dev/docs/config
+
+[workspace]
+# Reuse the existing git-cliff template instead of release-plz's defaults so
+# the changelog format stays stable across the manual-to-automated migration.
+changelog_config = "cliff.toml"
+
+# cargo-dist (`.github/workflows/release.yml`) publishes to crates.io via OIDC
+# trusted publishing on tag push. release-plz only needs to push the tag.
+publish = false
+
+# cargo-dist creates the GitHub Release (with binary assets and installers)
+# when it sees the tag. Leaving this on would race with cargo-dist.
+git_release_enable = false
