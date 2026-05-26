@@ -1,4 +1,3 @@
-#![allow(unused)]
 //! SEC command group for SEC filing searches.
 
 use clap::Subcommand;
@@ -30,7 +29,7 @@ pub(crate) enum Cmd {
 /// # Errors
 ///
 /// Returns an error when the API request fails or the response cannot be parsed.
-pub(crate) async fn dispatch(client: &FmpClient, cmd: Cmd) -> Result<CommandPayload> {
+pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPayload> {
     match cmd {
         Cmd::Filings(args) => {
             let from = args.from.clone().or_else(|| {

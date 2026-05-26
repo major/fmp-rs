@@ -1,4 +1,3 @@
-#![allow(unused)]
 //! News command group.
 
 use clap::Subcommand;
@@ -51,7 +50,7 @@ pub(crate) enum Cmd {
 }
 
 /// Dispatch a news subcommand.
-pub(crate) async fn dispatch(client: &FmpClient, cmd: Cmd) -> Result<CommandPayload> {
+pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPayload> {
     match cmd {
         Cmd::Stock(args) => run_news(client, endpoint::STOCK_NEWS, &args.symbol, args.limit).await,
         Cmd::General(args) => {
@@ -61,8 +60,6 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: Cmd) -> Result<CommandPayl
             run_paged(client, endpoint::FMP_ARTICLES, args.page, args.limit).await
         }
         Cmd::Forex(args) => run_paged(client, endpoint::FOREX_NEWS, args.page, args.limit).await,
-        Cmd::Crypto(args) => {
-            run_paged(client, endpoint::CRYPTO_NEWS, args.page, args.limit).await
-        }
+        Cmd::Crypto(args) => run_paged(client, endpoint::CRYPTO_NEWS, args.page, args.limit).await,
     }
 }

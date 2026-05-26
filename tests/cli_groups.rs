@@ -64,7 +64,7 @@ fn group_fundamentals_income_statement() {
 fn group_analyst_grades() {
     run_group_test(
         &["analyst", "grades", "AAPL"],
-        "/analyst-stock-ratings",
+        "/grades",
         &[("symbol", "AAPL"), ("apikey", "test-key")],
         json!([{}]),
     );
@@ -74,7 +74,7 @@ fn group_analyst_grades() {
 fn group_insider_latest() {
     run_group_test(
         &["insider", "latest"],
-        "/insider-trading",
+        "/insider-trading/latest",
         &[("apikey", "test-key")],
         json!([{}]),
     );
@@ -84,7 +84,7 @@ fn group_insider_latest() {
 fn group_calendar_earnings() {
     run_group_test(
         &["calendar", "earnings"],
-        "/earning_calendar",
+        "/earnings-calendar",
         &[("apikey", "test-key")],
         json!([{}]),
     );
@@ -94,7 +94,7 @@ fn group_calendar_earnings() {
 fn group_macro_treasury_rates() {
     run_group_test(
         &["macro", "treasury-rates"],
-        "/treasury",
+        "/treasury-rates",
         &[("apikey", "test-key")],
         json!([{}]),
     );
@@ -104,7 +104,7 @@ fn group_macro_treasury_rates() {
 fn group_technical_sma() {
     run_group_test(
         &["technical", "sma", "AAPL"],
-        "/technical_indicator/1day/AAPL",
+        "/technical-indicators/sma",
         &[("apikey", "test-key")],
         json!([{}]),
     );
@@ -114,7 +114,7 @@ fn group_technical_sma() {
 fn group_sec_filings() {
     run_group_test(
         &["sec", "filings", "AAPL"],
-        "/sec_filings",
+        "/sec-filings-search/symbol",
         &[("apikey", "test-key")],
         json!([{}]),
     );
@@ -154,7 +154,7 @@ fn group_forex_quote() {
 fn group_news_stock() {
     run_group_test(
         &["news", "stock", "AAPL"],
-        "/stock_news",
+        "/news/stock",
         &[("apikey", "test-key")],
         json!([{}]),
     );

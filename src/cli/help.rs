@@ -7,67 +7,43 @@ pub(crate) const API_KEY: &str =
     "FMP API key. Prefer FMP_API_KEY in .env or the environment so shells do not record it.";
 pub(crate) const BASE_URL: &str = "FMP stable API base URL. Override for tests or proxies.";
 
-#[allow(dead_code)]
 pub(crate) const COMPANY_GROUP_ABOUT: &str = "Company data command group.";
-#[allow(dead_code)]
 pub(crate) const COMPANY_GROUP_LONG: &str = "Company data commands. Available subcommands:\n  profile\n  executives\n  peers\n  scores\n  float\n  rating\n  historical-rating\n\nExamples:\n  fmp-agent company\n  fmp-agent company profile AAPL";
-#[allow(dead_code)]
 pub(crate) const MARKET_GROUP_ABOUT: &str = "Market data command group.";
-#[allow(dead_code)]
 pub(crate) const MARKET_GROUP_LONG: &str = "Market data commands. Available subcommands:\n  quote\n  historical\n  dividends\n  splits\n  price-change\n  stock-list\n\nExamples:\n  fmp-agent market\n  fmp-agent market quote AAPL";
-#[allow(dead_code)]
 pub(crate) const FUNDAMENTALS_GROUP_ABOUT: &str = "Fundamentals command group.";
-#[allow(dead_code)]
 pub(crate) const FUNDAMENTALS_GROUP_LONG: &str = "Fundamentals commands. Available subcommands:\n  income-statement\n  income-statement-as-reported\n  balance-sheet\n  cash-flow\n  ratios\n  metrics\n  income-statement-growth\n  balance-sheet-growth\n  cash-flow-growth\n  enterprise-values\n  analyst-estimates\n  report-dates\n  annual-report-form\n\nExamples:\n  fmp-agent fundamentals\n  fmp-agent fundamentals income-statement AAPL";
-#[allow(dead_code)]
 pub(crate) const ANALYST_GROUP_ABOUT: &str = "Analyst command group.";
-#[allow(dead_code)]
 pub(crate) const ANALYST_GROUP_LONG: &str = "Analyst commands. Available subcommands:\n  price-target-consensus\n  price-target-summary\n  grades\n\nExamples:\n  fmp-agent analyst\n  fmp-agent analyst grades AAPL";
-#[allow(dead_code)]
 pub(crate) const INSIDER_GROUP_ABOUT: &str = "Insider command group.";
-#[allow(dead_code)]
 pub(crate) const INSIDER_GROUP_LONG: &str = "Insider commands. Available subcommands:\n  latest\n\nExamples:\n  fmp-agent insider\n  fmp-agent insider latest --page 1 --limit 20";
-#[allow(dead_code)]
 pub(crate) const CALENDAR_GROUP_ABOUT: &str = "Calendar command group.";
-#[allow(dead_code)]
 pub(crate) const CALENDAR_GROUP_LONG: &str = "Calendar commands. Available subcommands:\n  earnings\n\nExamples:\n  fmp-agent calendar\n  fmp-agent calendar earnings --from 2024-01-01 --to 2024-03-31";
-#[allow(dead_code)]
 pub(crate) const MACRO_GROUP_ABOUT: &str = "Macro command group.";
-#[allow(dead_code)]
 pub(crate) const MACRO_GROUP_LONG: &str = "Macro commands. Available subcommands:\n  treasury-rates\n  economic-indicators\n\nExamples:\n  fmp-agent macro\n  fmp-agent macro economic-indicators GDP";
-#[allow(dead_code)]
 pub(crate) const TECHNICAL_GROUP_ABOUT: &str = "Technical analysis command group.";
-#[allow(dead_code)]
 pub(crate) const TECHNICAL_GROUP_LONG: &str = "Technical analysis commands. Available subcommands:\n  sma\n\nExamples:\n  fmp-agent technical\n  fmp-agent technical sma AAPL";
-#[allow(dead_code)]
 pub(crate) const SEC_GROUP_ABOUT: &str = "SEC command group.";
-#[allow(dead_code)]
 pub(crate) const SEC_GROUP_LONG: &str = "SEC commands. Available subcommands:\n  filings\n\nExamples:\n  fmp-agent sec\n  fmp-agent sec filings AAPL";
-#[allow(dead_code)]
 pub(crate) const ETF_GROUP_ABOUT: &str = "ETF command group.";
-#[allow(dead_code)]
 pub(crate) const ETF_GROUP_LONG: &str = "ETF commands. Available subcommands:\n  holdings\n\nExamples:\n  fmp-agent etf\n  fmp-agent etf holdings SPY";
-#[allow(dead_code)]
 pub(crate) const CRYPTO_GROUP_ABOUT: &str = "Cryptocurrency command group.";
-#[allow(dead_code)]
 pub(crate) const CRYPTO_GROUP_LONG: &str = "Cryptocurrency commands. Available subcommands:\n  list\n  quote\n  historical\n\nExamples:\n  fmp-agent crypto\n  fmp-agent crypto quote BTCUSD";
-#[allow(dead_code)]
 pub(crate) const FOREX_GROUP_ABOUT: &str = "Forex command group.";
-#[allow(dead_code)]
 pub(crate) const FOREX_GROUP_LONG: &str = "Forex commands. Available subcommands:\n  quote\n  historical\n\nExamples:\n  fmp-agent forex\n  fmp-agent forex quote EURUSD";
-#[allow(dead_code)]
 pub(crate) const NEWS_GROUP_ABOUT: &str = "News command group.";
-#[allow(dead_code)]
 pub(crate) const NEWS_GROUP_LONG: &str = "News commands. Available subcommands:\n  stock\n  general\n  articles\n  forex\n  crypto\n\nExamples:\n  fmp-agent news\n  fmp-agent news stock AAPL";
 
-#[allow(dead_code)]
-pub(crate) const QUOTE_ALIAS_ABOUT: &str = "Alias for market quote.";
-#[allow(dead_code)]
-pub(crate) const HISTORICAL_ALIAS_ABOUT: &str = "Alias for market historical.";
-#[allow(dead_code)]
-pub(crate) const PROFILE_ALIAS_ABOUT: &str = "Alias for company profile.";
-#[allow(dead_code)]
-pub(crate) const EARNINGS_ALIAS_ABOUT: &str = "Alias for calendar earnings.";
+pub(crate) const QUOTE_ALIAS_ABOUT: &str = "Get the latest market quote; alias for market quote.";
+pub(crate) const QUOTE_ALIAS_LONG: &str = "Top-level alias for `market quote`. Get the latest market quote for a stock ticker including price, volume, and change data.\n\nExamples:\n  fmp-agent quote AAPL\n  fmp-agent market quote AAPL";
+pub(crate) const HISTORICAL_ALIAS_ABOUT: &str =
+    "Get historical end-of-day price bars; alias for market historical.";
+pub(crate) const HISTORICAL_ALIAS_LONG: &str = "Top-level alias for `market historical`. Get historical end-of-day price bars for a stock ticker. Optionally filter by date range.\n\nExamples:\n  fmp-agent historical AAPL\n  fmp-agent market historical AAPL --from 2024-01-01 --to 2024-12-31";
+pub(crate) const PROFILE_ALIAS_ABOUT: &str = "Get company profile data; alias for company profile.";
+pub(crate) const PROFILE_ALIAS_LONG: &str = "Top-level alias for `company profile`. Get company profile and reference data including sector, industry, description, and headquarters for a stock ticker.\n\nExamples:\n  fmp-agent profile AAPL\n  fmp-agent company profile AAPL";
+pub(crate) const EARNINGS_ALIAS_ABOUT: &str =
+    "Get earnings calendar rows; alias for calendar earnings.";
+pub(crate) const EARNINGS_ALIAS_LONG: &str = "Top-level alias for `calendar earnings`. Get earnings calendar rows for an optional announcement date range.\n\nExamples:\n  fmp-agent earnings\n  fmp-agent calendar earnings --from 2024-01-01 --to 2024-03-31";
 
 pub(crate) const SEARCH_ABOUT: &str =
     "Search for tradable stock symbols by ticker or company name.";

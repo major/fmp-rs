@@ -35,23 +35,46 @@ pub async fn run(cli: Cli) -> Result<()> {
         return Ok(());
     }
 
+    if let Some(group_name) = bare_group_name(&cli.command) {
+        print_group_help(group_name)?;
+        return Ok(());
+    }
+
     let Some(api_key) = cli.api_key.filter(|key| !key.trim().is_empty()) else {
         return Err(Error::MissingApiKey);
     };
 
     let client = FmpClient::with_base_url(api_key, &cli.base_url)?;
     let payload = execute(&client, &cli.command).await?;
-    let output = render_output(payload)?;
-
-    println!("{output}");
+    if let Some(output) = render_output(payload)? {
+        println!("{output}");
+    }
 
     Ok(())
+}
+
+fn bare_group_name(command: &args::Command) -> Option<&'static str> {
+    match command {
+        args::Command::Company { command: None } => Some("company"),
+        args::Command::Market { command: None } => Some("market"),
+        args::Command::Fundamentals { command: None } => Some("fundamentals"),
+        args::Command::Analyst { command: None } => Some("analyst"),
+        args::Command::Insider { command: None } => Some("insider"),
+        args::Command::Calendar { command: None } => Some("calendar"),
+        args::Command::MacroEcon { command: None } => Some("macro"),
+        args::Command::Technical { command: None } => Some("technical"),
+        args::Command::Sec { command: None } => Some("sec"),
+        args::Command::Etf { command: None } => Some("etf"),
+        args::Command::Crypto { command: None } => Some("crypto"),
+        args::Command::Forex { command: None } => Some("forex"),
+        args::Command::News { command: None } => Some("news"),
+        _ => None,
+    }
 }
 
 /// Prints the help text for a named group subcommand.
 ///
 /// Called when the user invokes `fmp-agent <group>` without a subcommand.
-#[allow(dead_code)]
 pub(crate) fn print_group_help(group_name: &str) -> Result<()> {
     let mut command = <Cli as CommandFactory>::command();
     let Some(group) = command.find_subcommand_mut(group_name) else {

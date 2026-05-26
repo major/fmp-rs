@@ -1,4 +1,3 @@
-#![allow(unused)]
 //! Fundamentals command group.
 //!
 //! Financial statements, ratios, metrics, growth, estimates, and annual
@@ -22,6 +21,7 @@ pub(crate) enum Cmd {
         about = help::FUNDAMENTALS_INCOME_STATEMENT_ABOUT,
         long_about = help::FUNDAMENTALS_INCOME_STATEMENT_LONG
     )]
+    #[command(name = "income-statement")]
     Income(AnnualArgs),
 
     /// As-reported income statement command.
@@ -29,6 +29,7 @@ pub(crate) enum Cmd {
         about = help::FUNDAMENTALS_INCOME_STATEMENT_AS_REPORTED_ABOUT,
         long_about = help::FUNDAMENTALS_INCOME_STATEMENT_AS_REPORTED_LONG
     )]
+    #[command(name = "income-statement-as-reported")]
     IncomeAsReported(AnnualArgs),
 
     /// Balance sheet command.
@@ -64,6 +65,7 @@ pub(crate) enum Cmd {
         about = help::FUNDAMENTALS_INCOME_STATEMENT_GROWTH_ABOUT,
         long_about = help::FUNDAMENTALS_INCOME_STATEMENT_GROWTH_LONG
     )]
+    #[command(name = "income-statement-growth")]
     IncomeGrowth(AnnualArgs),
 
     /// Balance sheet growth command.
@@ -92,6 +94,7 @@ pub(crate) enum Cmd {
         about = help::FUNDAMENTALS_ANALYST_ESTIMATES_ABOUT,
         long_about = help::FUNDAMENTALS_ANALYST_ESTIMATES_LONG
     )]
+    #[command(name = "analyst-estimates")]
     Estimates(AnnualArgs),
 
     /// Financial report dates command.
@@ -106,11 +109,12 @@ pub(crate) enum Cmd {
         about = help::FUNDAMENTALS_ANNUAL_REPORT_FORM_ABOUT,
         long_about = help::FUNDAMENTALS_ANNUAL_REPORT_FORM_LONG
     )]
+    #[command(name = "annual-report-form")]
     AnnualReport(AnnualReportFormArgs),
 }
 
 /// Dispatches a fundamentals subcommand to the FMP API.
-pub(crate) async fn dispatch(client: &FmpClient, cmd: Cmd) -> Result<CommandPayload> {
+pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPayload> {
     match cmd {
         Cmd::Income(args) => {
             run_annual(client, endpoint::INCOME_STATEMENT, &args.symbol, args.limit).await

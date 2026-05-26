@@ -18,7 +18,7 @@ fn verbose_flag_produces_debug_output() {
         .unwrap()
         .env("FMP_API_KEY", "secret-test-key")
         .env("FMP_BASE_URL", format!("{}/", server.base_url()))
-        .args(["-vvv", "market-quote", "AAPL"])
+        .args(["-vvv", "market", "quote", "AAPL"])
         .output()
         .unwrap();
 
@@ -44,7 +44,7 @@ fn verbose_flag_redacts_api_key() {
         .unwrap()
         .env("FMP_API_KEY", "secret-test-key")
         .env("FMP_BASE_URL", format!("{}/", server.base_url()))
-        .args(["-vvv", "market-quote", "AAPL"])
+        .args(["-vvv", "market", "quote", "AAPL"])
         .output()
         .unwrap();
 
@@ -70,7 +70,7 @@ fn no_verbose_output_without_flag() {
         .unwrap()
         .env("FMP_API_KEY", "secret-test-key")
         .env("FMP_BASE_URL", format!("{}/", server.base_url()))
-        .args(["market-quote", "AAPL"])
+        .args(["market", "quote", "AAPL"])
         .output()
         .unwrap();
 

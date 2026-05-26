@@ -1,4 +1,3 @@
-#![allow(unused)]
 //! Company data command group.
 
 use clap::Subcommand;
@@ -64,7 +63,7 @@ pub(crate) enum Cmd {
 }
 
 /// Dispatch a company subcommand.
-pub(crate) async fn dispatch(client: &FmpClient, cmd: Cmd) -> Result<CommandPayload> {
+pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPayload> {
     match cmd {
         Cmd::Profile(args) => run_by_symbol(client, crate::endpoint::PROFILE, &args.symbol).await,
         Cmd::Executives(args) => {

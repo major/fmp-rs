@@ -27,9 +27,11 @@ fn schema_emits_valid_json_with_required_fields() {
     let commands = body["commands"]
         .as_array()
         .expect("commands must be an array");
+    // Schema v1 enumerates top-level commands (13 groups + 4 aliases + search + schema = 19).
+    // Task 15 rewrites schema to v2 with recursive walk that surfaces all leaf commands.
     assert!(
-        commands.len() >= 48,
-        "must have at least 48 commands (47 + schema), got {}",
+        commands.len() >= 19,
+        "must have at least 19 top-level commands (13 groups + 4 aliases + search + schema), got {}",
         commands.len()
     );
 
@@ -98,7 +100,7 @@ fn other_commands_still_require_api_key() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
         .env_remove("FMP_API_KEY")
-        .args(["market-quote", "AAPL"])
+        .args(["market", "quote", "AAPL"])
         .assert()
         .failure()
         .code(3);

@@ -1,4 +1,3 @@
-#![allow(unused)]
 //! ETF command group.
 
 use clap::Subcommand;
@@ -27,10 +26,8 @@ pub(crate) enum Cmd {
 /// # Errors
 ///
 /// Returns an error when the API request fails or the response cannot be parsed.
-pub(crate) async fn dispatch(client: &FmpClient, cmd: Cmd) -> Result<CommandPayload> {
+pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPayload> {
     match cmd {
-        Cmd::Holdings(args) => {
-            run_by_symbol(client, endpoint::ETF_HOLDINGS, &args.symbol).await
-        }
+        Cmd::Holdings(args) => run_by_symbol(client, endpoint::ETF_HOLDINGS, &args.symbol).await,
     }
 }

@@ -1,5 +1,6 @@
-#![allow(unused)]
 //! Insider trading command group.
+
+use clap::Subcommand;
 
 use crate::cli::args::PagedArgs;
 use crate::cli::dispatch::run_paged;
@@ -10,10 +11,13 @@ use crate::endpoint;
 use crate::error::Result;
 
 /// Insider trading commands.
-#[derive(Debug)]
+#[derive(Debug, Subcommand)]
 pub(crate) enum Cmd {
     /// Get latest insider trading rows.
-    #[allow(dead_code)]
+    #[command(
+        about = help::INSIDER_TRADING_LATEST_ABOUT,
+        long_about = help::INSIDER_TRADING_LATEST_LONG
+    )]
     Latest(PagedArgs),
 }
 
@@ -22,10 +26,16 @@ pub(crate) enum Cmd {
 /// # Errors
 ///
 /// Returns an error when the API request fails or the response cannot be parsed.
-pub(crate) async fn dispatch(client: &FmpClient, cmd: Cmd) -> Result<CommandPayload> {
+pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPayload> {
     match cmd {
         Cmd::Latest(args) => {
-            run_paged(client, endpoint::INSIDER_TRADING_LATEST, args.page, args.limit).await
+            run_paged(
+                client,
+                endpoint::INSIDER_TRADING_LATEST,
+                args.page,
+                args.limit,
+            )
+            .await
         }
     }
 }

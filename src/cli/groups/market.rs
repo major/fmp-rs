@@ -1,4 +1,3 @@
-#![allow(unused)]
 //! Market data command group.
 
 use clap::Subcommand;
@@ -40,10 +39,10 @@ pub(crate) enum Cmd {
 }
 
 /// Dispatch a market subcommand.
-pub(crate) async fn dispatch(client: &FmpClient, cmd: Cmd) -> Result<CommandPayload> {
+pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPayload> {
     match cmd {
-        Cmd::Quote(args) => dispatch_quote(client, &args).await,
-        Cmd::Historical(args) => dispatch_historical_eod(client, &args).await,
+        Cmd::Quote(args) => dispatch_quote(client, args).await,
+        Cmd::Historical(args) => dispatch_historical_eod(client, args).await,
         Cmd::Dividends(args) => {
             run_by_symbol(client, crate::endpoint::DIVIDENDS, &args.symbol).await
         }
