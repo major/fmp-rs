@@ -16,7 +16,10 @@ fn assert_broken_pipe(args: &[&str]) {
     // Close the read end of the pipe.
     drop(child.stdout.take());
     let status = child.wait().unwrap();
-    assert!(status.success(), "process should exit cleanly on broken pipe");
+    assert!(
+        status.success(),
+        "process should exit cleanly on broken pipe"
+    );
 }
 
 #[test]
@@ -65,7 +68,10 @@ fn commands_output_is_sorted() {
 
     let mut sorted = lines.clone();
     sorted.sort();
-    assert_eq!(lines, sorted, "commands output must be sorted alphabetically");
+    assert_eq!(
+        lines, sorted,
+        "commands output must be sorted alphabetically"
+    );
 }
 
 #[test]
