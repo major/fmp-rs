@@ -85,7 +85,7 @@ Other Rust projects (for example an MCP server) can depend on `rusty-fmp` as an 
 
 ```toml
 [dependencies]
-rusty-fmp = { version = "0.4.1", default-features = false }
+rusty-fmp = { default-features = false }
 ```
 
 This excludes `clap` and `dotenvy` and exposes `FmpClient`, `Endpoint`, `Error`, and `Result`. The `cli` feature (enabled by default) adds the `Cli` parser and the `run` entry point used by the `fmp-agent` binary.
