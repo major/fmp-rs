@@ -1,6 +1,6 @@
 //! Shared user-facing CLI help text.
 
-pub(crate) const CLI_ABOUT: &str = "Financial Modeling Prep API CLI. Commands are organized into groups, run `fmp-agent <group>` to explore, or `fmp-agent <group> <command> [args]` to execute.\n\nExamples:\n  fmp-agent market quote AAPL\n  fmp-agent company profile AAPL\n\nShortcuts:\n  fmp-agent commands           List all leaf commands\n  fmp-agent completions <shell> Generate shell completions (bash/zsh/fish/powershell)\n  fmp-agent schema             Dump CLI metadata as JSON\n  fmp-agent quote AAPL         Alias for market quote\n  fmp-agent historical AAPL    Alias for market historical\n  fmp-agent profile AAPL       Alias for company profile\n  fmp-agent earnings           Alias for calendar earnings";
+pub(crate) const CLI_ABOUT: &str = "Financial Modeling Prep API CLI. Commands are organized into groups, run `fmp-agent <group>` to explore, or `fmp-agent <group> <command> [args]` to execute.\n\nGetting started (set FMP_API_KEY first):\n  fmp-agent quote AAPL\n  fmp-agent profile AAPL\n  fmp-agent market historical AAPL --from 2024-01-01\n  fmp-agent commands --grouped\n\nExamples:\n  fmp-agent market quote AAPL\n  fmp-agent company profile AAPL\n\nShortcuts:\n  fmp-agent commands           List all leaf commands\n  fmp-agent completions <shell> Generate shell completions (bash/zsh/fish/powershell)\n  fmp-agent schema             Dump CLI metadata as JSON\n  fmp-agent quote AAPL         Alias for market quote\n  fmp-agent historical AAPL    Alias for market historical\n  fmp-agent profile AAPL       Alias for company profile\n  fmp-agent earnings           Alias for calendar earnings";
 pub(crate) const EXIT_CODES: &str = "EXIT CODES:\n  0  Success\n  2  Usage error (bad flags or arguments)\n  3  Configuration error (missing API key or invalid base URL)\n  4  Network error (HTTP request failed)\n  5  API error (server returned an error response)\n  6  Parse error (JSON deserialization failed)\n\nParse errors use Clap's native human-readable usage text on stderr for exit code 2. Runtime errors use the JSON envelope on stderr: {\"ok\":false,...} for exit codes 3-6. To distinguish programmatically, check the exit code first, then parse stderr only for exit codes 3-6.";
 
 pub(crate) const API_KEY: &str =
@@ -177,7 +177,9 @@ pub(crate) const SCHEMA_ABOUT: &str = "Dump the CLI surface as machine-readable 
 pub(crate) const SCHEMA_LONG: &str = "Dump the CLI surface as machine-readable JSON. The output format is experimental and may change between versions. schema_version 2 is the grouped-command format.\n\nThis command does not require FMP_API_KEY and does not make any network requests.\n\nExamples:\n  fmp-agent schema\n  fmp-agent schema | jq '.commands | length'";
 
 pub(crate) const COMMANDS_ABOUT: &str = "List all available leaf commands.";
-pub(crate) const COMMANDS_LONG: &str = "List all available leaf commands, one per line. Output is sorted alphabetically.\n\nThis command does not require FMP_API_KEY and does not make any network requests.\n\nExamples:\n  fmp-agent commands\n  fmp-agent commands | grep quote";
+pub(crate) const COMMANDS_LONG: &str = "List all available leaf commands. Output is sorted alphabetically by default. Pass --grouped for a human-readable listing with commands organized by category and annotated with their about text.\n\nThis command does not require FMP_API_KEY and does not make any network requests.\n\nExamples:\n  fmp-agent commands\n  fmp-agent commands | grep quote\n  fmp-agent commands --grouped";
+pub(crate) const COMMANDS_GROUPED: &str =
+    "Group commands by category instead of flat sorted output.";
 
 pub(crate) const COMPLETIONS_ABOUT: &str =
     "Generate shell completions for bash, zsh, fish, or powershell.";

@@ -233,3 +233,34 @@ fn commands_includes_metadata_commands() {
         .stdout(predicate::str::contains("completions"))
         .stdout(predicate::str::contains("schema"));
 }
+
+/// The `commands --grouped` output organizes commands by group with about text.
+#[test]
+fn commands_grouped_output_has_group_names() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env_remove("FMP_API_KEY")
+        .args(["commands", "--grouped"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("market"))
+        .stdout(predicate::str::contains("company"))
+        .stdout(predicate::str::contains("fundamentals"));
+}
+
+/// The `commands --grouped` output includes about text for each subcommand.
+#[test]
+fn commands_grouped_output_has_about_text() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env_remove("FMP_API_KEY")
+        .args(["commands", "--grouped"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains(
+            "Get the latest market quote for a stock ticker",
+        ))
+        .stdout(predicate::str::contains(
+            "Get company profile and reference data for a stock ticker",
+        ));
+}

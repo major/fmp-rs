@@ -664,3 +664,12 @@ async fn schema_arm_in_execute_panics() {
     let client = FmpClient::with_base_url("dummy", "http://localhost:1/").unwrap();
     execute(&client, &Command::Schema).await.unwrap();
 }
+
+#[tokio::test]
+#[should_panic(expected = "Commands command is handled before execute() in run()")]
+async fn commands_arm_in_execute_panics() {
+    let client = FmpClient::with_base_url("dummy", "http://localhost:1/").unwrap();
+    execute(&client, &Command::Commands { grouped: false })
+        .await
+        .unwrap();
+}

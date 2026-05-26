@@ -48,10 +48,15 @@ pub async fn run(cli: Cli) -> Result<()> {
     }
 
     // Commands listing is metadata-only and does not require an API key.
-    if let args::Command::Commands = &cli.command {
+    if let args::Command::Commands { grouped } = &cli.command {
         let cmd = <Cli as CommandFactory>::command();
-        for leaf in leaf_commands(&cmd) {
-            print_stdout_line(&leaf);
+        let output = if *grouped {
+            grouped_commands(&cmd)
+        } else {
+            leaf_commands(&cmd)
+        };
+        for line in output {
+            print_stdout_line(&line);
         }
         return Ok(());
     }
@@ -127,6 +132,68 @@ fn leaf_commands(cmd: &clap::Command) -> Vec<String> {
     }
     leaves.sort();
     leaves
+}
+
+/// Collect grouped command paths from a clap command tree, organized by group
+/// with about text, suitable for human reading.
+fn grouped_commands(cmd: &clap::Command) -> Vec<String> {
+    let mut lines = Vec::new();
+
+    // First pass: collect groups and their children.  The help subcommand
+    // (injected by Clap) is a leaf and falls through the children.is_empty()
+    // check below without a dedicated name guard.
+    for sub in cmd.get_subcommands() {
+        let children: Vec<_> = sub
+            .get_subcommands()
+            .filter(|c| c.get_name() != "help")
+            .collect();
+
+        if children.is_empty() {
+            // Top-level leaf (alias or metadata) -- handled in second pass.
+            continue;
+        }
+
+        // Group with children.
+        lines.push(sub.get_name().to_owned());
+
+        let max_width = children
+            .iter()
+            .map(|c| format!("{} {}", sub.get_name(), c.get_name()).len())
+            .max()
+            .unwrap_or(0);
+
+        for child in &children {
+            let full_path = format!("{} {}", sub.get_name(), child.get_name());
+            let about = child.get_about().map(|a| a.to_string()).unwrap_or_default();
+            lines.push(format!("  {full_path:<max_width$}  {about}"));
+        }
+        lines.push(String::new());
+    }
+
+    // Second pass: collect top-level standalone commands (aliases, search,
+    // schema, commands, completions) that have no child subcommands.
+    let leaves: Vec<_> = cmd
+        .get_subcommands()
+        .filter(|s| {
+            s.get_name() != "help"
+                && s.get_subcommands()
+                    .filter(|c| c.get_name() != "help")
+                    .count()
+                    == 0
+        })
+        .collect();
+
+    lines.push("top-level".to_owned());
+
+    let max_width = leaves.iter().map(|l| l.get_name().len()).max().unwrap_or(0);
+
+    for leaf in &leaves {
+        let about = leaf.get_about().map(|a| a.to_string()).unwrap_or_default();
+        lines.push(format!("  {:<max_width$}  {about}", leaf.get_name()));
+    }
+    lines.push(String::new());
+
+    lines
 }
 
 /// Prints the help text for a named group subcommand.

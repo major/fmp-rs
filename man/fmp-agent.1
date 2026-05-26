@@ -4,6 +4,12 @@
 .SH NAME
 fmp\-agent \- Financial Modeling Prep API CLI. Commands are organized into groups, run `fmp\-agent <group>` to explore, or `fmp\-agent <group> <command> [args]` to execute.
 
+Getting started (set FMP_API_KEY first):
+  fmp\-agent quote AAPL
+  fmp\-agent profile AAPL
+  fmp\-agent market historical AAPL \-\-from 2024\-01\-01
+  fmp\-agent commands \-\-grouped
+
 Examples:
   fmp\-agent market quote AAPL
   fmp\-agent company profile AAPL
@@ -20,6 +26,12 @@ Shortcuts:
 \fBfmp\-agent\fR [\fB\-\-api\-key\fR] [\fB\-\-base\-url\fR] [\fB\-v\fR|\fB\-\-verbose\fR]... [\fB\-q\fR|\fB\-\-quiet\fR]... [\fB\-h\fR|\fB\-\-help\fR] [\fB\-V\fR|\fB\-\-version\fR] <\fIsubcommands\fR>
 .SH DESCRIPTION
 Financial Modeling Prep API CLI. Commands are organized into groups, run `fmp\-agent <group>` to explore, or `fmp\-agent <group> <command> [args]` to execute.
+.PP
+Getting started (set FMP_API_KEY first):
+  fmp\-agent quote AAPL
+  fmp\-agent profile AAPL
+  fmp\-agent market historical AAPL \-\-from 2024\-01\-01
+  fmp\-agent commands \-\-grouped
 .PP
 Examples:
   fmp\-agent market quote AAPL

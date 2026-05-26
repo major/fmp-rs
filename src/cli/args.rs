@@ -44,7 +44,11 @@ pub(crate) enum Command {
 
     /// Commands list command.
     #[command(about = help::COMMANDS_ABOUT, long_about = help::COMMANDS_LONG)]
-    Commands,
+    Commands {
+        /// Group commands by category instead of flat sorted output.
+        #[arg(long, help = help::COMMANDS_GROUPED)]
+        grouped: bool,
+    },
 
     /// Shell completions command.
     #[command(about = help::COMPLETIONS_ABOUT, long_about = help::COMPLETIONS_LONG)]
