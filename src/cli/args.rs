@@ -11,11 +11,11 @@ const DEFAULT_BASE_URL: &str = "https://financialmodelingprep.com/stable/";
 #[command(name = "fmp-agent", version, about = help::CLI_ABOUT, after_help = help::EXIT_CODES)]
 pub struct Cli {
     /// FMP API key.
-    #[arg(long, env = "FMP_API_KEY", hide_env_values = true, help = help::API_KEY)]
+    #[arg(long, global = true, env = "FMP_API_KEY", hide_env_values = true, help = help::API_KEY)]
     pub api_key: Option<String>,
 
     /// FMP stable API base URL.
-    #[arg(long, env = "FMP_BASE_URL", default_value = DEFAULT_BASE_URL, help = help::BASE_URL)]
+    #[arg(long, global = true, env = "FMP_BASE_URL", default_value = DEFAULT_BASE_URL, help = help::BASE_URL)]
     pub base_url: String,
 
     /// Log verbosity flags.
