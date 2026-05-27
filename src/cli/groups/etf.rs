@@ -23,6 +23,10 @@ pub(crate) enum Cmd {
     /// List supported ETF symbols.
     #[command(about = help::ETF_LIST_ABOUT, long_about = help::ETF_LIST_LONG)]
     List,
+
+    /// Get ETF information for a fund symbol.
+    #[command(about = help::ETF_INFO_ABOUT, long_about = help::ETF_INFO_LONG)]
+    Info(SymbolArgs),
 }
 
 /// Dispatch an ETF group command.
@@ -34,5 +38,6 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
     match cmd {
         Cmd::Holdings(args) => run_by_symbol(client, endpoint::ETF_HOLDINGS, &args.symbol).await,
         Cmd::List => run_endpoint(client, endpoint::ETF_LIST).await,
+        Cmd::Info(args) => run_by_symbol(client, endpoint::ETF_INFO, &args.symbol).await,
     }
 }

@@ -3,7 +3,7 @@
 use clap::Subcommand;
 
 use crate::cli::args::{DateRangeArgs, NameDateRangeArgs};
-use crate::cli::dispatch::{run_by_date_range, run_by_name_date_range};
+use crate::cli::dispatch::{run_by_date_range, run_by_name_date_range, run_endpoint};
 use crate::cli::help;
 use crate::cli::output::CommandPayload;
 use crate::client::FmpClient;
@@ -23,6 +23,13 @@ pub(crate) enum Cmd {
         long_about = help::ECONOMIC_INDICATORS_LONG
     )]
     EconomicIndicators(NameDateRangeArgs),
+
+    /// Get the current market risk premium.
+    #[command(
+        about = help::MACRO_RISK_PREMIUM_ABOUT,
+        long_about = help::MACRO_RISK_PREMIUM_LONG
+    )]
+    RiskPremium,
 }
 
 /// Dispatch a macro group command.
@@ -44,5 +51,6 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
             )
             .await
         }
+        Cmd::RiskPremium => run_endpoint(client, endpoint::MARKET_RISK_PREMIUM).await,
     }
 }

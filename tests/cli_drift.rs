@@ -67,7 +67,7 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["company", "historical-rating"],
     &["company", "outlook"],
     &["company", "delisted"],
-    // market (8)
+    // market (10)
     &["market", "quote"],
     &["market", "historical"],
     &["market", "dividends"],
@@ -76,6 +76,8 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["market", "price-change"],
     &["market", "stock-list"],
     &["market", "realtime-quote"],
+    &["market", "aftermarket-quote"],
+    &["market", "aftermarket-trade"],
     // fundamentals (15)
     &["fundamentals", "income-statement"],
     &["fundamentals", "income-statement-as-reported"],
@@ -102,18 +104,21 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["analyst", "price-target"],
     // insider (1)
     &["insider", "latest"],
-    // calendar (1)
+    // calendar (2)
     &["calendar", "earnings"],
-    // macro (2)
+    &["calendar", "market-hours"],
+    // macro (3)
     &["macro", "treasury-rates"],
     &["macro", "economic-indicators"],
+    &["macro", "risk-premium"],
     // technical (1)
     &["technical", "sma"],
     // sec (1)
     &["sec", "filings"],
-    // etf (2)
+    // etf (3)
     &["etf", "holdings"],
     &["etf", "list"],
+    &["etf", "info"],
     // crypto (3)
     &["crypto", "list"],
     &["crypto", "quote"],
