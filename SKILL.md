@@ -53,10 +53,11 @@ fmp-agent [OPTIONS] <GROUP> <CMD> [ARGS]
 Stable behavior callers can rely on:
 
 - **Success**: the raw FMP JSON payload on **one line** to stdout, exit code 0.
-- **Runtime error** (config, network, API, parse): JSON envelope on **stderr**, non-zero exit:
+- **Runtime error** (config, network, API, parse, strict empty result): JSON envelope on **stderr**, non-zero exit:
   `{"ok": false, "error": {"kind": "...", "message": "..."}}`
 - **Rate limit**: HTTP 429 exits 5 with `error.kind` set to `rate_limited`. Retry later with backoff instead of treating it as a subscription, authentication, or generic API failure.
-- **Parse error** (bad flags or missing required args): Clap's human-readable usage text on stderr, exit code 2. To distinguish programmatically, check exit code first; only parse stderr as JSON for codes 3-6.
+- **Parse error** (bad flags or missing required args): Clap's human-readable usage text on stderr, exit code 2. To distinguish programmatically, check exit code first; only parse stderr as JSON for codes 3-7.
+- Empty JSON arrays are successful raw FMP responses by default because they can be valid for date ranges, news windows, or unknown symbols. For symbol lookups where an empty result should stop automation, pass `--strict-empty`; it exits 7 with `empty_result` and suggests `fmp-agent search <SYMBOL>`.
 - Help and version output are human-readable text, not JSON.
 - The CLI deliberately offers no output formatting, filtering, or pagination flags. Pipe through `jq` for selection.
 - Running `fmp-agent` with no command prints help and exits.
@@ -71,6 +72,7 @@ Stable behavior callers can rely on:
 | 4    | Network error (HTTP request failed)                            |
 | 5    | API error (server returned non-2xx, including rate limits)     |
 | 6    | Parse error (JSON deserialization failed)                      |
+| 7    | Empty symbol result in `--strict-empty` mode                   |
 
 ## 4. Configuration
 
@@ -80,6 +82,7 @@ Global options apply to every subcommand:
 | --------------------- | ---------------- | ------------------------------------------------ | -------------------------------------------------------------- |
 | `--api-key <KEY>`     | `FMP_API_KEY`    | (none; required for all commands except `schema`)| Prefer env or `.env`; CLI flag is recorded in shell history.   |
 | `--base-url <URL>`    | `FMP_BASE_URL`   | `https://financialmodelingprep.com/stable/`      | Override for proxies or tests.                                 |
+| `--strict-empty`      |                  | `false`                                          | Fail empty symbol lookup responses and suggest `search`.        |
 | `-v` / `-vv` / `-vvv` | `RUST_LOG`       | warnings only                                    | INFO / DEBUG / TRACE; logs go to stderr; API key is redacted.  |
 | `-h`, `--help`        |                  |                                                  | Human-readable help.                                           |
 | `-V`, `--version`     |                  |                                                  | Binary version.                                                |

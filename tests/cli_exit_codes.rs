@@ -176,6 +176,68 @@ fn success_returns_exit_code_0() {
 }
 
 #[test]
+fn empty_symbol_result_defaults_to_raw_success() {
+    let server = MockServer::start();
+    let mock = server.mock(|when, then| {
+        when.method(GET)
+            .path("/quote")
+            .query_param("symbol", "NOTAREALSYMBOL12345");
+        then.status(200).json_body(json!([]));
+    });
+
+    let output = Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env("FMP_API_KEY", "test-key")
+        .env("FMP_BASE_URL", format!("{}/", server.base_url()))
+        .args(["market", "quote", "NOTAREALSYMBOL12345"])
+        .output()
+        .unwrap();
+
+    mock.assert();
+    assert_eq!(output.status.code(), Some(0));
+    assert!(output.stderr.is_empty());
+
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert_eq!(stdout.trim_end(), "[]");
+}
+
+#[test]
+fn strict_empty_symbol_result_returns_exit_code_7() {
+    let server = MockServer::start();
+    let mock = server.mock(|when, then| {
+        when.method(GET)
+            .path("/quote")
+            .query_param("symbol", "NOTAREALSYMBOL12345")
+            .query_param("apikey", "test-key");
+        then.status(200).json_body(json!([]));
+    });
+
+    let output = Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env("FMP_API_KEY", "test-key")
+        .env("FMP_BASE_URL", format!("{}/", server.base_url()))
+        .args(["--strict-empty", "market", "quote", "NOTAREALSYMBOL12345"])
+        .output()
+        .unwrap();
+
+    mock.assert();
+    assert_eq!(output.status.code(), Some(7));
+    assert!(output.stdout.is_empty());
+
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    assert!(!stderr.contains("test-key"));
+
+    let body: Value = serde_json::from_str(stderr.trim_end()).unwrap();
+    assert_eq!(body["ok"], false);
+    assert_eq!(body["error"]["kind"], "empty_result");
+
+    let message = body["error"]["message"].as_str().unwrap();
+    assert!(message.contains("NOTAREALSYMBOL12345"));
+    assert!(message.contains("fmp-agent search NOTAREALSYMBOL12345"));
+    assert!(message.contains("--strict-empty"));
+}
+
+#[test]
 fn invalid_from_date_returns_exit_code_2() {
     let server = MockServer::start();
 

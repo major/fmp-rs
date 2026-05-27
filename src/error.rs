@@ -39,6 +39,19 @@ pub enum Error {
         message: String,
     },
 
+    /// A strict symbol lookup returned no data.
+    #[error(
+        "empty result for symbol {symbol} from {endpoint}; try `fmp-agent search {search_query}` to verify the symbol, or rerun without --strict-empty to keep the raw FMP response"
+    )]
+    EmptyResult {
+        /// Symbol or symbol list used for the lookup.
+        symbol: String,
+        /// Query suggested for discovery with `fmp-agent search`.
+        search_query: String,
+        /// API endpoint path that returned the empty payload.
+        endpoint: &'static str,
+    },
+
     /// The HTTP client failed before receiving a usable response.
     #[error("HTTP request failed: {0}")]
     Http(reqwest::Error),
@@ -64,6 +77,7 @@ impl Error {
             Self::MissingArgument(_) => "missing_argument",
             Self::Api { .. } => "api_error",
             Self::RateLimited { .. } => "rate_limited",
+            Self::EmptyResult { .. } => "empty_result",
             Self::Http(_) => "http_error",
             Self::Json(_) => "json_error",
         }
@@ -77,6 +91,7 @@ impl Error {
     /// - `4` - network/HTTP error
     /// - `5` - API error (server returned an error response, including rate limits)
     /// - `6` - parse error (JSON deserialization failed)
+    /// - `7` - empty symbol result in strict mode
     #[must_use]
     pub fn exit_code(&self) -> ExitCode {
         match self {
@@ -85,6 +100,7 @@ impl Error {
             Self::Http(_) => ExitCode::from(4),
             Self::Api { .. } | Self::RateLimited { .. } => ExitCode::from(5),
             Self::Json(_) => ExitCode::from(6),
+            Self::EmptyResult { .. } => ExitCode::from(7),
         }
     }
 }

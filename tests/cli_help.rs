@@ -50,10 +50,14 @@ fn help_explains_clap_and_json_error_paths() {
             "Clap catches bad flags and invalid dates at parse time",
         ))
         .stdout(predicate::str::contains(
-            "check the exit code first, then parse stderr only for exit codes 3-6",
+            "check the exit code first, then parse stderr only for exit codes 3-7",
         ))
         .stdout(predicate::str::contains("rate_limited"))
-        .stdout(predicate::str::contains("retry later with backoff"));
+        .stdout(predicate::str::contains("retry later with backoff"))
+        .stdout(predicate::str::contains("--strict-empty"))
+        .stdout(predicate::str::contains(
+            "7  Empty symbol result in --strict-empty mode",
+        ));
 }
 
 #[test]

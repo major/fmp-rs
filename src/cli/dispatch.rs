@@ -37,6 +37,7 @@ pub(super) async fn run_by_symbol(
         json!({ "symbol": symbol }),
         data,
     ))
+    .map(|payload| payload.symbol_lookup(endpoint.path(), symbol))
 }
 
 pub(super) async fn run_by_symbols(
@@ -50,6 +51,13 @@ pub(super) async fn run_by_symbols(
         json!({ "symbols": symbols }),
         data,
     ))
+    .map(|payload| {
+        payload.symbol_lookup_with_search_query(
+            endpoint.path(),
+            symbols.join(","),
+            symbols.first().cloned().unwrap_or_default(),
+        )
+    })
 }
 
 pub(super) async fn run_by_symbol_limit(
@@ -66,6 +74,7 @@ pub(super) async fn run_by_symbol_limit(
         json!({ "symbol": symbol, "limit": limit }),
         data,
     ))
+    .map(|payload| payload.symbol_lookup(endpoint.path(), symbol))
 }
 
 pub(super) async fn run_by_symbol_date_range(
@@ -83,6 +92,7 @@ pub(super) async fn run_by_symbol_date_range(
         json!({ "symbol": symbol, "from": from, "to": to }),
         data,
     ))
+    .map(|payload| payload.symbol_lookup(endpoint.path(), symbol))
 }
 
 pub(super) async fn run_by_date_range(
@@ -130,6 +140,7 @@ pub(super) async fn run_annual(
         json!({ "symbol": symbol, "period": ANNUAL_PERIOD, "limit": limit }),
         data,
     ))
+    .map(|payload| payload.symbol_lookup(endpoint.path(), symbol))
 }
 
 pub(super) async fn run_annual_report_form(
@@ -147,6 +158,7 @@ pub(super) async fn run_annual_report_form(
         json!({ "symbol": symbol, "year": year, "period": period }),
         data,
     ))
+    .map(|payload| payload.symbol_lookup(endpoint.path(), symbol))
 }
 
 pub(super) async fn run_technical_sma(
@@ -168,6 +180,7 @@ pub(super) async fn run_technical_sma(
         }),
         data,
     ))
+    .map(|payload| payload.symbol_lookup(endpoint.path(), symbol))
 }
 
 pub(super) async fn run_news(
@@ -182,6 +195,7 @@ pub(super) async fn run_news(
         json!({ "symbol": symbol, "limit": limit }),
         data,
     ))
+    .map(|payload| payload.symbol_lookup(endpoint.path(), symbol))
 }
 
 pub(super) async fn run_paged(
