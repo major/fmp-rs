@@ -2,8 +2,8 @@
 
 use clap::Subcommand;
 
-use crate::cli::args::PagedArgs;
-use crate::cli::dispatch::run_paged;
+use crate::cli::args::{PagedArgs, SymbolArgs};
+use crate::cli::dispatch::{run_by_symbol, run_paged};
 use crate::cli::help;
 use crate::cli::output::CommandPayload;
 use crate::client::FmpClient;
@@ -19,6 +19,12 @@ pub(crate) enum Cmd {
         long_about = help::INSIDER_TRADING_LATEST_LONG
     )]
     Latest(PagedArgs),
+    /// Search insider trading filings for a stock ticker.
+    #[command(
+        about = help::INSIDER_TRADING_SEARCH_ABOUT,
+        long_about = help::INSIDER_TRADING_SEARCH_LONG
+    )]
+    Search(SymbolArgs),
 }
 
 /// Dispatches an insider trading command.
@@ -36,6 +42,9 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
                 args.limit,
             )
             .await
+        }
+        Cmd::Search(args) => {
+            run_by_symbol(client, endpoint::INSIDER_TRADING_SEARCH, &args.symbol).await
         }
     }
 }

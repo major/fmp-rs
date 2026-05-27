@@ -36,7 +36,7 @@ pub(crate) const FUNDAMENTALS_GROUP_LONG: &str = "Fundamentals commands.\n\nExam
 pub(crate) const ANALYST_GROUP_ABOUT: &str = "Analyst command group.";
 pub(crate) const ANALYST_GROUP_LONG: &str = "Analyst commands.\n\nExamples:\n  fmp-agent analyst\n  fmp-agent analyst grades AAPL\n  fmp-agent analyst upgrades-downgrades AAPL";
 pub(crate) const INSIDER_GROUP_ABOUT: &str = "Insider command group.";
-pub(crate) const INSIDER_GROUP_LONG: &str = "Insider commands.\n\nExamples:\n  fmp-agent insider\n  fmp-agent insider latest --page 1 --limit 20";
+pub(crate) const INSIDER_GROUP_LONG: &str = "Insider commands.\n\nExamples:\n  fmp-agent insider\n  fmp-agent insider latest --page 1 --limit 20\n  fmp-agent insider search AAPL";
 pub(crate) const CALENDAR_GROUP_ABOUT: &str = "Calendar command group.";
 pub(crate) const CALENDAR_GROUP_LONG: &str = "Calendar commands.\n\nExamples:\n  fmp-agent calendar\n  fmp-agent calendar earnings --from 2024-01-01 --to 2024-03-31";
 pub(crate) const MACRO_GROUP_ABOUT: &str = "Macro command group.";
@@ -200,6 +200,9 @@ pub(crate) const ANALYST_PRICE_TARGET_ABOUT: &str = "Get analyst price targets f
 pub(crate) const ANALYST_PRICE_TARGET_LONG: &str = "Get analyst price targets for a stock ticker including individual analyst forecasts with target prices and dates.\n\nExamples:\n  fmp-agent analyst price-target AAPL";
 pub(crate) const INSIDER_TRADING_LATEST_ABOUT: &str = "Get latest insider trading rows.";
 pub(crate) const INSIDER_TRADING_LATEST_LONG: &str = "Get latest insider trading rows. Uses zero-based paging.\n\nExamples:\n  fmp-agent insider latest\n  fmp-agent insider latest --page 1 --limit 20";
+pub(crate) const INSIDER_TRADING_SEARCH_ABOUT: &str =
+    "Search insider trading filings for a stock ticker.";
+pub(crate) const INSIDER_TRADING_SEARCH_LONG: &str = "Search insider trading filings filtered by stock ticker. Returns individual filing records with reporting names, transaction types, and details.\n\nExamples:\n  fmp-agent insider search AAPL";
 pub(crate) const EARNINGS_CALENDAR_ABOUT: &str =
     "Get earnings calendar rows for an optional announcement date range.";
 pub(crate) const EARNINGS_CALENDAR_LONG: &str = "Get earnings calendar rows for an optional announcement date range.\n\nExamples:\n  fmp-agent calendar earnings\n  fmp-agent calendar earnings --from 2024-01-01 --to 2024-03-31";

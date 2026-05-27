@@ -83,6 +83,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Historical rating | `ratings-historical?symbol=AAPL&limit=5` | confirmed | Array with rating fields such as `symbol`, `date`, `rating`, `overallScore`, and component scores. |
 | Stock list | `stock-list` | confirmed | Array with supported stock symbols and company metadata such as `symbol`, `companyName`, `price`, `exchange`, and `type`. |
 | Latest insider trading | `insider-trading/latest?page=0&limit=5` | confirmed | Array with insider trading fields such as `symbol`, `filingDate`, `transactionDate`, `transactionType`, and `reportingName`. |
+| Insider trading search | `insider-trading/search?symbol=AAPL` | unconfirmed | Implemented as `insider search` using the stable search endpoint path discovered from FMP docs; needs API Viewer confirmation. |
 | Economic indicators | `economic-indicators?name=GDP&from=2025-01-01&to=2025-12-31` | confirmed | Array with macroeconomic indicator rows containing `name`, `date`, and `value`. |
 | ETF holdings | `etf/holdings?symbol=SPY` | denied | HTTP 402 subscription restriction; implemented as `etf-holdings` to exercise structured API-error handling. |
 | Earnings transcript | `earning-call-transcript?symbol=AAPL&year=2024&quarter=1` | denied | HTTP 402 subscription restriction. |
@@ -162,7 +163,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | SEC/filings/insider | [SEC RSS feeds](https://site.financialmodelingprep.com/developer/docs/sec-rss-feeds-api) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [All SEC RSS feeds](https://site.financialmodelingprep.com/developer/docs/sec-all-rss-feeds-api) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [RSS feed 8-K](https://site.financialmodelingprep.com/developer/docs/rss-feed-8k-api) | unknown | low | Verify before exposing. |
-| SEC/filings/insider | [Insider trading](https://site.financialmodelingprep.com/developer/docs/stock-insider-trading-api) | confirmed | medium | Tested `insider-trading/latest?page=0&limit=5`; implemented as `insider-trading-latest`. Symbol-filtered `insider-trading?symbol=AAPL` returned HTTP 404 and remains unexposed. |
+| SEC/filings/insider | [Insider trading](https://site.financialmodelingprep.com/developer/docs/stock-insider-trading-api) | confirmed | medium | Tested `insider-trading/latest?page=0&limit=5`; implemented as `insider-trading-latest`. Symbol-filtered `insider-trading/search?symbol=AAPL` implemented as `insider search` using the stable search endpoint path; Starter access not yet probed. |
 | SEC/filings/insider | [Insider trading RSS](https://site.financialmodelingprep.com/developer/docs/insider-trading-rss-feed-api) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [Senate trading](https://site.financialmodelingprep.com/developer/docs/senate-trading-api) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [Senate disclosure](https://site.financialmodelingprep.com/developer/docs/senate-disclosure-api) | unknown | low | Verify before exposing. |
