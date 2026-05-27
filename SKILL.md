@@ -9,6 +9,7 @@ This document is the long-form reference. For programmatic discovery, prefer the
 LLMs and tool runners should discover the command surface from the binary itself instead of parsing this document:
 
 ```bash
+fmp-agent doctor             # JSON readiness: version, base URL validity, API key presence
 fmp-agent commands           # list all leaf command paths, one per line
 fmp-agent completions <shell> # generate bash/zsh/fish/powershell completions script
 fmp-agent schema             # versioned JSON: { schema_version, binary, version, commands[] }
@@ -17,9 +18,10 @@ fmp-agent <GROUP> --help     # human-readable per-group help
 fmp-agent <GROUP> <CMD> --help  # human-readable per-command help, includes Examples
 ```
 
-`fmp-agent commands`, `fmp-agent completions`, and `fmp-agent schema`:
+`fmp-agent doctor`, `fmp-agent commands`, `fmp-agent completions`, and `fmp-agent schema`:
 
 - Do **not** require `FMP_API_KEY` and make **no** network requests.
+- `doctor` emits JSON with `ok`, `version`, sanitized `base_url`, `api_key.configured`, and `live_connectivity.checked: false` so callers can verify local readiness without consuming quota.
 - `commands` prints one leaf path per line, sorted alphabetically (e.g. `analyst grades`, `company profile`).
 - `completions` generates a shell completions script (bash/zsh/fish/powershell) on stdout.
 - `schema` emits `schema_version: 3` today; the shape is experimental and may change between releases.
@@ -80,7 +82,7 @@ Global options apply to every subcommand:
 
 | Flag                  | Env var          | Default                                          | Notes                                                          |
 | --------------------- | ---------------- | ------------------------------------------------ | -------------------------------------------------------------- |
-| `--api-key <KEY>`     | `FMP_API_KEY`    | (none; required for all commands except `schema`)| Prefer env or `.env`; CLI flag is recorded in shell history.   |
+| `--api-key <KEY>`     | `FMP_API_KEY`    | (none; required for live API commands)           | Prefer env or `.env`; CLI flag is recorded in shell history.   |
 | `--base-url <URL>`    | `FMP_BASE_URL`   | `https://financialmodelingprep.com/stable/`      | Override for proxies or tests.                                 |
 | `--strict-empty`      |                  | `false`                                          | Fail empty symbol lookup responses and suggest `search`.        |
 | `-v` / `-vv` / `-vvv` | `RUST_LOG`       | warnings only                                    | INFO / DEBUG / TRACE; logs go to stderr; API key is redacted.  |
@@ -134,6 +136,7 @@ Commands use the `<group> <verb>` form introduced in 0.4.0. See the README migra
 
 | Command                 | Shape       |
 | ----------------------- | ----------- |
+| `doctor`                | `Endpoint` (no API key)|
 | `search <QUERY>`        | `Query`     |
 | `schema`                | `Endpoint` (no API key)|
 
@@ -227,6 +230,7 @@ Commands use the `<group> <verb>` form introduced in 0.4.0. See the README migra
 
 ```bash
 # Discovery
+fmp-agent doctor | jq '{ok, base_url, api_key}'
 fmp-agent schema | jq '.commands | map(.name)'
 fmp-agent search Apple
 

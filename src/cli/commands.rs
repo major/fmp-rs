@@ -42,6 +42,7 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
         Command::Completions { .. } => {
             unreachable!("Completions command is handled before execute() in run()")
         }
+        Command::Doctor => unreachable!("Doctor command is handled before execute() in run()"),
         Command::Quote(args) => dispatch_quote(client, args).await,
         Command::Historical(args) => dispatch_historical_eod(client, args).await,
         Command::Profile(args) => run_by_symbol(client, PROFILE, &args.symbol).await,

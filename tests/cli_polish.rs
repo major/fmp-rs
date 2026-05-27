@@ -231,6 +231,7 @@ fn commands_includes_metadata_commands() {
         .success()
         .stdout(predicate::str::contains("commands"))
         .stdout(predicate::str::contains("completions"))
+        .stdout(predicate::str::contains("doctor"))
         .stdout(predicate::str::contains("schema"));
 }
 

@@ -30,10 +30,11 @@ pub(super) fn schema_payload() -> Value {
         let children: Vec<_> = sub.get_subcommands().collect();
 
         if children.is_empty() {
-            // Top-level leaf: search, schema, or an alias.
+            // Top-level leaf: search, metadata-only commands, or an alias.
             let path = vec![name.to_owned()];
             let preferred = preferred_path_for(name);
-            let api_key_required = name != "schema" && name != "commands" && name != "completions";
+            let api_key_required =
+                !matches!(name, "schema" | "commands" | "completions" | "doctor");
 
             commands.push(leaf_to_json(sub, path, preferred, &[], api_key_required));
         } else {
