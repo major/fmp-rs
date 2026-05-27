@@ -82,6 +82,9 @@ pub async fn run(cli: Cli) -> Result<()> {
 
     let client = FmpClient::with_base_url(api_key, &cli.base_url)?;
     let payload = execute(&client, &cli.command).await?;
+    if cli.strict_empty {
+        payload.reject_strict_empty()?;
+    }
     if let Some(output) = render_output(payload)? {
         print_stdout_line(&output);
     }

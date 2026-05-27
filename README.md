@@ -54,6 +54,8 @@ In the repo, use `cargo run -- <GROUP> <SUBCOMMAND>` with the same arguments bef
 
 Successful command responses are the raw FMP JSON payload on one line for shell pipelines, and runtime errors are JSON on stderr. Help and version output are human-readable text. The CLI does not provide output formatting or filtering options.
 
+By default, empty JSON arrays from FMP are treated as successful raw API responses. This preserves upstream semantics because an empty array can mean several valid things, such as no rows for a date range, no news in the requested window, or a symbol that FMP does not recognize. For symbol lookup commands where an empty result should stop automation, pass `--strict-empty`; the CLI exits 7 with `empty_result` on stderr and suggests `fmp-agent search <SYMBOL>`.
+
 Pass `--verbose` / `-v` for INFO logs, `-vv` for DEBUG, or `-vvv` for TRACE. Log output goes to stderr and does not appear without the flag. The `RUST_LOG` environment variable can also control log level.
 
 Running `fmp-agent` without a command prints the generic help text.
@@ -151,8 +153,9 @@ This excludes `clap` and `dotenvy` and exposes `FmpClient`, `Endpoint`, `Error`,
 | 4 | Network error (HTTP request failed) |
 | 5 | API error (server returned a non-2xx response, including rate limits) |
 | 6 | Parse error (JSON deserialization failed) |
+| 7 | Empty symbol result in `--strict-empty` mode |
 
-Exit code 2 is produced at parse time by Clap with human-readable usage text on stderr (bad flags and invalid dates are caught before the CLI reaches runtime validation). Exit codes 3-6 are runtime errors and use structured JSON on stderr: `{"ok":false,"error":{"kind":"<kind>","message":"..."}}`.
+Exit code 2 is produced at parse time by Clap with human-readable usage text on stderr (bad flags and invalid dates are caught before the CLI reaches runtime validation). Exit codes 3-7 are runtime errors and use structured JSON on stderr: `{"ok":false,"error":{"kind":"<kind>","message":"..."}}`.
 
 HTTP 429 responses use exit code 5 with `error.kind` set to `rate_limited`. Agents should treat that kind as retryable later with backoff, not as a subscription, authentication, or generic API failure. Other non-429 API failures continue to use `api_error`.
 

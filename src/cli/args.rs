@@ -38,6 +38,10 @@ pub struct Cli {
     #[arg(short = 'v', long = "verbose", action = clap::ArgAction::Count)]
     pub verbose: u8,
 
+    /// Fail symbol lookups that return an empty JSON result.
+    #[arg(long, global = true, help = help::STRICT_EMPTY)]
+    pub strict_empty: bool,
+
     /// Command to execute.
     #[command(subcommand)]
     pub(crate) command: Command,
