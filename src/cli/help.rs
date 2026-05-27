@@ -1,7 +1,7 @@
 //! Shared user-facing CLI help text.
 
 pub(crate) const CLI_ABOUT: &str = "Financial Modeling Prep API CLI. Commands are organized into groups, run `fmp-agent <group>` to explore, or `fmp-agent <group> <command> [args]` to execute.\n\nGetting started (set FMP_API_KEY first):\n  fmp-agent quote AAPL\n  fmp-agent profile AAPL\n  fmp-agent market historical AAPL --from 2024-01-01\n  fmp-agent commands --grouped\n\nExamples:\n  fmp-agent doctor\n  fmp-agent market quote AAPL\n  fmp-agent company profile AAPL\n\nHelp topics:\n  fmp-agent help environment   Environment variables, .env, and config precedence\n  fmp-agent help exit-codes    Exit codes and structured stderr errors\n  fmp-agent help schema        Schema and tool-calling guidance\n  fmp-agent help examples      Representative command examples\n\nShortcuts:\n  fmp-agent doctor            Check local configuration readiness as JSON\n  fmp-agent commands           List all leaf commands\n  fmp-agent completions <shell> Generate shell completions (bash/zsh/fish/powershell)\n  fmp-agent schema             Dump CLI metadata as JSON\n  fmp-agent quote AAPL         Alias for market quote\n  fmp-agent historical AAPL    Alias for market historical\n  fmp-agent profile AAPL       Alias for company profile\n  fmp-agent earnings           Alias for calendar earnings";
-pub(crate) const EXIT_CODES: &str = "EXIT CODES:\n  0  Success\n  2  Usage error (bad flags, missing arguments, or invalid dates)\n  3  Configuration error (missing API key or invalid base URL)\n  4  Network error (HTTP request failed)\n  5  API error (server returned an error response, including rate limits)\n  6  Parse error (JSON deserialization failed)\n  7  Empty symbol result in --strict-empty mode\n\nClap catches bad flags and invalid dates at parse time and prints human-readable usage text on stderr with exit code 2. Runtime errors use the JSON envelope on stderr: {\"ok\":false,...} for exit codes 3-7. To distinguish programmatically, check the exit code first, then parse stderr only for exit codes 3-7. HTTP 429 uses error.kind=\"rate_limited\" so agents can retry later with backoff instead of treating it like a subscription or authentication failure.";
+pub(crate) const EXIT_CODES: &str = "EXIT CODES:\n  0  Success\n  2  Usage error (bad flags, missing arguments, or invalid dates)\n  3  Configuration error (missing API key or invalid base URL)\n  4  Network error (HTTP request failed)\n  5  API error or unavailable endpoint (server returned an error response, rate limit, or command maps only to a legacy endpoint)\n  6  Parse error (JSON deserialization failed)\n  7  Empty symbol result in --strict-empty mode\n\nClap catches bad flags and invalid dates at parse time and prints human-readable usage text on stderr with exit code 2. Runtime errors use the JSON envelope on stderr: {\"ok\":false,...} for exit codes 3-7. To distinguish programmatically, check the exit code first, then parse stderr only for exit codes 3-7. HTTP 429 uses error.kind=\"rate_limited\" so agents can retry later with backoff instead of treating it like a subscription or authentication failure. Commands that FMP only documents as legacy endpoints use error.kind=\"endpoint_unavailable\" and do not make a network request.";
 
 pub(crate) const API_KEY: &str =
     "FMP API key. Prefer FMP_API_KEY in .env or the environment so shells do not record it.";
@@ -28,13 +28,13 @@ pub(crate) const HELP_EXAMPLES_ABOUT: &str = "Show representative command exampl
 pub(crate) const HELP_EXAMPLES_LONG: &str = "Representative examples\n\nDiscovery, no API key required:\n  fmp-agent help environment\n  fmp-agent commands\n  fmp-agent commands --grouped\n  fmp-agent schema | jq '.commands[0]'\n  fmp-agent completions bash\n\nCommon market and company data:\n  fmp-agent quote AAPL\n  fmp-agent market batch-quote AAPL MSFT GOOGL\n  fmp-agent market historical AAPL --from 2024-01-01 --to 2024-12-31\n  fmp-agent company profile AAPL\n  fmp-agent company peers AAPL\n\nFundamentals, analyst, and calendars:\n  fmp-agent fundamentals income-statement AAPL --limit 5\n  fmp-agent fundamentals annual-report AAPL --year 2023\n  fmp-agent analyst grades AAPL\n  fmp-agent calendar earnings --from 2024-01-01 --to 2024-03-31\n\nNews, macro, and technicals:\n  fmp-agent news stock AAPL --limit 10\n  fmp-agent macro economic-indicators GDP --from 2024-01-01\n  fmp-agent technical sma AAPL --period-length 20 --timeframe 1day\n\nExamples:\n  fmp-agent help examples\n  fmp-agent help schema";
 
 pub(crate) const COMPANY_GROUP_ABOUT: &str = "Company data command group.";
-pub(crate) const COMPANY_GROUP_LONG: &str = "Company data commands.\n\nExamples:\n  fmp-agent company\n  fmp-agent company profile AAPL\n  fmp-agent company outlook AAPL\n  fmp-agent company delisted";
+pub(crate) const COMPANY_GROUP_LONG: &str = "Company data commands.\n\nExamples:\n  fmp-agent company\n  fmp-agent company profile AAPL\n  fmp-agent company peers AAPL\n  fmp-agent company delisted";
 pub(crate) const MARKET_GROUP_ABOUT: &str = "Market data command group.";
 pub(crate) const MARKET_GROUP_LONG: &str = "Market data commands.\n\nExamples:\n  fmp-agent market\n  fmp-agent market quote AAPL\n  fmp-agent market realtime-quote AAPL";
 pub(crate) const FUNDAMENTALS_GROUP_ABOUT: &str = "Fundamentals command group.";
 pub(crate) const FUNDAMENTALS_GROUP_LONG: &str = "Fundamentals commands.\n\nExamples:\n  fmp-agent fundamentals\n  fmp-agent fundamentals income-statement AAPL\n  fmp-agent fundamentals earnings AAPL";
 pub(crate) const ANALYST_GROUP_ABOUT: &str = "Analyst command group.";
-pub(crate) const ANALYST_GROUP_LONG: &str = "Analyst commands.\n\nExamples:\n  fmp-agent analyst\n  fmp-agent analyst grades AAPL\n  fmp-agent analyst upgrades-downgrades AAPL";
+pub(crate) const ANALYST_GROUP_LONG: &str = "Analyst commands.\n\nExamples:\n  fmp-agent analyst\n  fmp-agent analyst grades AAPL\n  fmp-agent analyst price-target-summary AAPL";
 pub(crate) const INSIDER_GROUP_ABOUT: &str = "Insider command group.";
 pub(crate) const INSIDER_GROUP_LONG: &str = "Insider commands.\n\nExamples:\n  fmp-agent insider\n  fmp-agent insider latest --page 1 --limit 20\n  fmp-agent insider search AAPL";
 pub(crate) const CALENDAR_GROUP_ABOUT: &str = "Calendar command group.";
@@ -112,8 +112,8 @@ pub(crate) const COMPANY_HISTORICAL_RATING_ABOUT: &str =
     "Get historical company rating rows for a stock ticker.";
 pub(crate) const COMPANY_HISTORICAL_RATING_LONG: &str = "Get historical company rating rows for a stock ticker. Returns up to the limit of most-recent rating snapshots.\n\nExamples:\n  fmp-agent company historical-rating AAPL\n  fmp-agent company historical-rating AAPL --limit 20";
 pub(crate) const COMPANY_OUTLOOK_ABOUT: &str =
-    "Get comprehensive company outlook for a stock ticker.";
-pub(crate) const COMPANY_OUTLOOK_LONG: &str = "Get a comprehensive company outlook for a stock ticker including target price, growth estimates, and analyst consensus metrics. Starter plan accounts receive symbol-limited results.\n\nExamples:\n  fmp-agent company outlook AAPL";
+    "Report that company outlook is unavailable on the stable API.";
+pub(crate) const COMPANY_OUTLOOK_LONG: &str = "Report that company outlook is unavailable because FMP only documents the aggregate company outlook command as a legacy endpoint. This command returns a structured endpoint_unavailable error without making a network request; use stable commands such as company profile, fundamentals income-statement, fundamentals ratios, and company scores instead.\n\nExamples:\n  fmp-agent company outlook AAPL";
 pub(crate) const COMPANY_DELISTED_ABOUT: &str = "List delisted companies.";
 pub(crate) const COMPANY_DELISTED_LONG: &str = "List delisted companies with optional paging. Returns a large payload with symbol, company name, exchange, and delisting date.\n\nExamples:\n  fmp-agent company delisted\n  fmp-agent company delisted --page 0 --limit 100";
 pub(crate) const MARKET_QUOTE_ABOUT: &str = "Get the latest market quote for a stock ticker.";
@@ -188,16 +188,17 @@ pub(crate) const ANALYST_GRADES_ABOUT: &str =
     "Get analyst grade action history for a stock ticker.";
 pub(crate) const ANALYST_GRADES_LONG: &str = "Get analyst grade action history for a stock ticker showing upgrades, downgrades, and initiations.\n\nExamples:\n  fmp-agent analyst grades AAPL";
 pub(crate) const ANALYST_UPGRADES_DOWNGRADES_ABOUT: &str =
-    "Get analyst upgrades and downgrades for a stock ticker.";
-pub(crate) const ANALYST_UPGRADES_DOWNGRADES_LONG: &str = "Get analyst upgrades and downgrades for a stock ticker showing rating changes with dates and analyst firms. Starter plan accounts receive symbol-limited results.\n\nExamples:\n  fmp-agent analyst upgrades-downgrades AAPL";
+    "Report that analyst upgrades and downgrades is unavailable on the stable API.";
+pub(crate) const ANALYST_UPGRADES_DOWNGRADES_LONG: &str = "Report that analyst upgrades and downgrades is unavailable because FMP only documents this command as a legacy endpoint. This command returns a structured endpoint_unavailable error without making a network request; use analyst grades for stable analyst grade actions instead.\n\nExamples:\n  fmp-agent analyst upgrades-downgrades AAPL";
 pub(crate) const ANALYST_RATINGS_SNAPSHOT_ABOUT: &str =
     "Get a snapshot of current analyst ratings for a stock ticker.";
 pub(crate) const ANALYST_RATINGS_SNAPSHOT_LONG: &str = "Get a snapshot of current analyst ratings for a stock ticker including buy, hold, and sell counts with average rating. Starter plan accounts receive symbol-limited results.\n\nExamples:\n  fmp-agent analyst ratings-snapshot AAPL";
 pub(crate) const ANALYST_EARNINGS_SURPRISES_ABOUT: &str =
-    "Get earnings surprises for a stock ticker.";
-pub(crate) const ANALYST_EARNINGS_SURPRISES_LONG: &str = "Get earnings surprises for a stock ticker showing actual vs. estimated EPS and revenue with surprise percentages. Starter plan accounts receive symbol-limited results.\n\nExamples:\n  fmp-agent analyst earnings-surprises AAPL";
-pub(crate) const ANALYST_PRICE_TARGET_ABOUT: &str = "Get analyst price targets for a stock ticker.";
-pub(crate) const ANALYST_PRICE_TARGET_LONG: &str = "Get analyst price targets for a stock ticker including individual analyst forecasts with target prices and dates.\n\nExamples:\n  fmp-agent analyst price-target AAPL";
+    "Report that symbol earnings surprises is unavailable on the stable API.";
+pub(crate) const ANALYST_EARNINGS_SURPRISES_LONG: &str = "Report that symbol earnings surprises is unavailable because FMP only documents this command as a legacy endpoint. This command returns a structured endpoint_unavailable error without making a network request; no stable per-symbol earnings surprises API path is available.\n\nExamples:\n  fmp-agent analyst earnings-surprises AAPL";
+pub(crate) const ANALYST_PRICE_TARGET_ABOUT: &str =
+    "Report that historical analyst price targets is unavailable on the stable API.";
+pub(crate) const ANALYST_PRICE_TARGET_LONG: &str = "Report that historical analyst price targets is unavailable because FMP only documents this command as a legacy endpoint. This command returns a structured endpoint_unavailable error without making a network request; use analyst price-target-consensus or analyst price-target-summary for stable price target data instead.\n\nExamples:\n  fmp-agent analyst price-target AAPL";
 pub(crate) const INSIDER_TRADING_LATEST_ABOUT: &str = "Get latest insider trading rows.";
 pub(crate) const INSIDER_TRADING_LATEST_LONG: &str = "Get latest insider trading rows. Uses zero-based paging.\n\nExamples:\n  fmp-agent insider latest\n  fmp-agent insider latest --page 1 --limit 20";
 pub(crate) const INSIDER_TRADING_SEARCH_ABOUT: &str =

@@ -4,7 +4,7 @@ use serde_json::json;
 
 use crate::client::FmpClient;
 use crate::endpoint::{ANNUAL_PERIOD, Endpoint};
-use crate::error::Result;
+use crate::error::{Error, Result};
 
 use super::output::CommandPayload;
 
@@ -38,6 +38,13 @@ pub(super) async fn run_by_symbol(
         data,
     ))
     .map(|payload| payload.symbol_lookup(endpoint.path(), symbol))
+}
+
+pub(super) fn unavailable_endpoint(
+    endpoint: &'static str,
+    message: &'static str,
+) -> Result<CommandPayload> {
+    Err(Error::EndpointUnavailable { endpoint, message })
 }
 
 pub(super) async fn run_by_symbols(

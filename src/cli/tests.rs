@@ -381,6 +381,13 @@ async fn execute_grouped_commands_use_endpoint_descriptors() {
             json!({}),
         ),
         (
+            "quote",
+            Command::Market {
+                command: Some(groups::market::Cmd::RealtimeQuote(symbol("AAPL"))),
+            },
+            json!({ "symbol": "AAPL" }),
+        ),
+        (
             "income-statement",
             Command::Fundamentals {
                 command: Some(groups::fundamentals::Cmd::Income(annual("AAPL"))),
@@ -460,6 +467,13 @@ async fn execute_grouped_commands_use_endpoint_descriptors() {
             json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
         (
+            "financial-growth",
+            Command::Fundamentals {
+                command: Some(groups::fundamentals::Cmd::StatementGrowth(annual("AAPL"))),
+            },
+            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
+        ),
+        (
             "financial-reports-dates",
             Command::Fundamentals {
                 command: Some(groups::fundamentals::Cmd::ReportDates(symbol("AAPL"))),
@@ -509,6 +523,13 @@ async fn execute_grouped_commands_use_endpoint_descriptors() {
                 command: Some(groups::calendar::Cmd::Earnings(date_range())),
             },
             json!({ "from": "2025-01-01", "to": "2025-01-31" }),
+        ),
+        (
+            "all-exchange-market-hours",
+            Command::Calendar {
+                command: Some(groups::calendar::Cmd::MarketHours),
+            },
+            json!({}),
         ),
         (
             "treasury-rates",

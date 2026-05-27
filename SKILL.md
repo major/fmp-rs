@@ -163,6 +163,7 @@ Commands use the `<group> <verb>` form introduced in 0.4.0. See the README migra
 | `company float <SYMBOL>`                       | `Symbol`       |
 | `company rating <SYMBOL>`                      | `Symbol`       |
 | `company historical-rating <SYMBOL>`           | `SymbolLimit`  |
+| `company outlook <SYMBOL>`                     | Unavailable *  |
 
 ### Market data
 
@@ -175,9 +176,10 @@ Commands use the `<group> <verb>` form introduced in 0.4.0. See the README migra
 | `market splits <SYMBOL>`                       | `Symbol`           |
 | `market price-change <SYMBOL>`                 | `Symbol`           |
 | `market stock-list`                            | `Endpoint`         |
+| `market realtime-quote <SYMBOL>`               | `Symbol`           |
 | `etf holdings <SYMBOL>`                        | `Symbol` *         |
 
-\* `etf holdings` is intentionally exposed even though Starter accounts receive an API error; it exercises the structured error path (exit code 5).
+\* `company outlook` is legacy-only in current FMP docs and returns `endpoint_unavailable` locally. `etf holdings` is intentionally exposed even though Starter accounts receive an API error; it exercises the structured error path (exit code 5).
 
 ### Crypto and forex
 
@@ -206,6 +208,7 @@ Commands use the `<group> <verb>` form introduced in 0.4.0. See the README migra
 | `fundamentals analyst-estimates <SYMBOL>`                        | `Annual`            |
 | `fundamentals report-dates <SYMBOL>`                             | `Symbol`            |
 | `fundamentals annual-report <SYMBOL> --year <YEAR>`             | `AnnualReportForm`  |
+| `fundamentals statement-growth <SYMBOL>`                         | `Annual`            |
 
 ### Analyst
 
@@ -214,12 +217,18 @@ Commands use the `<group> <verb>` form introduced in 0.4.0. See the README migra
 | `analyst price-target-consensus <SYMBOL>`        | `Symbol` |
 | `analyst price-target-summary <SYMBOL>`          | `Symbol` |
 | `analyst grades <SYMBOL>`                        | `Symbol` |
+| `analyst price-target <SYMBOL>`                  | Unavailable * |
+| `analyst upgrades-downgrades <SYMBOL>`           | Unavailable * |
+| `analyst earnings-surprises <SYMBOL>`            | Unavailable * |
+
+\* These analyst commands correspond to legacy-only FMP docs and return `endpoint_unavailable` locally. Use `analyst price-target-consensus`, `analyst price-target-summary`, and `analyst grades` for stable analyst data.
 
 ### Calendars, rates, technicals, filings
 
 | Command                                          | Shape              |
 | ------------------------------------------------ | ------------------ |
 | `calendar earnings`                              | `DateRange`        |
+| `calendar market-hours`                          | `Endpoint`         |
 | `macro treasury-rates`                           | `DateRange`        |
 | `macro economic-indicators <NAME>`               | `NameDateRange`    |
 | `technical sma <SYMBOL>`                         | `TechnicalSma`     |
