@@ -170,9 +170,10 @@ fn grouped_commands(cmd: &clap::Command) -> Vec<String> {
         lines.push(String::new());
     }
 
-    // Second pass: collect top-level standalone commands (aliases, search,
-    // schema, commands, completions) that have no child subcommands.
-    let leaves: Vec<_> = cmd
+    // Second pass: collect top-level standalone commands, split into discovery
+    // commands (schema, commands, completions) and convenience aliases (quote,
+    // historical, profile, earnings).
+    let leaves: Vec<&clap::Command> = cmd
         .get_subcommands()
         .filter(|s| {
             s.get_name() != "help"
@@ -183,15 +184,46 @@ fn grouped_commands(cmd: &clap::Command) -> Vec<String> {
         })
         .collect();
 
-    lines.push("top-level".to_owned());
+    const DISCOVERY: &[&str] = &["schema", "commands", "completions"];
+    let discovery_leaves: Vec<_> = leaves
+        .iter()
+        .filter(|l| DISCOVERY.contains(&l.get_name()))
+        .copied()
+        .collect();
+    let alias_leaves: Vec<_> = leaves
+        .into_iter()
+        .filter(|l| !DISCOVERY.contains(&l.get_name()))
+        .collect();
 
-    let max_width = leaves.iter().map(|l| l.get_name().len()).max().unwrap_or(0);
-
-    for leaf in &leaves {
-        let about = leaf.get_about().map(|a| a.to_string()).unwrap_or_default();
-        lines.push(format!("  {:<max_width$}  {about}", leaf.get_name()));
+    // Discovery commands section.
+    if !discovery_leaves.is_empty() {
+        lines.push("discovery".to_owned());
+        let max_width = discovery_leaves
+            .iter()
+            .map(|l| l.get_name().len())
+            .max()
+            .unwrap_or(0);
+        for leaf in &discovery_leaves {
+            let about = leaf.get_about().map(|a| a.to_string()).unwrap_or_default();
+            lines.push(format!("  {:<max_width$}  {about}", leaf.get_name()));
+        }
+        lines.push(String::new());
     }
-    lines.push(String::new());
+
+    // Alias commands section.
+    if !alias_leaves.is_empty() {
+        lines.push("aliases".to_owned());
+        let max_width = alias_leaves
+            .iter()
+            .map(|l| l.get_name().len())
+            .max()
+            .unwrap_or(0);
+        for leaf in &alias_leaves {
+            let about = leaf.get_about().map(|a| a.to_string()).unwrap_or_default();
+            lines.push(format!("  {:<max_width$}  {about}", leaf.get_name()));
+        }
+        lines.push(String::new());
+    }
 
     lines
 }

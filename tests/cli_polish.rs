@@ -234,7 +234,8 @@ fn commands_includes_metadata_commands() {
         .stdout(predicate::str::contains("schema"));
 }
 
-/// The `commands --grouped` output organizes commands by group with about text.
+/// The `commands --grouped` output organizes commands by group with about text
+/// and separates discovery commands from convenience aliases.
 #[test]
 fn commands_grouped_output_has_group_names() {
     Command::cargo_bin("fmp-agent")
@@ -245,7 +246,9 @@ fn commands_grouped_output_has_group_names() {
         .success()
         .stdout(predicate::str::contains("market"))
         .stdout(predicate::str::contains("company"))
-        .stdout(predicate::str::contains("fundamentals"));
+        .stdout(predicate::str::contains("fundamentals"))
+        .stdout(predicate::str::contains("discovery"))
+        .stdout(predicate::str::contains("aliases"));
 }
 
 /// The `commands --grouped` output includes about text for each subcommand.
