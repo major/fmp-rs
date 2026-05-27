@@ -3,7 +3,7 @@
 use clap::Subcommand;
 
 use crate::cli::args::SymbolDateRangeArgs;
-use crate::cli::dispatch::run_by_symbol_date_range;
+use crate::cli::dispatch::{run_by_symbol_date_range, validate_date};
 use crate::cli::help;
 use crate::cli::output::CommandPayload;
 use crate::client::FmpClient;
@@ -38,6 +38,8 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
                     .expect("90-day subtraction from current date cannot fail");
                 Some(ago.date().to_string())
             });
+            validate_date("--from", &from)?;
+            validate_date("--to", &args.to)?;
             run_by_symbol_date_range(
                 client,
                 endpoint::SEC_FILINGS_SEARCH_SYMBOL,

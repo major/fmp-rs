@@ -1,6 +1,7 @@
 use assert_cmd::Command;
 use httpmock::Method::GET;
 use httpmock::MockServer;
+use predicates::prelude::*;
 use serde_json::{Value, json};
 
 #[test]
@@ -135,4 +136,106 @@ fn success_returns_exit_code_0() {
         .args(["market", "quote", "AAPL"])
         .assert()
         .code(0);
+}
+
+#[test]
+fn invalid_from_date_returns_exit_code_2() {
+    let server = MockServer::start();
+
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env("FMP_API_KEY", "test-key")
+        .env("FMP_BASE_URL", format!("{}/", server.base_url()))
+        .args(["market", "historical", "AAPL", "--from", "not-a-date"])
+        .assert()
+        .code(2)
+        .stderr(predicate::str::contains("YYYY-MM-DD"));
+}
+
+#[test]
+fn invalid_date_range_command_returns_exit_code_2() {
+    let server = MockServer::start();
+
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env("FMP_API_KEY", "test-key")
+        .env("FMP_BASE_URL", format!("{}/", server.base_url()))
+        .args(["calendar", "earnings", "--from", "not-a-date"])
+        .assert()
+        .code(2)
+        .stderr(predicate::str::contains("YYYY-MM-DD"));
+}
+
+#[test]
+fn invalid_date_no_http_request() {
+    // When date validation fails, no HTTP request should be made.
+    let server = MockServer::start();
+    let mock = server.mock(|when, then| {
+        when.method(GET).path("/historical-price-eod/full");
+        then.status(200).json_body(json!([]));
+    });
+
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env("FMP_API_KEY", "test-key")
+        .env("FMP_BASE_URL", format!("{}/", server.base_url()))
+        .args([
+            "market",
+            "historical",
+            "AAPL",
+            "--from",
+            "2026-99-99",
+            "--to",
+            "2026-05",
+        ])
+        .assert()
+        .code(2)
+        .stderr(predicate::str::contains("YYYY-MM-DD"));
+
+    mock.assert_calls(0);
+}
+
+#[test]
+fn valid_date_range_command_succeeds() {
+    let server = MockServer::start();
+    let mock = server.mock(|when, then| {
+        when.method(GET)
+            .path("/historical-price-eod/full")
+            .query_param("from", "2025-01-02")
+            .query_param("to", "2025-01-10");
+        then.status(200).json_body(json!({ "historical": [] }));
+    });
+
+    let output = Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env("FMP_API_KEY", "test-key")
+        .env("FMP_BASE_URL", format!("{}/", server.base_url()))
+        .args([
+            "market",
+            "historical",
+            "AAPL",
+            "--from",
+            "2025-01-02",
+            "--to",
+            "2025-01-10",
+        ])
+        .output()
+        .unwrap();
+
+    mock.assert();
+    assert_eq!(output.status.code(), Some(0));
+}
+
+#[test]
+fn invalid_date_on_sec_filings_returns_exit_code_2() {
+    let server = MockServer::start();
+
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env("FMP_API_KEY", "test-key")
+        .env("FMP_BASE_URL", format!("{}/", server.base_url()))
+        .args(["sec", "filings", "AAPL", "--from", "not-a-date"])
+        .assert()
+        .code(2)
+        .stderr(predicate::str::contains("YYYY-MM-DD"));
 }
