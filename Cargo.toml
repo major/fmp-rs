@@ -17,11 +17,6 @@ name = "fmp-agent"
 path = "src/main.rs"
 required-features = ["cli"]
 
-[[example]]
-name = "generate-man"
-path = "examples/generate-man.rs"
-required-features = ["cli"]
-
 [features]
 default = ["cli"]
 cli = ["dep:clap", "dep:dotenvy", "dep:jiff", "dep:env_logger", "dep:clap-verbosity-flag", "dep:human-panic", "dep:clap_complete"]
@@ -44,7 +39,6 @@ tokio = { version = "1.52", features = ["macros", "rt-multi-thread"] }
 httpmock = "=0.8.3"
 assert_cmd = "=2.2.2"
 predicates = "=3.1.4"
-clap_mangen = "=0.3.0"
 
 [lints.rust]
 unused = { level = "deny", priority = -1 }
