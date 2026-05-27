@@ -17,9 +17,9 @@ fn schema_body() -> Value {
 }
 
 #[test]
-fn schema_version_is_2() {
+fn schema_version_is_3() {
     let body = schema_body();
-    assert_eq!(body["schema_version"], 2, "schema_version must be 2");
+    assert_eq!(body["schema_version"], 3, "schema_version must be 3");
     assert_eq!(body["binary"], "fmp-agent");
 
     let version = env!("CARGO_PKG_VERSION");
@@ -130,11 +130,11 @@ fn schema_canonical_has_alias_backref() {
 }
 
 #[test]
-fn schema_args_have_value_names() {
+fn schema_positional_arg_has_metadata() {
     let body = schema_body();
     let commands = body["commands"].as_array().unwrap();
 
-    // market quote has a positional "symbol" arg with value_name "SYMBOL"
+    // market quote has a positional "symbol" arg
     let mq = commands
         .iter()
         .find(|c| c["path"] == serde_json::json!(["market", "quote"]))
@@ -147,9 +147,26 @@ fn schema_args_have_value_names() {
         .find(|a| a["name"] == "symbol")
         .expect("market quote must have symbol arg");
 
+    // Existing fields
     assert_eq!(symbol_arg["kind"], "positional");
     assert_eq!(symbol_arg["value_name"], "SYMBOL");
     assert_eq!(symbol_arg["required"], true);
+
+    // New v3 fields
+    assert!(
+        symbol_arg["long"].is_null(),
+        "positional arg should not have long flag"
+    );
+    assert!(
+        symbol_arg["short"].is_null(),
+        "positional arg should not have short flag"
+    );
+    assert_eq!(symbol_arg["parser"]["hint"], "string");
+    assert!(
+        symbol_arg["possible_values"].is_null(),
+        "positional arg should not have possible values"
+    );
+    assert_eq!(symbol_arg["multi_value"], false);
 }
 
 #[test]
@@ -206,7 +223,133 @@ fn schema_works_without_api_key() {
 
     let body: Value =
         serde_json::from_slice(&output).expect("schema output without key should be valid JSON");
-    assert_eq!(body["schema_version"], 2);
+    assert_eq!(body["schema_version"], 3);
+}
+
+#[test]
+fn schema_option_with_default_has_long_and_integer_hint() {
+    let body = schema_body();
+    let commands = body["commands"].as_array().unwrap();
+
+    // technical sma has --period-length with default 10
+    let sma = commands
+        .iter()
+        .find(|c| c["path"] == serde_json::json!(["technical", "sma"]))
+        .expect("must have technical sma leaf");
+
+    let period_arg = sma["args"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|a| a["name"] == "period_length")
+        .expect("technical sma must have period_length arg");
+
+    assert_eq!(period_arg["kind"], "option");
+    assert_eq!(period_arg["long"], "period-length");
+    assert!(period_arg["short"].is_null());
+    assert_eq!(period_arg["default"], 10);
+    assert_eq!(period_arg["parser"]["hint"], "integer");
+    assert!(period_arg["possible_values"].is_null());
+    assert_eq!(period_arg["multi_value"], false);
+}
+
+#[test]
+fn schema_enum_arg_has_possible_values() {
+    let body = schema_body();
+    let commands = body["commands"].as_array().unwrap();
+
+    // completions has a shell arg with value_enum
+    let completions = commands
+        .iter()
+        .find(|c| c["name"] == "completions")
+        .expect("must have completions leaf");
+
+    let shell_arg = completions["args"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|a| a["name"] == "shell")
+        .expect("completions must have shell arg");
+
+    assert_eq!(shell_arg["kind"], "positional");
+    assert_eq!(shell_arg["required"], true);
+    assert_eq!(shell_arg["parser"]["hint"], "enum");
+
+    let possible = shell_arg["possible_values"]
+        .as_array()
+        .expect("shell arg must have possible_values array");
+    assert!(!possible.is_empty(), "shell should have possible values");
+
+    // Each possible value has name and help
+    for pv in possible {
+        assert!(
+            pv["name"].is_string(),
+            "each possible value must have a name"
+        );
+    }
+}
+
+#[test]
+fn schema_option_has_short_flag_when_present() {
+    let body = schema_body();
+    let commands = body["commands"].as_array().unwrap();
+
+    // commands --grouped uses a long flag (bool)
+    let cmd = commands
+        .iter()
+        .find(|c| c["name"] == "commands")
+        .expect("must have commands leaf");
+
+    let grouped_arg = cmd["args"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|a| a["name"] == "grouped")
+        .expect("commands must have grouped arg");
+
+    assert_eq!(grouped_arg["kind"], "option");
+    assert_eq!(grouped_arg["long"], "grouped");
+    assert!(grouped_arg["short"].is_null());
+    assert_eq!(grouped_arg["parser"]["hint"], "bool");
+}
+
+#[test]
+fn schema_args_long_flag_matches_clap_spelling() {
+    let body = schema_body();
+    let commands = body["commands"].as_array().unwrap();
+
+    // fundamentals income-statement has --limit with default 5
+    let income = commands
+        .iter()
+        .find(|c| c["path"] == serde_json::json!(["fundamentals", "income-statement"]))
+        .expect("must have income statement leaf");
+
+    let limit_arg = income["args"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|a| a["name"] == "limit")
+        .expect("income statement must have limit arg");
+
+    assert_eq!(limit_arg["long"], "limit");
+    assert_eq!(limit_arg["default"], 5);
+
+    // sec filings has --from and --to
+    let filings = commands
+        .iter()
+        .find(|c| c["path"] == serde_json::json!(["sec", "filings"]))
+        .expect("must have sec filings leaf");
+
+    let from_arg = filings["args"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|a| a["name"] == "from")
+        .expect("sec filings must have from arg");
+
+    assert_eq!(from_arg["long"], "from");
+    assert!(from_arg["short"].is_null());
+    assert_eq!(from_arg["required"], false);
 }
 
 #[test]

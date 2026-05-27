@@ -22,8 +22,9 @@ fmp-agent <GROUP> <CMD> --help  # human-readable per-command help, includes Exam
 - Do **not** require `FMP_API_KEY` and make **no** network requests.
 - `commands` prints one leaf path per line, sorted alphabetically (e.g. `analyst grades`, `company profile`).
 - `completions` generates a shell completions script (bash/zsh/fish/powershell) on stdout.
-- `schema` emits `schema_version: 2` today; the shape is experimental and may change between releases.
-- Each schema command entry has `name`, `path`, `aliases`, `preferred_path`, `api_key_required`, `about`, `long_about`, and `args` (with `name`, `kind`, defaults, value names).
+- `schema` emits `schema_version: 3` today; the shape is experimental and may change between releases.
+- Each schema command entry has `name`, `path`, `aliases`, `preferred_path`, `api_key_required`, `about`, `long_about`, and `args`.
+- Each arg has `name`, `kind`, `required`, `default`, `value_name`, `help`, `long` (exact `--flag` spelling or null for positional), `short` (single-char flag or null), `parser` (type hint: `string`, `integer`, `bool`, `enum`, or `count`), `possible_values` (array of `{"name": "...", "help": "..."}` for enum args, null otherwise), and `multi_value` (whether the arg accepts repeat values).
 - Use these as the source of truth for available commands and arguments; treat the catalog in section 6 as a curated index.
 
 Top-level aliases (no API key required for discovery):

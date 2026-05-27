@@ -1,6 +1,7 @@
 //! CLI schema introspection for the `schema` subcommand.
 
 use clap::CommandFactory;
+use clap::builder::PossibleValue;
 use serde_json::{Value, json};
 
 use super::args::Cli;
@@ -51,7 +52,7 @@ pub(super) fn schema_payload() -> Value {
     }
 
     json!({
-        "schema_version": 2,
+        "schema_version": 3,
         "binary": "fmp-agent",
         "version": env!("CARGO_PKG_VERSION"),
         "groups": groups,
@@ -80,16 +81,26 @@ fn leaf_to_json(
             } else {
                 "option"
             };
-            let default_val = a
-                .get_default_values()
-                .first()
-                .and_then(|v| v.to_str())
-                .map(|s| json!(s));
+            let default_str = a.get_default_values().first().and_then(|v| v.to_str());
+            let default_val = default_str.map(|s| {
+                // Emit numeric defaults as JSON numbers so agents don't need
+                // to coerce strings themselves.
+                if let Ok(n) = s.parse::<u64>() {
+                    json!(n)
+                } else {
+                    json!(s)
+                }
+            });
             let value_name = a
                 .get_value_names()
                 .and_then(|names| names.first())
                 .map(|n| json!(n.as_str()));
             let help_text = a.get_help().map(|s| s.to_string());
+            let long_flag = a.get_long().map(|s| json!(s));
+            let short_flag = a.get_short().map(|c| json!(c.to_string()));
+            let parser = parser_hint(a, default_str);
+            let possible_vals: Option<Vec<Value>> = possible_values_json(&a.get_possible_values());
+            let multi = matches!(a.get_action(), clap::ArgAction::Append);
             json!({
                 "name": a.get_id().as_str(),
                 "kind": kind,
@@ -97,6 +108,11 @@ fn leaf_to_json(
                 "default": default_val,
                 "value_name": value_name,
                 "help": help_text,
+                "long": long_flag,
+                "short": short_flag,
+                "parser": parser,
+                "possible_values": possible_vals,
+                "multi_value": multi,
             })
         })
         .collect();
@@ -138,4 +154,48 @@ fn aliases_for(group: &str, child: &str) -> Vec<String> {
         }
     }
     Vec::new()
+}
+
+/// Derives a parser type hint from a Clap argument's action, possible values,
+/// and default value.
+fn parser_hint(a: &clap::Arg, default_str: Option<&str>) -> Value {
+    let action = a.get_action();
+
+    if matches!(action, clap::ArgAction::SetTrue | clap::ArgAction::SetFalse) {
+        return json!({ "hint": "bool" });
+    }
+    if matches!(action, clap::ArgAction::Count) {
+        return json!({ "hint": "count" });
+    }
+    if !a.get_possible_values().is_empty() {
+        return json!({ "hint": "enum" });
+    }
+    if default_str.is_some_and(|s| s.parse::<u64>().is_ok()) {
+        return json!({ "hint": "integer" });
+    }
+
+    json!({ "hint": "string" })
+}
+
+/// Converts Clap possible values into a JSON array of `{ name, help }` objects,
+/// or `None` when the list is empty.
+fn possible_values_json(values: &[PossibleValue]) -> Option<Vec<Value>> {
+    if values.is_empty() {
+        return None;
+    }
+    Some(
+        values
+            .iter()
+            .filter(|v| !v.is_hide_set())
+            .map(|v| {
+                let name = v.get_name();
+                let help = v.get_help().map(|s| s.to_string());
+                if let Some(help) = help {
+                    json!({ "name": name, "help": help })
+                } else {
+                    json!({ "name": name, "help": null })
+                }
+            })
+            .collect(),
+    )
 }
