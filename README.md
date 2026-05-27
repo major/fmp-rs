@@ -60,7 +60,7 @@ Running `fmp-agent` without a command prints the generic help text.
 
 ### Schema introspection
 
-`fmp-agent schema` dumps CLI metadata as JSON without contacting the FMP API and without requiring `FMP_API_KEY`. The output is experimental and may change between releases. Fields include `schema_version` (currently `2`), `binary`, `version`, and `commands` (a flat array of leaf command entries). Each leaf includes `path`, `aliases`, `preferred_path`, and `api_key_required`. This is useful for LLM tool-calling setups that need to discover available commands programmatically.
+`fmp-agent schema` dumps CLI metadata as JSON without contacting the FMP API and without requiring `FMP_API_KEY`. The output is experimental and may change between releases. Fields include `schema_version` (currently `3`), `binary`, `version`, and `commands` (a flat array of leaf command entries). Each leaf includes `path`, `aliases`, `preferred_path`, `api_key_required`, `about`, `long_about`, and `args`. Argument entries include `kind`, `required`, `default`, `value_name`, the exact `long` and `short` flag spellings, a `parser` hint (`string`, `integer`, `bool`, `enum`, or `count`), `possible_values` for enum-like arguments, and a `multi_value` flag.
 
 ```bash
 fmp-agent schema | jq '.commands | length'
@@ -73,7 +73,21 @@ Example leaf shape:
   "path": ["market", "quote"],
   "aliases": ["quote"],
   "preferred_path": "market quote",
-  "api_key_required": true
+  "api_key_required": true,
+  "args": [
+    {
+      "name": "symbol",
+      "kind": "positional",
+      "required": true,
+      "default": null,
+      "value_name": "SYMBOL",
+      "long": null,
+      "short": null,
+      "parser": { "hint": "string" },
+      "possible_values": null,
+      "multi_value": false
+    }
+  ]
 }
 ```
 
@@ -102,14 +116,15 @@ fmp-agent completions <shell> # shell completions (bash, elvish, fish, powershel
 | Get latest news (stock, general, crypto, forex) | `news stock`, `news general` |
 | Search for a ticker by name | `search` |
 
-**Shape-based dispatch:** Commands follow reusable argument shapes (Symbol, SymbolLimit, DateRange, Annual, etc.). The `schema` output includes per-command `args` with required/optional/default metadata so agents can construct valid invocations without consulting human docs.
+**Shape-based dispatch:** Commands follow reusable argument shapes (Symbol, SymbolLimit, DateRange, Annual, etc.). The `schema` output includes per-command `args` with exact flag spellings, parser type hints, possible values for enums, and defaults so agents can construct valid invocations without scraping `--help`.
 
 ```json
 {
-  "name": "quote",
-  "path": ["market", "quote"],
+  "name": "income-statement",
+  "path": ["fundamentals", "income-statement"],
   "args": [
-    { "name": "symbol", "kind": "positional", "required": true, "default": null }
+    { "name": "symbol", "kind": "positional", "required": true, "default": null, "long": null, "parser": { "hint": "string" }, "multi_value": false },
+    { "name": "limit", "kind": "option", "required": false, "default": 5, "long": "limit", "parser": { "hint": "integer" }, "multi_value": false }
   ],
   "api_key_required": true
 }
