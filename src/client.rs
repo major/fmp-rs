@@ -296,7 +296,15 @@ impl FmpClient {
         let body = response.text().await?;
 
         if !status.is_success() {
-            let summary = summarize_body(&body);
+            let summary = summarize_body(status, &body, &self.api_key);
+            if status == StatusCode::TOO_MANY_REQUESTS {
+                log::warn!("rate limited {}: {}", status, summary);
+                return Err(Error::RateLimited {
+                    status: status.as_u16(),
+                    message: summary,
+                });
+            }
+
             log::warn!("API error {}: {}", status, summary);
             return Err(Error::Api {
                 status: status.as_u16(),
@@ -384,16 +392,21 @@ fn sanitize_base_url(url: &Url) -> String {
     sanitized.to_string()
 }
 
-fn summarize_body(body: &str) -> String {
+fn summarize_body(status: StatusCode, body: &str, api_key: &str) -> String {
     let trimmed = body.trim();
     if trimmed.is_empty() {
-        return StatusCode::INTERNAL_SERVER_ERROR
+        return status
             .canonical_reason()
             .unwrap_or("empty response")
             .to_owned();
     }
 
-    trimmed.chars().take(240).collect()
+    let summary: String = trimmed.chars().take(240).collect();
+    if api_key.is_empty() {
+        summary
+    } else {
+        summary.replace(api_key, "***")
+    }
 }
 
 #[cfg(test)]
@@ -882,6 +895,67 @@ mod tests {
         assert_eq!(error.kind(), "api_error");
         assert!(!error.to_string().contains("secret-key"));
         assert!(error.to_string().contains("402"));
+    }
+
+    #[tokio::test]
+    async fn rate_limited_errors_have_stable_kind_and_exit_code() {
+        let server = MockServer::start_async().await;
+        server
+            .mock_async(|when, then| {
+                when.method(GET).path("/quote");
+                then.status(429)
+                    .body("Rate limit exceeded. Please retry later.");
+            })
+            .await;
+        let client =
+            FmpClient::with_base_url("secret-key", format!("{}/", server.base_url())).unwrap();
+
+        let error = client.by_symbol(QUOTE, "AAPL").await.unwrap_err();
+
+        assert_eq!(error.kind(), "rate_limited");
+        assert_eq!(error.exit_code(), std::process::ExitCode::from(5));
+        assert!(!error.to_string().contains("secret-key"));
+        assert!(error.to_string().contains("HTTP 429"));
+        assert!(error.to_string().contains("retry later"));
+    }
+
+    #[tokio::test]
+    async fn rate_limited_body_redacts_echoed_api_key() {
+        let server = MockServer::start_async().await;
+        server
+            .mock_async(|when, then| {
+                when.method(GET).path("/quote");
+                then.status(429)
+                    .body("Rate limit exceeded for apikey=secret-key. Please retry later.");
+            })
+            .await;
+        let client =
+            FmpClient::with_base_url("secret-key", format!("{}/", server.base_url())).unwrap();
+
+        let error = client.by_symbol(QUOTE, "AAPL").await.unwrap_err();
+        let message = error.to_string();
+
+        assert_eq!(error.kind(), "rate_limited");
+        assert!(!message.contains("secret-key"));
+        assert!(message.contains("apikey=***"));
+    }
+
+    #[tokio::test]
+    async fn empty_rate_limit_body_uses_status_reason() {
+        let server = MockServer::start_async().await;
+        server
+            .mock_async(|when, then| {
+                when.method(GET).path("/quote");
+                then.status(429).body("");
+            })
+            .await;
+        let client =
+            FmpClient::with_base_url("secret-key", format!("{}/", server.base_url())).unwrap();
+
+        let error = client.by_symbol(QUOTE, "AAPL").await.unwrap_err();
+
+        assert_eq!(error.kind(), "rate_limited");
+        assert!(error.to_string().contains("Too Many Requests"));
     }
 
     #[tokio::test]

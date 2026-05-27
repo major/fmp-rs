@@ -55,6 +55,7 @@ Stable behavior callers can rely on:
 - **Success**: the raw FMP JSON payload on **one line** to stdout, exit code 0.
 - **Runtime error** (config, network, API, parse): JSON envelope on **stderr**, non-zero exit:
   `{"ok": false, "error": {"kind": "...", "message": "..."}}`
+- **Rate limit**: HTTP 429 exits 5 with `error.kind` set to `rate_limited`. Retry later with backoff instead of treating it as a subscription, authentication, or generic API failure.
 - **Parse error** (bad flags or missing required args): Clap's human-readable usage text on stderr, exit code 2. To distinguish programmatically, check exit code first; only parse stderr as JSON for codes 3-6.
 - Help and version output are human-readable text, not JSON.
 - The CLI deliberately offers no output formatting, filtering, or pagination flags. Pipe through `jq` for selection.
@@ -68,7 +69,7 @@ Stable behavior callers can rely on:
 | 2    | Usage error (Clap parse failure)                               |
 | 3    | Configuration error (missing API key or invalid base URL)      |
 | 4    | Network error (HTTP request failed)                            |
-| 5    | API error (server returned non-2xx, e.g. plan restriction)     |
+| 5    | API error (server returned non-2xx, including rate limits)     |
 | 6    | Parse error (JSON deserialization failed)                      |
 
 ## 4. Configuration

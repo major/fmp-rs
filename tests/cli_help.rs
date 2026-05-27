@@ -51,7 +51,9 @@ fn help_explains_clap_and_json_error_paths() {
         ))
         .stdout(predicate::str::contains(
             "check the exit code first, then parse stderr only for exit codes 3-6",
-        ));
+        ))
+        .stdout(predicate::str::contains("rate_limited"))
+        .stdout(predicate::str::contains("retry later with backoff"));
 }
 
 #[test]

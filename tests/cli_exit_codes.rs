@@ -102,6 +102,43 @@ fn etf_holdings_subscription_error_is_structured() {
 }
 
 #[test]
+fn rate_limited_error_is_structured_and_retryable() {
+    let server = MockServer::start();
+    let mock = server.mock(|when, then| {
+        when.method(GET)
+            .path("/quote")
+            .query_param("symbol", "AAPL")
+            .query_param("apikey", "test-key");
+        then.status(429)
+            .body(r#"{"Error Message":"Limit Reach for test-key. Please wait and try again."}"#);
+    });
+
+    let output = Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env("FMP_API_KEY", "test-key")
+        .env("FMP_BASE_URL", format!("{}/", server.base_url()))
+        .args(["market", "quote", "AAPL"])
+        .output()
+        .unwrap();
+
+    mock.assert();
+    assert_eq!(output.status.code(), Some(5));
+    assert!(output.stdout.is_empty());
+
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    assert!(!stderr.contains("test-key"));
+
+    let body: Value = serde_json::from_str(stderr.trim_end()).unwrap();
+    assert_eq!(body["ok"], false);
+    assert_eq!(body["error"]["kind"], "rate_limited");
+
+    let message = body["error"]["message"].as_str().unwrap();
+    assert!(message.contains("HTTP 429"));
+    assert!(message.contains("Limit Reach"));
+    assert!(message.contains("***"));
+}
+
+#[test]
 fn json_parse_error_returns_exit_code_6() {
     let server = MockServer::start();
     server.mock(|when, then| {
