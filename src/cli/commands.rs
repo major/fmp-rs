@@ -6,8 +6,8 @@ use crate::error::Result;
 
 use super::args::{Command, SymbolArgs, SymbolDateRangeArgs};
 use super::dispatch::{run_by_date_range, run_by_symbol, run_by_symbol_date_range, run_query};
+use super::groups;
 use super::output::CommandPayload;
-use super::{groups, print_group_help};
 
 /// Dispatch a shared quote command through the symbol-only helper.
 pub(crate) async fn dispatch_quote(
@@ -50,60 +50,55 @@ pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<Com
         }
         Command::Company { command } => match command {
             Some(cmd) => groups::company::dispatch(client, cmd).await,
-            None => print_help_silently("company"),
+            None => unreachable!("bare group handled by run()"),
         },
         Command::Market { command } => match command {
             Some(cmd) => groups::market::dispatch(client, cmd).await,
-            None => print_help_silently("market"),
+            None => unreachable!("bare group handled by run()"),
         },
         Command::Fundamentals { command } => match command {
             Some(cmd) => groups::fundamentals::dispatch(client, cmd).await,
-            None => print_help_silently("fundamentals"),
+            None => unreachable!("bare group handled by run()"),
         },
         Command::Analyst { command } => match command {
             Some(cmd) => groups::analyst::dispatch(client, cmd).await,
-            None => print_help_silently("analyst"),
+            None => unreachable!("bare group handled by run()"),
         },
         Command::Insider { command } => match command {
             Some(cmd) => groups::insider::dispatch(client, cmd).await,
-            None => print_help_silently("insider"),
+            None => unreachable!("bare group handled by run()"),
         },
         Command::Calendar { command } => match command {
             Some(cmd) => groups::calendar::dispatch(client, cmd).await,
-            None => print_help_silently("calendar"),
+            None => unreachable!("bare group handled by run()"),
         },
         Command::MacroEcon { command } => match command {
             Some(cmd) => groups::macro_econ::dispatch(client, cmd).await,
-            None => print_help_silently("macro"),
+            None => unreachable!("bare group handled by run()"),
         },
         Command::Technical { command } => match command {
             Some(cmd) => groups::technical::dispatch(client, cmd).await,
-            None => print_help_silently("technical"),
+            None => unreachable!("bare group handled by run()"),
         },
         Command::Sec { command } => match command {
             Some(cmd) => groups::sec::dispatch(client, cmd).await,
-            None => print_help_silently("sec"),
+            None => unreachable!("bare group handled by run()"),
         },
         Command::Etf { command } => match command {
             Some(cmd) => groups::etf::dispatch(client, cmd).await,
-            None => print_help_silently("etf"),
+            None => unreachable!("bare group handled by run()"),
         },
         Command::Crypto { command } => match command {
             Some(cmd) => groups::crypto::dispatch(client, cmd).await,
-            None => print_help_silently("crypto"),
+            None => unreachable!("bare group handled by run()"),
         },
         Command::Forex { command } => match command {
             Some(cmd) => groups::forex::dispatch(client, cmd).await,
-            None => print_help_silently("forex"),
+            None => unreachable!("bare group handled by run()"),
         },
         Command::News { command } => match command {
             Some(cmd) => groups::news::dispatch(client, cmd).await,
-            None => print_help_silently("news"),
+            None => unreachable!("bare group handled by run()"),
         },
     }
-}
-
-fn print_help_silently(group_name: &str) -> Result<CommandPayload> {
-    print_group_help(group_name)?;
-    Ok(CommandPayload::silent())
 }

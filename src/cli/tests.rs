@@ -203,13 +203,6 @@ fn render_output_returns_compact_json_payload() {
     );
 }
 
-#[test]
-fn render_output_skips_silent_payload() {
-    let output = render_output(CommandPayload::silent()).unwrap();
-
-    assert!(output.is_none());
-}
-
 #[tokio::test]
 async fn execute_alias_commands_use_endpoint_descriptors() {
     let server = MockServer::start_async().await;

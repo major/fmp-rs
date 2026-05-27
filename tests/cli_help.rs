@@ -262,3 +262,18 @@ fn stock_news_help_explains_limit_default() {
         .success()
         .stdout(predicate::str::contains("[default: 10]"));
 }
+
+#[test]
+fn leaf_help_includes_global_api_key_and_base_url() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .args(["market", "quote", "--help"])
+        .env("CLAP_COLOR", "never")
+        .env("NO_COLOR", "1")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("--api-key"))
+        .stdout(predicate::str::contains("FMP_API_KEY"))
+        .stdout(predicate::str::contains("--base-url"))
+        .stdout(predicate::str::contains("FMP_BASE_URL"));
+}
