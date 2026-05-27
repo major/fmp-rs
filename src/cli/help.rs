@@ -28,16 +28,14 @@ pub(crate) const HELP_EXAMPLES_ABOUT: &str = "Show representative command exampl
 pub(crate) const HELP_EXAMPLES_LONG: &str = "Representative examples\n\nDiscovery, no API key required:\n  fmp-agent help environment\n  fmp-agent commands\n  fmp-agent commands --grouped\n  fmp-agent schema | jq '.commands[0]'\n  fmp-agent completions bash\n\nCommon market and company data:\n  fmp-agent quote AAPL\n  fmp-agent market batch-quote AAPL MSFT GOOGL\n  fmp-agent market historical AAPL --from 2024-01-01 --to 2024-12-31\n  fmp-agent company profile AAPL\n  fmp-agent company peers AAPL\n\nFundamentals, analyst, and calendars:\n  fmp-agent fundamentals income-statement AAPL --limit 5\n  fmp-agent fundamentals annual-report AAPL --year 2023\n  fmp-agent analyst grades AAPL\n  fmp-agent calendar earnings --from 2024-01-01 --to 2024-03-31\n\nNews, macro, and technicals:\n  fmp-agent news stock AAPL --limit 10\n  fmp-agent macro economic-indicators GDP --from 2024-01-01\n  fmp-agent technical sma AAPL --period-length 20 --timeframe 1day\n\nExamples:\n  fmp-agent help examples\n  fmp-agent help schema";
 
 pub(crate) const COMPANY_GROUP_ABOUT: &str = "Company data command group.";
-pub(crate) const COMPANY_GROUP_LONG: &str =
-    "Company data commands.\n\nExamples:\n  fmp-agent company\n  fmp-agent company profile AAPL";
+pub(crate) const COMPANY_GROUP_LONG: &str = "Company data commands.\n\nExamples:\n  fmp-agent company\n  fmp-agent company profile AAPL\n  fmp-agent company outlook AAPL";
 pub(crate) const MARKET_GROUP_ABOUT: &str = "Market data command group.";
 pub(crate) const MARKET_GROUP_LONG: &str =
     "Market data commands.\n\nExamples:\n  fmp-agent market\n  fmp-agent market quote AAPL";
 pub(crate) const FUNDAMENTALS_GROUP_ABOUT: &str = "Fundamentals command group.";
 pub(crate) const FUNDAMENTALS_GROUP_LONG: &str = "Fundamentals commands.\n\nExamples:\n  fmp-agent fundamentals\n  fmp-agent fundamentals income-statement AAPL";
 pub(crate) const ANALYST_GROUP_ABOUT: &str = "Analyst command group.";
-pub(crate) const ANALYST_GROUP_LONG: &str =
-    "Analyst commands.\n\nExamples:\n  fmp-agent analyst\n  fmp-agent analyst grades AAPL";
+pub(crate) const ANALYST_GROUP_LONG: &str = "Analyst commands.\n\nExamples:\n  fmp-agent analyst\n  fmp-agent analyst grades AAPL\n  fmp-agent analyst upgrades-downgrades AAPL";
 pub(crate) const INSIDER_GROUP_ABOUT: &str = "Insider command group.";
 pub(crate) const INSIDER_GROUP_LONG: &str = "Insider commands.\n\nExamples:\n  fmp-agent insider\n  fmp-agent insider latest --page 1 --limit 20";
 pub(crate) const CALENDAR_GROUP_ABOUT: &str = "Calendar command group.";
@@ -51,8 +49,7 @@ pub(crate) const SEC_GROUP_ABOUT: &str = "SEC command group.";
 pub(crate) const SEC_GROUP_LONG: &str =
     "SEC commands.\n\nExamples:\n  fmp-agent sec\n  fmp-agent sec filings AAPL";
 pub(crate) const ETF_GROUP_ABOUT: &str = "ETF command group.";
-pub(crate) const ETF_GROUP_LONG: &str =
-    "ETF commands.\n\nExamples:\n  fmp-agent etf\n  fmp-agent etf holdings SPY";
+pub(crate) const ETF_GROUP_LONG: &str = "ETF commands.\n\nExamples:\n  fmp-agent etf\n  fmp-agent etf holdings SPY\n  fmp-agent etf list";
 pub(crate) const CRYPTO_GROUP_ABOUT: &str = "Cryptocurrency command group.";
 pub(crate) const CRYPTO_GROUP_LONG: &str =
     "Cryptocurrency commands.\n\nExamples:\n  fmp-agent crypto\n  fmp-agent crypto quote BTCUSD";
@@ -90,6 +87,8 @@ pub(crate) const MARKET_STOCK_LIST_LONG: &str = "List all supported stock symbol
 pub(crate) const ETF_HOLDINGS_ABOUT: &str =
     "Get ETF holdings for a fund symbol; Starter accounts return an API error.";
 pub(crate) const ETF_HOLDINGS_LONG: &str = "Get ETF holdings for a fund symbol. Note: Starter plan accounts receive an API error for this endpoint; it is included to exercise structured error handling.\n\nExamples:\n  fmp-agent etf holdings SPY";
+pub(crate) const ETF_LIST_ABOUT: &str = "List supported ETF symbols.";
+pub(crate) const ETF_LIST_LONG: &str = "List all supported ETF symbols. Returns a large payload with ticker, name, and type for each instrument.\n\nExamples:\n  fmp-agent etf list";
 pub(crate) const COMPANY_FINANCIAL_SCORES_ABOUT: &str =
     "Get financial quality scores for a stock ticker.";
 pub(crate) const COMPANY_FINANCIAL_SCORES_LONG: &str = "Get financial quality scores for a company including Piotroski score and intrinsic value rating.\n\nExamples:\n  fmp-agent company scores AAPL";
@@ -102,6 +101,9 @@ pub(crate) const COMPANY_RATING_LONG: &str = "Get the current analyst rating con
 pub(crate) const COMPANY_HISTORICAL_RATING_ABOUT: &str =
     "Get historical company rating rows for a stock ticker.";
 pub(crate) const COMPANY_HISTORICAL_RATING_LONG: &str = "Get historical company rating rows for a stock ticker. Returns up to the limit of most-recent rating snapshots.\n\nExamples:\n  fmp-agent company historical-rating AAPL\n  fmp-agent company historical-rating AAPL --limit 20";
+pub(crate) const COMPANY_OUTLOOK_ABOUT: &str =
+    "Get comprehensive company outlook for a stock ticker.";
+pub(crate) const COMPANY_OUTLOOK_LONG: &str = "Get a comprehensive company outlook for a stock ticker including target price, growth estimates, and analyst consensus metrics. Starter plan accounts receive symbol-limited results.\n\nExamples:\n  fmp-agent company outlook AAPL";
 pub(crate) const MARKET_QUOTE_ABOUT: &str = "Get the latest market quote for a stock ticker.";
 pub(crate) const MARKET_QUOTE_LONG: &str = "Get the latest market quote for a stock ticker including price, volume, and change data.\n\nExamples:\n  fmp-agent market quote AAPL\n  fmp-agent market quote TSLA";
 pub(crate) const MARKET_HISTORICAL_ABOUT: &str =
@@ -167,6 +169,15 @@ pub(crate) const ANALYST_PRICE_TARGET_SUMMARY_LONG: &str = "Get a summary of ana
 pub(crate) const ANALYST_GRADES_ABOUT: &str =
     "Get analyst grade action history for a stock ticker.";
 pub(crate) const ANALYST_GRADES_LONG: &str = "Get analyst grade action history for a stock ticker showing upgrades, downgrades, and initiations.\n\nExamples:\n  fmp-agent analyst grades AAPL";
+pub(crate) const ANALYST_UPGRADES_DOWNGRADES_ABOUT: &str =
+    "Get analyst upgrades and downgrades for a stock ticker.";
+pub(crate) const ANALYST_UPGRADES_DOWNGRADES_LONG: &str = "Get analyst upgrades and downgrades for a stock ticker showing rating changes with dates and analyst firms. Starter plan accounts receive symbol-limited results.\n\nExamples:\n  fmp-agent analyst upgrades-downgrades AAPL";
+pub(crate) const ANALYST_RATINGS_SNAPSHOT_ABOUT: &str =
+    "Get a snapshot of current analyst ratings for a stock ticker.";
+pub(crate) const ANALYST_RATINGS_SNAPSHOT_LONG: &str = "Get a snapshot of current analyst ratings for a stock ticker including buy, hold, and sell counts with average rating. Starter plan accounts receive symbol-limited results.\n\nExamples:\n  fmp-agent analyst ratings-snapshot AAPL";
+pub(crate) const ANALYST_EARNINGS_SURPRISES_ABOUT: &str =
+    "Get earnings surprises for a stock ticker.";
+pub(crate) const ANALYST_EARNINGS_SURPRISES_LONG: &str = "Get earnings surprises for a stock ticker showing actual vs. estimated EPS and revenue with surprise percentages. Starter plan accounts receive symbol-limited results.\n\nExamples:\n  fmp-agent analyst earnings-surprises AAPL";
 pub(crate) const INSIDER_TRADING_LATEST_ABOUT: &str = "Get latest insider trading rows.";
 pub(crate) const INSIDER_TRADING_LATEST_LONG: &str = "Get latest insider trading rows. Uses zero-based paging.\n\nExamples:\n  fmp-agent insider latest\n  fmp-agent insider latest --page 1 --limit 20";
 pub(crate) const EARNINGS_CALENDAR_ABOUT: &str =

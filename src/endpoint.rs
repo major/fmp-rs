@@ -125,3 +125,13 @@ pub const FMP_ARTICLES: Endpoint = Endpoint::new("fmp-articles");
 pub const FOREX_NEWS: Endpoint = Endpoint::new("news/forex-latest");
 /// Crypto news endpoint.
 pub const CRYPTO_NEWS: Endpoint = Endpoint::new("news/crypto-latest");
+/// Analyst upgrades and downgrades endpoint.
+pub const UPGRADES_DOWNGRADES: Endpoint = Endpoint::new("upgrades-downgrades");
+/// Ratings snapshot endpoint.
+pub const RATINGS_SNAPSHOT: Endpoint = Endpoint::new("ratings-snapshot");
+/// Earnings surprises endpoint.
+pub const EARNINGS_SURPRISES: Endpoint = Endpoint::new("earnings-surprises");
+/// Company outlook endpoint.
+pub const COMPANY_OUTLOOK: Endpoint = Endpoint::new("company-outlook");
+/// ETF list endpoint.
+pub const ETF_LIST: Endpoint = Endpoint::new("etf-list");
