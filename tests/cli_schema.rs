@@ -53,6 +53,41 @@ fn schema_has_13_groups_in_order() {
 }
 
 #[test]
+fn schema_batch_quote_multi_value_arg() {
+    let body = schema_body();
+    let commands = body["commands"].as_array().unwrap();
+
+    let bq = commands
+        .iter()
+        .find(|c| c["path"] == serde_json::json!(["market", "batch-quote"]))
+        .expect("must have market batch-quote leaf");
+
+    assert_eq!(bq["name"], "batch-quote");
+    assert_eq!(bq["api_key_required"], true);
+    assert_eq!(bq["preferred_path"], "market batch-quote");
+    assert!(bq["aliases"].as_array().unwrap().is_empty());
+    assert!(bq["about"].is_string(), "about must be a string");
+    assert!(
+        bq["long_about"]
+            .as_str()
+            .is_some_and(|s| s.contains("Examples:")),
+        "long_about must contain examples"
+    );
+
+    let symbols_arg = bq["args"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|a| a["name"] == "symbols")
+        .expect("batch-quote must have symbols arg");
+
+    assert_eq!(symbols_arg["kind"], "positional");
+    assert_eq!(symbols_arg["required"], true);
+    assert_eq!(symbols_arg["parser"]["hint"], "string");
+    assert_eq!(symbols_arg["multi_value"], true);
+}
+
+#[test]
 fn schema_market_quote_leaf() {
     let body = schema_body();
     let commands = body["commands"].as_array().unwrap();

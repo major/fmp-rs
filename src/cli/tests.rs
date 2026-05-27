@@ -7,7 +7,7 @@ use crate::client::FmpClient;
 
 use super::args::{
     AnnualArgs, AnnualReportFormArgs, Cli, Command, DateRangeArgs, NameDateRangeArgs, PagedArgs,
-    StockNewsArgs, SymbolArgs, SymbolDateRangeArgs, SymbolLimitArgs, TechnicalSmaArgs,
+    StockNewsArgs, SymbolArgs, SymbolDateRangeArgs, SymbolLimitArgs, SymbolsArgs, TechnicalSmaArgs,
 };
 use super::commands::execute;
 use super::groups;
@@ -20,6 +20,12 @@ fn test_client(server: &MockServer) -> FmpClient {
 fn symbol(symbol: &str) -> SymbolArgs {
     SymbolArgs {
         symbol: symbol.to_owned(),
+    }
+}
+
+fn symbols(symbols: &[&str]) -> SymbolsArgs {
+    SymbolsArgs {
+        symbols: symbols.iter().map(|s| s.to_string()).collect(),
     }
 }
 
@@ -116,6 +122,15 @@ fn parses_grouped_commands() {
             command: Some(groups::market::Cmd::Quote(_))
         }
     ));
+
+    let batch = Cli::parse_from(["fmp", "market", "batch-quote", "AAPL", "MSFT", "GOOGL"]);
+    let Command::Market {
+        command: Some(groups::market::Cmd::BatchQuote(args)),
+    } = batch.command
+    else {
+        panic!("expected batch-quote command");
+    };
+    assert_eq!(args.symbols, vec!["AAPL", "MSFT", "GOOGL"]);
 
     let fundamentals = Cli::parse_from(["fmp", "fundamentals", "income-statement", "AAPL"]);
     assert!(matches!(
@@ -348,6 +363,15 @@ async fn execute_grouped_commands_use_endpoint_descriptors() {
                 command: Some(groups::market::Cmd::PriceChange(symbol("AAPL"))),
             },
             json!({ "symbol": "AAPL" }),
+        ),
+        (
+            "batch-quote",
+            Command::Market {
+                command: Some(groups::market::Cmd::BatchQuote(symbols(&[
+                    "AAPL", "MSFT", "GOOGL",
+                ]))),
+            },
+            json!({ "symbols": ["AAPL", "MSFT", "GOOGL"] }),
         ),
         (
             "stock-list",

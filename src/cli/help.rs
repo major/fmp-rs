@@ -93,6 +93,9 @@ pub(crate) const MARKET_DIVIDENDS_LONG: &str = "Get historical dividend events f
 pub(crate) const MARKET_SPLITS_ABOUT: &str =
     "Get historical stock split events for a stock ticker.";
 pub(crate) const MARKET_SPLITS_LONG: &str = "Get historical stock split events for a stock ticker.\n\nExamples:\n  fmp-agent market splits AAPL";
+pub(crate) const MARKET_BATCH_QUOTE_ABOUT: &str =
+    "Get the latest market quotes for multiple stock tickers in one request.";
+pub(crate) const MARKET_BATCH_QUOTE_LONG: &str = "Get the latest market quotes for multiple stock tickers in a single API request. Accepts one or more symbols as positional arguments and returns current price, volume, and change data for each.\n\nExamples:\n  fmp-agent market batch-quote AAPL\n  fmp-agent market batch-quote AAPL MSFT GOOGL";
 pub(crate) const MARKET_PRICE_CHANGE_ABOUT: &str =
     "Get price change percentages for a stock ticker.";
 pub(crate) const MARKET_PRICE_CHANGE_LONG: &str = "Get price change percentages for a stock ticker across multiple time periods (1D, 5D, 1M, 3M, 6M, YTD, 1Y, 3Y, 5Y, 10Y).\n\nExamples:\n  fmp-agent market price-change AAPL";
@@ -196,6 +199,7 @@ pub(crate) const COMPLETIONS_LONG: &str = "Generate shell completions for the sp
 
 pub(crate) const SYMBOL: &str =
     "Symbol accepted by this command, such as a stock ticker, forex pair, or crypto pair.";
+pub(crate) const SYMBOLS: &str = "One or more stock ticker symbols, separated by spaces.";
 pub(crate) const STOCK_SYMBOL: &str = "Stock ticker symbol, for example AAPL.";
 pub(crate) const LIMIT_ROWS: &str = "Maximum number of rows to return.";
 pub(crate) const YEAR: &str = "Fiscal year, for example 2024.";

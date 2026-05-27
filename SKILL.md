@@ -150,6 +150,7 @@ Commands use the `<group> <verb>` form introduced in 0.4.0. See the README migra
 | Command                                        | Shape              |
 | ---------------------------------------------- | ------------------ |
 | `market quote <SYMBOL>`                        | `Symbol`           |
+| `market batch-quote <SYMBOLS...>`              | `Symbols`          |
 | `market historical <SYMBOL>`                   | `SymbolDateRange`  |
 | `market dividends <SYMBOL>`                    | `Symbol`           |
 | `market splits <SYMBOL>`                       | `Symbol`           |
@@ -227,6 +228,7 @@ fmp-agent search Apple
 
 # Reference data
 FMP_API_KEY=your-key fmp-agent market quote AAPL
+fmp-agent market batch-quote AAPL MSFT GOOGL
 fmp-agent company profile AAPL
 fmp-agent company historical-rating AAPL --limit 20
 
