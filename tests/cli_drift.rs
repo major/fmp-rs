@@ -57,7 +57,7 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["commands"],
     &["completions"],
     &["doctor"],
-    // company (7)
+    // company (8)
     &["company", "profile"],
     &["company", "executives"],
     &["company", "peers"],
@@ -65,6 +65,7 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["company", "float"],
     &["company", "rating"],
     &["company", "historical-rating"],
+    &["company", "outlook"],
     // market (7)
     &["market", "quote"],
     &["market", "historical"],
@@ -87,10 +88,13 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["fundamentals", "analyst-estimates"],
     &["fundamentals", "report-dates"],
     &["fundamentals", "annual-report"],
-    // analyst (3)
+    // analyst (6)
     &["analyst", "price-target-consensus"],
     &["analyst", "price-target-summary"],
     &["analyst", "grades"],
+    &["analyst", "upgrades-downgrades"],
+    &["analyst", "ratings-snapshot"],
+    &["analyst", "earnings-surprises"],
     // insider (1)
     &["insider", "latest"],
     // calendar (1)
@@ -102,8 +106,9 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["technical", "sma"],
     // sec (1)
     &["sec", "filings"],
-    // etf (1)
+    // etf (2)
     &["etf", "holdings"],
+    &["etf", "list"],
     // crypto (3)
     &["crypto", "list"],
     &["crypto", "quote"],

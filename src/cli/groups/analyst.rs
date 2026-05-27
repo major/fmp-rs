@@ -30,6 +30,27 @@ pub(crate) enum Cmd {
     /// Get analyst grade action history for a stock ticker.
     #[command(about = help::ANALYST_GRADES_ABOUT, long_about = help::ANALYST_GRADES_LONG)]
     Grades(SymbolArgs),
+
+    /// Get analyst upgrades and downgrades for a stock ticker.
+    #[command(
+        about = help::ANALYST_UPGRADES_DOWNGRADES_ABOUT,
+        long_about = help::ANALYST_UPGRADES_DOWNGRADES_LONG
+    )]
+    UpgradesDowngrades(SymbolArgs),
+
+    /// Get a snapshot of current analyst ratings for a stock ticker.
+    #[command(
+        about = help::ANALYST_RATINGS_SNAPSHOT_ABOUT,
+        long_about = help::ANALYST_RATINGS_SNAPSHOT_LONG
+    )]
+    RatingsSnapshot(SymbolArgs),
+
+    /// Get earnings surprises for a stock ticker.
+    #[command(
+        about = help::ANALYST_EARNINGS_SURPRISES_ABOUT,
+        long_about = help::ANALYST_EARNINGS_SURPRISES_LONG
+    )]
+    EarningsSurprises(SymbolArgs),
 }
 
 /// Dispatch an analyst command.
@@ -42,5 +63,14 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
             run_by_symbol(client, endpoint::PRICE_TARGET_SUMMARY, &args.symbol).await
         }
         Cmd::Grades(args) => run_by_symbol(client, endpoint::GRADES, &args.symbol).await,
+        Cmd::UpgradesDowngrades(args) => {
+            run_by_symbol(client, endpoint::UPGRADES_DOWNGRADES, &args.symbol).await
+        }
+        Cmd::RatingsSnapshot(args) => {
+            run_by_symbol(client, endpoint::RATINGS_SNAPSHOT, &args.symbol).await
+        }
+        Cmd::EarningsSurprises(args) => {
+            run_by_symbol(client, endpoint::EARNINGS_SURPRISES, &args.symbol).await
+        }
     }
 }

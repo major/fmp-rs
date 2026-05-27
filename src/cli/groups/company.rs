@@ -60,6 +60,13 @@ pub(crate) enum Cmd {
         long_about = help::COMPANY_HISTORICAL_RATING_LONG
     )]
     HistoricalRating(SymbolLimitArgs),
+
+    /// Get comprehensive company outlook for a stock ticker.
+    #[command(
+        about = help::COMPANY_OUTLOOK_ABOUT,
+        long_about = help::COMPANY_OUTLOOK_LONG
+    )]
+    Outlook(SymbolArgs),
 }
 
 /// Dispatch a company subcommand.
@@ -87,6 +94,9 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
                 args.limit,
             )
             .await
+        }
+        Cmd::Outlook(args) => {
+            run_by_symbol(client, crate::endpoint::COMPANY_OUTLOOK, &args.symbol).await
         }
     }
 }
