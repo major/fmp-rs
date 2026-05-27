@@ -149,10 +149,12 @@ This excludes `clap` and `dotenvy` and exposes `FmpClient`, `Endpoint`, `Error`,
 | 2 | Usage error (bad flags, missing arguments, or invalid dates) |
 | 3 | Configuration error (missing API key or invalid base URL) |
 | 4 | Network error (HTTP request failed) |
-| 5 | API error (server returned a non-2xx response) |
+| 5 | API error (server returned a non-2xx response, including rate limits) |
 | 6 | Parse error (JSON deserialization failed) |
 
 Exit code 2 is produced at parse time by Clap with human-readable usage text on stderr (bad flags and invalid dates are caught before the CLI reaches runtime validation). Exit codes 3-6 are runtime errors and use structured JSON on stderr: `{"ok":false,"error":{"kind":"<kind>","message":"..."}}`.
+
+HTTP 429 responses use exit code 5 with `error.kind` set to `rate_limited`. Agents should treat that kind as retryable later with backoff, not as a subscription, authentication, or generic API failure. Other non-429 API failures continue to use `api_error`.
 
 ## Development
 

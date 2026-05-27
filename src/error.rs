@@ -30,6 +30,15 @@ pub enum Error {
         message: String,
     },
 
+    /// The API rate-limited the request.
+    #[error("FMP API request was rate limited with HTTP {status}: {message}")]
+    RateLimited {
+        /// HTTP status code returned by the API.
+        status: u16,
+        /// Redacted response body or status message.
+        message: String,
+    },
+
     /// The HTTP client failed before receiving a usable response.
     #[error("HTTP request failed: {0}")]
     Http(reqwest::Error),
@@ -54,6 +63,7 @@ impl Error {
             Self::InvalidBaseUrl(_) => "invalid_base_url",
             Self::MissingArgument(_) => "missing_argument",
             Self::Api { .. } => "api_error",
+            Self::RateLimited { .. } => "rate_limited",
             Self::Http(_) => "http_error",
             Self::Json(_) => "json_error",
         }
@@ -65,7 +75,7 @@ impl Error {
     /// - `2` - usage/argument error (missing required CLI argument)
     /// - `3` - configuration error (missing API key, invalid base URL)
     /// - `4` - network/HTTP error
-    /// - `5` - API error (server returned an error response)
+    /// - `5` - API error (server returned an error response, including rate limits)
     /// - `6` - parse error (JSON deserialization failed)
     #[must_use]
     pub fn exit_code(&self) -> ExitCode {
@@ -73,7 +83,7 @@ impl Error {
             Self::MissingArgument(_) => ExitCode::from(2),
             Self::MissingApiKey | Self::InvalidBaseUrl(_) => ExitCode::from(3),
             Self::Http(_) => ExitCode::from(4),
-            Self::Api { .. } => ExitCode::from(5),
+            Self::Api { .. } | Self::RateLimited { .. } => ExitCode::from(5),
             Self::Json(_) => ExitCode::from(6),
         }
     }
