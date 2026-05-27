@@ -3,7 +3,7 @@
 use clap::Subcommand;
 
 use crate::cli::args::{PagedArgs, SymbolArgs, SymbolLimitArgs};
-use crate::cli::dispatch::{run_by_symbol, run_by_symbol_limit, run_paged};
+use crate::cli::dispatch::{run_by_symbol, run_by_symbol_limit, run_paged, unavailable_endpoint};
 use crate::cli::help;
 use crate::cli::output::CommandPayload;
 use crate::client::FmpClient;
@@ -102,9 +102,10 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
             )
             .await
         }
-        Cmd::Outlook(args) => {
-            run_by_symbol(client, crate::endpoint::COMPANY_OUTLOOK, &args.symbol).await
-        }
+        Cmd::Outlook(_) => unavailable_endpoint(
+            crate::endpoint::COMPANY_OUTLOOK.path(),
+            "FMP only documents company outlook as a legacy endpoint; no stable API path is available for this command",
+        ),
         Cmd::Delisted(args) => {
             run_paged(
                 client,

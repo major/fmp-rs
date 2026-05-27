@@ -158,13 +158,13 @@ Run `fmp-agent help exit-codes` to view this guidance from the installed binary.
 | 2 | Usage error (bad flags, missing arguments, or invalid dates) |
 | 3 | Configuration error (missing API key or invalid base URL) |
 | 4 | Network error (HTTP request failed) |
-| 5 | API error (server returned a non-2xx response, including rate limits) |
+| 5 | API error or unavailable endpoint (server returned a non-2xx response, rate limit, or command maps only to a legacy endpoint) |
 | 6 | Parse error (JSON deserialization failed) |
 | 7 | Empty symbol result in `--strict-empty` mode |
 
 Exit code 2 is produced at parse time by Clap with human-readable usage text on stderr (bad flags and invalid dates are caught before the CLI reaches runtime validation). Exit codes 3-7 are runtime errors and use structured JSON on stderr: `{"ok":false,"error":{"kind":"<kind>","message":"..."}}`.
 
-HTTP 429 responses use exit code 5 with `error.kind` set to `rate_limited`. Agents should treat that kind as retryable later with backoff, not as a subscription, authentication, or generic API failure. Other non-429 API failures continue to use `api_error`.
+HTTP 429 responses use exit code 5 with `error.kind` set to `rate_limited`. Agents should treat that kind as retryable later with backoff, not as a subscription, authentication, or generic API failure. Other non-429 API failures continue to use `api_error`. Commands that FMP only documents as legacy endpoints use exit code 5 with `error.kind` set to `endpoint_unavailable` and do not make a network request.
 
 ## Development
 

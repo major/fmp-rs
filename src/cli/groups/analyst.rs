@@ -3,7 +3,7 @@
 use clap::Subcommand;
 
 use crate::cli::args::SymbolArgs;
-use crate::cli::dispatch::run_by_symbol;
+use crate::cli::dispatch::{run_by_symbol, unavailable_endpoint};
 use crate::cli::help;
 use crate::cli::output::CommandPayload;
 use crate::client::FmpClient;
@@ -70,15 +70,20 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
             run_by_symbol(client, endpoint::PRICE_TARGET_SUMMARY, &args.symbol).await
         }
         Cmd::Grades(args) => run_by_symbol(client, endpoint::GRADES, &args.symbol).await,
-        Cmd::UpgradesDowngrades(args) => {
-            run_by_symbol(client, endpoint::UPGRADES_DOWNGRADES, &args.symbol).await
-        }
+        Cmd::UpgradesDowngrades(_) => unavailable_endpoint(
+            endpoint::UPGRADES_DOWNGRADES.path(),
+            "FMP only documents upgrades and downgrades as a legacy endpoint; use `analyst grades` for the stable analyst grade actions endpoint",
+        ),
         Cmd::RatingsSnapshot(args) => {
             run_by_symbol(client, endpoint::RATINGS_SNAPSHOT, &args.symbol).await
         }
-        Cmd::EarningsSurprises(args) => {
-            run_by_symbol(client, endpoint::EARNINGS_SURPRISES, &args.symbol).await
-        }
-        Cmd::PriceTarget(args) => run_by_symbol(client, endpoint::PRICE_TARGET, &args.symbol).await,
+        Cmd::EarningsSurprises(_) => unavailable_endpoint(
+            endpoint::EARNINGS_SURPRISES.path(),
+            "FMP only documents symbol earnings surprises as a legacy endpoint; no stable per-symbol API path is available for this command",
+        ),
+        Cmd::PriceTarget(_) => unavailable_endpoint(
+            endpoint::PRICE_TARGET.path(),
+            "FMP only documents historical price targets as a legacy endpoint; use `analyst price-target-consensus` or `analyst price-target-summary` for stable price target data",
+        ),
     }
 }

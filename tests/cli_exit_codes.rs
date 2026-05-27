@@ -102,6 +102,50 @@ fn etf_holdings_subscription_error_is_structured() {
 }
 
 #[test]
+fn unavailable_legacy_endpoint_returns_structured_error_without_http_request() {
+    let cases: &[&[&str]] = &[
+        &["company", "outlook", "AAPL"],
+        &["analyst", "price-target", "AAPL"],
+        &["analyst", "upgrades-downgrades", "AAPL"],
+        &["analyst", "earnings-surprises", "AAPL"],
+    ];
+
+    for args in cases {
+        let server = MockServer::start();
+        let mock = server.mock(|when, then| {
+            when.method(GET);
+            then.status(200).json_body(json!([{ "unexpected": true }]));
+        });
+
+        let output = Command::cargo_bin("fmp-agent")
+            .unwrap()
+            .env("FMP_API_KEY", "test-key")
+            .env("FMP_BASE_URL", format!("{}/", server.base_url()))
+            .args(*args)
+            .output()
+            .unwrap();
+
+        mock.assert_calls(0);
+        assert_eq!(output.status.code(), Some(5), "command: {args:?}");
+        assert!(output.stdout.is_empty(), "command: {args:?}");
+
+        let stderr = String::from_utf8(output.stderr).unwrap();
+        assert!(!stderr.contains("test-key"));
+
+        let body: Value = serde_json::from_str(stderr.trim_end()).unwrap();
+        assert_eq!(body["ok"], false, "command: {args:?}");
+        assert_eq!(
+            body["error"]["kind"], "endpoint_unavailable",
+            "command: {args:?}"
+        );
+
+        let message = body["error"]["message"].as_str().unwrap();
+        assert!(message.contains("unavailable"), "command: {args:?}");
+        assert!(message.contains("legacy endpoint"), "command: {args:?}");
+    }
+}
+
+#[test]
 fn rate_limited_error_is_structured_and_retryable() {
     let server = MockServer::start();
     let mock = server.mock(|when, then| {

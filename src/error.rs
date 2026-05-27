@@ -52,6 +52,15 @@ pub enum Error {
         endpoint: &'static str,
     },
 
+    /// A CLI command maps to an endpoint that FMP no longer documents for the stable API.
+    #[error("endpoint {endpoint} is unavailable: {message}")]
+    EndpointUnavailable {
+        /// Endpoint path or command identifier that is unavailable.
+        endpoint: &'static str,
+        /// User-facing explanation of the unavailable endpoint.
+        message: &'static str,
+    },
+
     /// The HTTP client failed before receiving a usable response.
     #[error("HTTP request failed: {0}")]
     Http(reqwest::Error),
@@ -78,6 +87,7 @@ impl Error {
             Self::Api { .. } => "api_error",
             Self::RateLimited { .. } => "rate_limited",
             Self::EmptyResult { .. } => "empty_result",
+            Self::EndpointUnavailable { .. } => "endpoint_unavailable",
             Self::Http(_) => "http_error",
             Self::Json(_) => "json_error",
         }
@@ -98,7 +108,9 @@ impl Error {
             Self::MissingArgument(_) => ExitCode::from(2),
             Self::MissingApiKey | Self::InvalidBaseUrl(_) => ExitCode::from(3),
             Self::Http(_) => ExitCode::from(4),
-            Self::Api { .. } | Self::RateLimited { .. } => ExitCode::from(5),
+            Self::Api { .. } | Self::RateLimited { .. } | Self::EndpointUnavailable { .. } => {
+                ExitCode::from(5)
+            }
             Self::Json(_) => ExitCode::from(6),
             Self::EmptyResult { .. } => ExitCode::from(7),
         }
