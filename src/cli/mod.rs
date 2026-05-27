@@ -16,6 +16,8 @@ mod tests;
 pub use args::Cli;
 
 use clap::CommandFactory;
+use reqwest::Url;
+use serde_json::{Value, json};
 
 use commands::execute;
 use output::render_output;
@@ -71,6 +73,14 @@ pub async fn run(cli: Cli) -> Result<()> {
         return Ok(());
     }
 
+    // Doctor is local-only and does not require an API key or network access.
+    if let args::Command::Doctor = &cli.command {
+        let output = serde_json::to_string(&doctor_report(&cli.base_url, cli.api_key.as_deref()))
+            .map_err(crate::error::Error::Json)?;
+        print_stdout_line(&output);
+        return Ok(());
+    }
+
     if let Some(group_name) = bare_group_name(&cli.command) {
         print_group_help(group_name)?;
         return Ok(());
@@ -90,6 +100,47 @@ pub async fn run(cli: Cli) -> Result<()> {
     }
 
     Ok(())
+}
+
+fn doctor_report(base_url: &str, api_key: Option<&str>) -> Value {
+    let api_key_configured = api_key.is_some_and(|key| !key.trim().is_empty());
+    let base_url_display = display_base_url(base_url);
+    let base_url_error = FmpClient::with_base_url("", base_url)
+        .err()
+        .map(|error| json!({ "kind": error.kind(), "message": error.to_string() }));
+    let base_url_valid = base_url_error.is_none();
+    let ok = api_key_configured && base_url_valid;
+
+    json!({
+        "ok": ok,
+        "version": env!("CARGO_PKG_VERSION"),
+        "base_url": {
+            "value": base_url_display,
+            "valid": base_url_valid,
+            "error": base_url_error,
+        },
+        "api_key": {
+            "configured": api_key_configured,
+            "status": if api_key_configured { "ok" } else { "missing" },
+        },
+        "live_connectivity": {
+            "checked": false,
+            "status": "skipped",
+            "reason": "doctor performs local checks only and does not consume FMP API quota",
+        },
+    })
+}
+
+fn display_base_url(base_url: &str) -> String {
+    let Ok(mut url) = Url::parse(base_url) else {
+        return "<invalid URL>".to_owned();
+    };
+
+    let _ = url.set_username("");
+    let _ = url.set_password(None);
+    url.set_query(None);
+    url.set_fragment(None);
+    url.to_string()
 }
 
 fn bare_group_name(command: &args::Command) -> Option<&'static str> {
@@ -174,8 +225,8 @@ fn grouped_commands(cmd: &clap::Command) -> Vec<String> {
     }
 
     // Second pass: collect top-level standalone commands, split into discovery
-    // commands (schema, commands, completions) and convenience aliases (quote,
-    // historical, profile, earnings).
+    // commands (doctor, schema, commands, completions) and convenience aliases
+    // (quote, historical, profile, earnings).
     let leaves: Vec<&clap::Command> = cmd
         .get_subcommands()
         .filter(|s| {
@@ -187,7 +238,7 @@ fn grouped_commands(cmd: &clap::Command) -> Vec<String> {
         })
         .collect();
 
-    const DISCOVERY: &[&str] = &["schema", "commands", "completions"];
+    const DISCOVERY: &[&str] = &["doctor", "schema", "commands", "completions"];
     let discovery_leaves: Vec<_> = leaves
         .iter()
         .filter(|l| DISCOVERY.contains(&l.get_name()))

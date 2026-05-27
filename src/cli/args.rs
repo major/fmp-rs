@@ -78,6 +78,10 @@ pub(crate) enum Command {
         shell: clap_complete::Shell,
     },
 
+    /// Local configuration diagnostic command.
+    #[command(about = help::DOCTOR_ABOUT, long_about = help::DOCTOR_LONG)]
+    Doctor,
+
     /// Top-level alias for `market quote`.
     #[command(about = help::QUOTE_ALIAS_ABOUT, long_about = help::QUOTE_ALIAS_LONG)]
     Quote(SymbolArgs),

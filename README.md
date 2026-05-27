@@ -28,6 +28,8 @@ FMP_API_KEY=your-key cargo run -- market quote AAPL
 
 `FMP_BASE_URL` can override the default `https://financialmodelingprep.com/stable/` base URL for proxies or tests.
 
+Run `fmp-agent doctor` first when troubleshooting setup. It prints JSON with the binary version, sanitized base URL, API key presence, and local readiness status without revealing the key or making a network request.
+
 ## Migration from 0.3.x
 
 0.4.0 restructures the CLI into a git-like grouped command tree. Commands now take the form `fmp-agent <group> <subcommand>` instead of a single flat hyphenated verb.
@@ -48,7 +50,7 @@ Four single-token aliases are preserved for ergonomics: `quote` (market quote), 
 
 ## Commands
 
-See [`SKILL.md`](SKILL.md) for the full command reference and examples. Commands follow a two-level grouped structure: a group name followed by a subcommand verb, such as `company profile`, `market quote`, `fundamentals income-statement`, `macro economic-indicators`, and `news stock`. The 13 groups are: `company`, `market`, `fundamentals`, `analyst`, `insider`, `calendar`, `macro`, `technical`, `sec`, `etf`, `crypto`, `forex`, and `news`.
+See [`SKILL.md`](SKILL.md) for the full command reference and examples. Commands follow a two-level grouped structure: a group name followed by a subcommand verb, such as `company profile`, `market quote`, `fundamentals income-statement`, `macro economic-indicators`, and `news stock`. The standalone `doctor` command is the first troubleshooting step for local configuration readiness. The 13 groups are: `company`, `market`, `fundamentals`, `analyst`, `insider`, `calendar`, `macro`, `technical`, `sec`, `etf`, `crypto`, `forex`, and `news`.
 
 In the repo, use `cargo run -- <GROUP> <SUBCOMMAND>` with the same arguments before installing or after cleaning the build. After `cargo build`, run the built binary as `target/debug/fmp-agent`, for example `target/debug/fmp-agent market quote AAPL`.
 
@@ -98,6 +100,7 @@ Example leaf shape:
 When integrating `fmp-agent` into an LLM agent or tool-calling pipeline, use these discovery commands first (none require an API key):
 
 ```bash
+fmp-agent doctor              # JSON readiness: version, base URL validity, API key presence
 fmp-agent schema              # JSON metadata: all commands, args, defaults, api_key_required
 fmp-agent commands            # sorted list of leaf command paths, one per line
 fmp-agent completions <shell> # shell completions (bash, elvish, fish, powershell, zsh)
@@ -116,6 +119,7 @@ fmp-agent completions <shell> # shell completions (bash, elvish, fish, powershel
 | Get SEC filings for a ticker | `sec filings` |
 | Get crypto or forex quotes | `crypto quote`, `forex quote` |
 | Get latest news (stock, general, crypto, forex) | `news stock`, `news general` |
+| Check local setup before API calls | `doctor` |
 | Search for a ticker by name | `search` |
 
 **Shape-based dispatch:** Commands follow reusable argument shapes (Symbol, SymbolLimit, DateRange, Annual, etc.). The `schema` output includes per-command `args` with exact flag spellings, parser type hints, possible values for enums, and defaults so agents can construct valid invocations without scraping `--help`.

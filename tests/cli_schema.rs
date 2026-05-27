@@ -109,7 +109,7 @@ fn schema_leaf_is_not_api_key_required() {
     let commands = body["commands"].as_array().unwrap();
 
     // Metadata-only commands that do not need FMP_API_KEY
-    for &name in &["schema", "commands", "completions"] {
+    for &name in &["schema", "commands", "completions", "doctor"] {
         let cmd = commands
             .iter()
             .find(|c| c["name"] == name && c["path"] == serde_json::json!([name]))
