@@ -17,7 +17,7 @@ const ALIAS_PREFERRED: &[(&str, &str)] = &[
 /// Builds a versioned JSON snapshot of the CLI surface by recursively walking the
 /// Clap command tree.
 ///
-/// Schema v2 exposes group names, leaf command paths, aliases, preferred canonical
+/// Schema v3 exposes group names, leaf command paths, aliases, preferred canonical
 /// paths, and per-command `api_key_required` flags.
 pub(super) fn schema_payload() -> Value {
     let cmd = Cli::command();
@@ -27,7 +27,14 @@ pub(super) fn schema_payload() -> Value {
 
     for sub in cmd.get_subcommands() {
         let name = sub.get_name();
-        let children: Vec<_> = sub.get_subcommands().collect();
+        let children: Vec<_> = sub
+            .get_subcommands()
+            .filter(|c| c.get_name() != "help")
+            .collect();
+
+        if name == "help" && children.is_empty() {
+            continue;
+        }
 
         if children.is_empty() {
             // Top-level leaf: search, metadata-only commands, or an alias.
@@ -46,8 +53,15 @@ pub(super) fn schema_payload() -> Value {
                 let path = vec![name.to_owned(), child_name.to_owned()];
                 let preferred = format!("{name} {child_name}");
                 let aliases = aliases_for(name, child_name);
+                let api_key_required = name != "help";
 
-                commands.push(leaf_to_json(child, path, preferred, &aliases, true));
+                commands.push(leaf_to_json(
+                    child,
+                    path,
+                    preferred,
+                    &aliases,
+                    api_key_required,
+                ));
             }
         }
     }

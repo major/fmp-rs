@@ -13,18 +13,23 @@ fmp-agent doctor             # JSON readiness: version, base URL validity, API k
 fmp-agent commands           # list all leaf command paths, one per line
 fmp-agent completions <shell> # generate bash/zsh/fish/powershell completions script
 fmp-agent schema             # versioned JSON: { schema_version, binary, version, commands[] }
+fmp-agent help environment   # environment variables, .env, and config precedence
+fmp-agent help exit-codes    # exit codes and structured stderr errors
+fmp-agent help schema        # schema and tool-calling guidance
+fmp-agent help examples      # representative command examples
 fmp-agent --help             # human-readable top-level help
 fmp-agent <GROUP> --help     # human-readable per-group help
 fmp-agent <GROUP> <CMD> --help  # human-readable per-command help, includes Examples
 ```
 
-`fmp-agent doctor`, `fmp-agent commands`, `fmp-agent completions`, and `fmp-agent schema`:
+`fmp-agent doctor`, `fmp-agent commands`, `fmp-agent completions`, `fmp-agent schema`, and `fmp-agent help <topic>`:
 
 - Do **not** require `FMP_API_KEY` and make **no** network requests.
 - `doctor` emits JSON with `ok`, `version`, sanitized `base_url`, `api_key.configured`, and `live_connectivity.checked: false` so callers can verify local readiness without consuming quota.
 - `commands` prints one leaf path per line, sorted alphabetically (e.g. `analyst grades`, `company profile`).
 - `completions` generates a shell completions script (bash/zsh/fish/powershell) on stdout.
 - `schema` emits `schema_version: 3` today; the shape is experimental and may change between releases.
+- `help <topic>` prints operational guidance from the installed binary. Topics are `environment`, `exit-codes`, `schema`, and `examples`.
 - Each schema command entry has `name`, `path`, `aliases`, `preferred_path`, `api_key_required`, `about`, `long_about`, and `args`.
 - Each arg has `name`, `kind`, `required`, `default`, `value_name`, `help`, `long` (exact `--flag` spelling or null for positional), `short` (single-char flag or null), `parser` (type hint: `string`, `integer`, `bool`, `enum`, or `count`), `possible_values` (array of `{"name": "...", "help": "..."}` for enum args, null otherwise), and `multi_value` (whether the arg accepts repeat values).
 - Use these as the source of truth for available commands and arguments; treat the catalog in section 6 as a curated index.
@@ -76,13 +81,15 @@ Stable behavior callers can rely on:
 | 6    | Parse error (JSON deserialization failed)                      |
 | 7    | Empty symbol result in `--strict-empty` mode                   |
 
+Run `fmp-agent help exit-codes` for the same exit-code guidance from the binary.
+
 ## 4. Configuration
 
 Global options apply to every subcommand:
 
 | Flag                  | Env var          | Default                                          | Notes                                                          |
 | --------------------- | ---------------- | ------------------------------------------------ | -------------------------------------------------------------- |
-| `--api-key <KEY>`     | `FMP_API_KEY`    | (none; required for live API commands)           | Prefer env or `.env`; CLI flag is recorded in shell history.   |
+| `--api-key <KEY>`     | `FMP_API_KEY`    | (none; required for API commands)                | Not required for metadata commands (`commands`, `completions`, `schema`, `help <topic>`). Prefer env or `.env`. |
 | `--base-url <URL>`    | `FMP_BASE_URL`   | `https://financialmodelingprep.com/stable/`      | Override for proxies or tests.                                 |
 | `--strict-empty`      |                  | `false`                                          | Fail empty symbol lookup responses and suggest `search`.        |
 | `-v` / `-vv` / `-vvv` | `RUST_LOG`       | warnings only                                    | INFO / DEBUG / TRACE; logs go to stderr; API key is redacted.  |
@@ -90,6 +97,7 @@ Global options apply to every subcommand:
 | `-V`, `--version`     |                  |                                                  | Binary version.                                                |
 
 A `.env` file in the working directory is loaded automatically before parsing.
+Run `fmp-agent help environment` for the same configuration guidance from the binary.
 
 ## 5. Argument shapes
 
@@ -137,6 +145,10 @@ Commands use the `<group> <verb>` form introduced in 0.4.0. See the README migra
 | Command                 | Shape       |
 | ----------------------- | ----------- |
 | `doctor`                | `Endpoint` (no API key)|
+| `help environment`      | `Endpoint` (no API key)|
+| `help exit-codes`       | `Endpoint` (no API key)|
+| `help schema`           | `Endpoint` (no API key)|
+| `help examples`         | `Endpoint` (no API key)|
 | `search <QUERY>`        | `Query`     |
 | `schema`                | `Endpoint` (no API key)|
 

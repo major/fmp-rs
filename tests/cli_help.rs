@@ -18,7 +18,43 @@ fn bare_command_prints_help() {
             "Usage: fmp-agent [OPTIONS] <COMMAND>",
         ))
         .stdout(predicate::str::contains("Commands:"))
+        .stdout(predicate::str::contains("fmp-agent help environment"))
+        .stdout(predicate::str::contains("fmp-agent help exit-codes"))
         .stdout(predicate::str::contains("requires a subcommand").not());
+}
+
+#[test]
+fn help_group_lists_topics() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env_remove("FMP_API_KEY")
+        .args(["help"])
+        .env("CLAP_COLOR", "never")
+        .env("NO_COLOR", "1")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Usage: fmp-agent help"))
+        .stdout(predicate::str::contains("environment"))
+        .stdout(predicate::str::contains("exit-codes"))
+        .stdout(predicate::str::contains("schema"))
+        .stdout(predicate::str::contains("examples"))
+        .stdout(predicate::str::contains("\n  help ").not());
+}
+
+#[test]
+fn help_topic_output_is_operational_guidance() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env_remove("FMP_API_KEY")
+        .args(["help", "schema"])
+        .env("CLAP_COLOR", "never")
+        .env("NO_COLOR", "1")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("fmp-agent schema"))
+        .stdout(predicate::str::contains("api_key_required"))
+        .stdout(predicate::str::contains("tool-calling"))
+        .stderr(predicate::str::is_empty());
 }
 
 #[test]

@@ -10,9 +10,6 @@ use clap::CommandFactory;
 fn collect_leaf_commands(cmd: &clap::Command, prefix: Vec<String>) -> Vec<Vec<String>> {
     let mut leaves = Vec::new();
     for sub in cmd.get_subcommands() {
-        if sub.get_name() == "help" {
-            continue;
-        }
         let mut child_path = prefix.clone();
         child_path.push(sub.get_name().to_owned());
 
@@ -20,6 +17,10 @@ fn collect_leaf_commands(cmd: &clap::Command, prefix: Vec<String>) -> Vec<Vec<St
             .get_subcommands()
             .filter(|c| c.get_name() != "help")
             .collect();
+
+        if sub.get_name() == "help" && real_children.is_empty() {
+            continue;
+        }
 
         if real_children.is_empty() {
             leaves.push(child_path);
@@ -45,6 +46,11 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["historical"],
     &["profile"],
     &["earnings"],
+    // Help topics (4)
+    &["help", "environment"],
+    &["help", "exit-codes"],
+    &["help", "schema"],
+    &["help", "examples"],
     // Top-level standalone (5)
     &["search"],
     &["schema"],
@@ -166,9 +172,6 @@ enum HelpField {
 
 fn check_leaf_help(cmd: &clap::Command, prefix: Vec<String>, field: &HelpField) {
     for sub in cmd.get_subcommands() {
-        if sub.get_name() == "help" {
-            continue;
-        }
         let mut child_path = prefix.clone();
         child_path.push(sub.get_name().to_owned());
 
@@ -176,6 +179,10 @@ fn check_leaf_help(cmd: &clap::Command, prefix: Vec<String>, field: &HelpField) 
             .get_subcommands()
             .filter(|c| c.get_name() != "help")
             .collect();
+
+        if sub.get_name() == "help" && real_children.is_empty() {
+            continue;
+        }
 
         if real_children.is_empty() {
             let display = path_str(&child_path);
@@ -208,7 +215,11 @@ fn no_flat_kebab_commands_at_top_level() {
 
     for sub in cmd.get_subcommands() {
         let name = sub.get_name();
-        if name == "help" {
+        let real_children = sub
+            .get_subcommands()
+            .filter(|c| c.get_name() != "help")
+            .count();
+        if name == "help" && real_children == 0 {
             continue;
         }
         assert!(

@@ -41,6 +41,16 @@ fn print_stdout_line(output: &str) {
 ///
 /// Returns an error when configuration is missing, an API call fails, or JSON output cannot be rendered.
 pub async fn run(cli: Cli) -> Result<()> {
+    // Help topics are metadata-only and do not require an API key.
+    if let args::Command::Help { command } = &cli.command {
+        if let Some(topic) = command {
+            print_stdout_line(help_topic_text(topic));
+        } else {
+            print_group_help("help")?;
+        }
+        return Ok(());
+    }
+
     // Schema is metadata-only and does not require an API key.
     if let args::Command::Schema = &cli.command {
         let data = schema::schema_payload();
@@ -162,19 +172,28 @@ fn bare_group_name(command: &args::Command) -> Option<&'static str> {
     }
 }
 
+fn help_topic_text(topic: &args::HelpTopic) -> &'static str {
+    match topic {
+        args::HelpTopic::Environment => help::HELP_ENVIRONMENT_LONG,
+        args::HelpTopic::ExitCodes => help::HELP_EXIT_CODES_LONG,
+        args::HelpTopic::Schema => help::HELP_SCHEMA_LONG,
+        args::HelpTopic::Examples => help::HELP_EXAMPLES_LONG,
+    }
+}
+
 /// Collect leaf command paths from a clap command tree, one `group subcommand`
 /// string per leaf, sorted alphabetically.
 fn leaf_commands(cmd: &clap::Command) -> Vec<String> {
     let mut leaves = Vec::new();
     for sub in cmd.get_subcommands() {
-        if sub.get_name() == "help" {
-            continue;
-        }
-
         let real_children: Vec<_> = sub
             .get_subcommands()
             .filter(|c| c.get_name() != "help")
             .collect();
+
+        if sub.get_name() == "help" && real_children.is_empty() {
+            continue;
+        }
 
         if real_children.is_empty() {
             leaves.push(sub.get_name().to_owned());
@@ -201,6 +220,10 @@ fn grouped_commands(cmd: &clap::Command) -> Vec<String> {
             .get_subcommands()
             .filter(|c| c.get_name() != "help")
             .collect();
+
+        if sub.get_name() == "help" && children.is_empty() {
+            continue;
+        }
 
         if children.is_empty() {
             // Top-level leaf (alias or metadata) -- handled in second pass.
