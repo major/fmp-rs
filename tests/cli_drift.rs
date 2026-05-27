@@ -102,8 +102,9 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["analyst", "ratings-snapshot"],
     &["analyst", "earnings-surprises"],
     &["analyst", "price-target"],
-    // insider (1)
+    // insider (2)
     &["insider", "latest"],
+    &["insider", "search"],
     // calendar (2)
     &["calendar", "earnings"],
     &["calendar", "market-hours"],

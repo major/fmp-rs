@@ -113,6 +113,8 @@ pub const GRADES_CONSENSUS: Endpoint = Endpoint::new("grades-consensus");
 pub const RATINGS_HISTORICAL: Endpoint = Endpoint::new("ratings-historical");
 /// Latest insider trading endpoint.
 pub const INSIDER_TRADING_LATEST: Endpoint = Endpoint::new("insider-trading/latest");
+/// Insider trading search endpoint (by symbol).
+pub const INSIDER_TRADING_SEARCH: Endpoint = Endpoint::new("insider-trading/search");
 /// Economic indicators endpoint.
 pub const ECONOMIC_INDICATORS: Endpoint = Endpoint::new("economic-indicators");
 /// Stock news endpoint.
