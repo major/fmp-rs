@@ -100,7 +100,8 @@ fn leaf_to_json(
             let short_flag = a.get_short().map(|c| json!(c.to_string()));
             let parser = parser_hint(a, default_str);
             let possible_vals: Option<Vec<Value>> = possible_values_json(&a.get_possible_values());
-            let multi = matches!(a.get_action(), clap::ArgAction::Append);
+            let multi = matches!(a.get_action(), clap::ArgAction::Append)
+                || a.get_num_args().is_some_and(|r| r.max_values() > 1);
             json!({
                 "name": a.get_id().as_str(),
                 "kind": kind,

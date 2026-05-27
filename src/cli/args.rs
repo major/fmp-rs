@@ -213,6 +213,14 @@ pub struct SymbolArgs {
     pub symbol: String,
 }
 
+/// Shared multi-symbol positional argument for batch-style commands.
+#[derive(Debug, Args)]
+pub struct SymbolsArgs {
+    /// One or more stock ticker symbols (e.g., AAPL MSFT GOOGL).
+    #[arg(required = true, num_args = 1.., value_name = "SYMBOLS", help = help::SYMBOLS)]
+    pub symbols: Vec<String>,
+}
+
 /// Shared symbol plus row limit arguments.
 #[derive(Debug, Args)]
 pub struct SymbolLimitArgs {

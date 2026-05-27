@@ -40,6 +40,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Company profile | `profile?symbol=AAPL` | confirmed | Array with company profile fields such as `symbol`, `price`, `marketCap`, `beta`. |
 | Symbol search | `search-symbol?query=AAPL` | confirmed | Array of matching securities with `symbol`, `name`, `currency`, `exchangeFullName`, `exchange`. |
 | Stock quote | `quote?symbol=AAPL` | confirmed | Array with quote fields such as `symbol`, `name`, `price`, `changePercentage`, `volume`. |
+| Batch quote | `batch-quote?symbols=AAPL,MSFT,GOOGL` | confirmed | Array with quote fields for multiple symbols. Uses comma-separated `symbols` parameter. |
 | Historical EOD | `historical-price-eod/full?symbol=AAPL&from=2025-01-01&to=2025-01-31` | confirmed | Array of daily bars with `date`, `open`, `high`, `low`, `close`, `volume`. |
 | Income statement | `income-statement?symbol=AAPL&period=annual&limit=5` | confirmed | Array of annual statements with `date`, `symbol`, `reportedCurrency`, `fiscalYear`, `period`. |
 | Balance sheet | `balance-sheet-statement?symbol=AAPL&period=annual&limit=5` | confirmed | Array of annual statements with `date`, `symbol`, `reportedCurrency`, `fiscalYear`, `period`. |
@@ -200,7 +201,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Bulk/batch/websocket | [Bulk key metrics](https://site.financialmodelingprep.com/developer/docs/bulk-key-metrics) | excluded | low | Bulk/batch delivery is excluded by pricing. |
 | Bulk/batch/websocket | [Bulk financial growth](https://site.financialmodelingprep.com/developer/docs/bulk-financial-growth) | excluded | low | Bulk/batch delivery is excluded by pricing. |
 | Bulk/batch/websocket | [Bulk ETF holders](https://site.financialmodelingprep.com/developer/docs/bulk-etf-holders) | excluded | low | Bulk and ETF holdings are excluded by pricing. |
-| Bulk/batch/websocket | [Batch quote](https://site.financialmodelingprep.com/developer/docs/batch-quote-quote) | excluded | low | Bulk/batch delivery is excluded by pricing. |
+| Bulk/batch/websocket | [Batch quote](https://site.financialmodelingprep.com/developer/docs/batch-quote-quote) | confirmed | low | Verified with Starter account; uses `symbols` comma-separated parameter. |
 | Bulk/batch/websocket | [Batch trade](https://site.financialmodelingprep.com/developer/docs/batch-trade-quote) | excluded | low | Bulk/batch delivery is excluded by pricing. |
 | Bulk/batch/websocket | [Websocket](https://site.financialmodelingprep.com/developer/docs/websocket-api) | unknown | low | Not clearly mapped to Starter. |
 | Bulk/batch/websocket | [Crypto websocket](https://site.financialmodelingprep.com/developer/docs/crypto-websocket) | unknown | low | Not clearly mapped to Starter. |

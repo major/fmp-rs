@@ -58,11 +58,12 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["company", "float"],
     &["company", "rating"],
     &["company", "historical-rating"],
-    // market (6)
+    // market (7)
     &["market", "quote"],
     &["market", "historical"],
     &["market", "dividends"],
     &["market", "splits"],
+    &["market", "batch-quote"],
     &["market", "price-change"],
     &["market", "stock-list"],
     // fundamentals (13)

@@ -39,6 +39,19 @@ pub(super) async fn run_by_symbol(
     ))
 }
 
+pub(super) async fn run_by_symbols(
+    client: &FmpClient,
+    endpoint: Endpoint,
+    symbols: &[String],
+) -> Result<CommandPayload> {
+    let data = client.by_symbols(endpoint, symbols).await?;
+    Ok(CommandPayload::new(
+        endpoint.path(),
+        json!({ "symbols": symbols }),
+        data,
+    ))
+}
+
 pub(super) async fn run_by_symbol_limit(
     client: &FmpClient,
     endpoint: Endpoint,

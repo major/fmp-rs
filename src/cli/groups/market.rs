@@ -2,9 +2,9 @@
 
 use clap::Subcommand;
 
-use crate::cli::args::{SymbolArgs, SymbolDateRangeArgs};
+use crate::cli::args::{SymbolArgs, SymbolDateRangeArgs, SymbolsArgs};
 use crate::cli::commands::{dispatch_historical_eod, dispatch_quote};
-use crate::cli::dispatch::{run_by_symbol, run_endpoint};
+use crate::cli::dispatch::{run_by_symbol, run_by_symbols, run_endpoint};
 use crate::cli::help;
 use crate::cli::output::CommandPayload;
 use crate::client::FmpClient;
@@ -29,6 +29,13 @@ pub(crate) enum Cmd {
     #[command(about = help::MARKET_SPLITS_ABOUT, long_about = help::MARKET_SPLITS_LONG)]
     Splits(SymbolArgs),
 
+    /// Get the latest market quotes for multiple stock tickers.
+    #[command(
+        about = help::MARKET_BATCH_QUOTE_ABOUT,
+        long_about = help::MARKET_BATCH_QUOTE_LONG
+    )]
+    BatchQuote(SymbolsArgs),
+
     /// Get price change percentages for a stock ticker.
     #[command(about = help::MARKET_PRICE_CHANGE_ABOUT, long_about = help::MARKET_PRICE_CHANGE_LONG)]
     PriceChange(SymbolArgs),
@@ -47,6 +54,9 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
             run_by_symbol(client, crate::endpoint::DIVIDENDS, &args.symbol).await
         }
         Cmd::Splits(args) => run_by_symbol(client, crate::endpoint::SPLITS, &args.symbol).await,
+        Cmd::BatchQuote(args) => {
+            run_by_symbols(client, crate::endpoint::BATCH_QUOTE, &args.symbols).await
+        }
         Cmd::PriceChange(args) => {
             run_by_symbol(client, crate::endpoint::STOCK_PRICE_CHANGE, &args.symbol).await
         }

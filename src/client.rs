@@ -103,6 +103,16 @@ impl FmpClient {
         self.get(endpoint, &[("symbol", symbol)]).await
     }
 
+    /// Calls `endpoint` with a `?symbols=...` parameter (comma-joined).
+    ///
+    /// # Errors
+    ///
+    /// See [module-level errors](self#errors).
+    pub async fn by_symbols(&self, endpoint: Endpoint, symbols: &[String]) -> Result<Value> {
+        let joined = symbols.join(",");
+        self.get(endpoint, &[("symbols", &joined)]).await
+    }
+
     /// Calls `endpoint` with `?symbol=...&limit=...` (limit defaults to
     /// [`NEWS_LIMIT`]).
     ///
@@ -394,7 +404,7 @@ mod tests {
 
     use super::*;
     use crate::endpoint::{
-        ANALYST_ESTIMATES, BALANCE_SHEET_STATEMENT, BALANCE_SHEET_STATEMENT_GROWTH,
+        ANALYST_ESTIMATES, BALANCE_SHEET_STATEMENT, BALANCE_SHEET_STATEMENT_GROWTH, BATCH_QUOTE,
         CASH_FLOW_STATEMENT, CASH_FLOW_STATEMENT_GROWTH, CRYPTO_NEWS, CRYPTOCURRENCY_LIST,
         DIVIDENDS, EARNINGS_CALENDAR, ECONOMIC_INDICATORS, ENTERPRISE_VALUES, ETF_HOLDINGS,
         FINANCIAL_REPORTS_DATES, FINANCIAL_REPORTS_JSON, FINANCIAL_SCORES, FMP_ARTICLES,
@@ -528,6 +538,31 @@ mod tests {
 
         mock.assert_async().await;
         assert_eq!(value[0]["symbol"], "AAPL");
+    }
+
+    #[tokio::test]
+    async fn by_symbols_joins_with_comma() {
+        let server = MockServer::start_async().await;
+        let mock = server
+            .mock_async(|when, then| {
+                when.method(GET)
+                    .path("/batch-quote")
+                    .query_param("symbols", "AAPL,MSFT,GOOGL")
+                    .query_param("apikey", "test-key");
+                then.status(200)
+                    .json_body(json!([{ "symbol": "AAPL" }, { "symbol": "MSFT" }]));
+            })
+            .await;
+
+        let symbols = vec!["AAPL".to_owned(), "MSFT".to_owned(), "GOOGL".to_owned()];
+        let value = test_client(&server)
+            .by_symbols(BATCH_QUOTE, &symbols)
+            .await
+            .unwrap();
+
+        mock.assert_async().await;
+        assert_eq!(value[0]["symbol"], "AAPL");
+        assert_eq!(value[1]["symbol"], "MSFT");
     }
 
     #[tokio::test]

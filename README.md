@@ -105,7 +105,7 @@ fmp-agent completions <shell> # shell completions (bash, elvish, fish, powershel
 
 | You want to... | Use this command |
 |---|---|
-| Get latest price or historical bars for a ticker | `market quote`, `market historical` |
+| Get latest price or historical bars for a ticker | `market quote`, `market batch-quote`, `market historical` |
 | Get company info, executives, peers, ratings | `company profile`, `company executives`, `company peers` |
 | Get income statements, balance sheets, ratios | `fundamentals income-statement`, `fundamentals balance-sheet` |
 | Get analyst price targets or grades | `analyst price-target-consensus`, `analyst grades` |

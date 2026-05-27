@@ -44,6 +44,8 @@ pub const PROFILE: Endpoint = Endpoint::new("profile");
 pub const KEY_EXECUTIVES: Endpoint = Endpoint::new("key-executives");
 /// Quote endpoint.
 pub const QUOTE: Endpoint = Endpoint::new("quote");
+/// Batch quote endpoint (multiple symbols as comma-separated `?symbols=`).
+pub const BATCH_QUOTE: Endpoint = Endpoint::new("batch-quote");
 /// Historical end-of-day price endpoint.
 pub const HISTORICAL_PRICE_EOD_FULL: Endpoint = Endpoint::new("historical-price-eod/full");
 /// Cryptocurrency list endpoint.
