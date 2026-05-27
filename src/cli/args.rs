@@ -24,7 +24,13 @@ const DEFAULT_BASE_URL: &str = "https://financialmodelingprep.com/stable/";
 
 /// Financial Modeling Prep CLI configuration.
 #[derive(Debug, Parser)]
-#[command(name = "fmp-agent", version, about = help::CLI_ABOUT, after_help = help::EXIT_CODES)]
+#[command(
+    name = "fmp-agent",
+    version,
+    about = help::CLI_ABOUT,
+    after_help = help::EXIT_CODES,
+    disable_help_subcommand = true
+)]
 pub struct Cli {
     /// FMP API key.
     #[arg(long, global = true, env = "FMP_API_KEY", hide_env_values = true, help = help::API_KEY)]
@@ -50,6 +56,18 @@ pub struct Cli {
 /// Supported FMP endpoint commands.
 #[derive(Debug, Subcommand)]
 pub(crate) enum Command {
+    /// Git-like help topic command group.
+    #[command(
+        about = help::HELP_GROUP_ABOUT,
+        long_about = help::HELP_GROUP_LONG,
+        disable_help_subcommand = true
+    )]
+    Help {
+        /// Help topic to show.
+        #[command(subcommand)]
+        command: Option<HelpTopic>,
+    },
+
     /// Search command.
     #[command(about = help::SEARCH_ABOUT, long_about = help::SEARCH_LONG)]
     Search {
@@ -211,6 +229,26 @@ pub(crate) enum Command {
         #[command(subcommand)]
         command: Option<groups::news::Cmd>,
     },
+}
+
+/// Git-like help topics for operational guidance.
+#[derive(Debug, Subcommand)]
+pub(crate) enum HelpTopic {
+    /// Environment and configuration help topic.
+    #[command(about = help::HELP_ENVIRONMENT_ABOUT, long_about = help::HELP_ENVIRONMENT_LONG)]
+    Environment,
+
+    /// Exit code and stderr format help topic.
+    #[command(about = help::HELP_EXIT_CODES_ABOUT, long_about = help::HELP_EXIT_CODES_LONG)]
+    ExitCodes,
+
+    /// Schema and tool-calling help topic.
+    #[command(about = help::HELP_SCHEMA_ABOUT, long_about = help::HELP_SCHEMA_LONG)]
+    Schema,
+
+    /// Representative examples help topic.
+    #[command(about = help::HELP_EXAMPLES_ABOUT, long_about = help::HELP_EXAMPLES_LONG)]
+    Examples,
 }
 
 /// Shared command symbol argument.

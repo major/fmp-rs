@@ -27,10 +27,11 @@ fn schema_version_is_3() {
 }
 
 #[test]
-fn schema_has_13_groups_in_order() {
+fn schema_has_groups_in_order() {
     let body = schema_body();
     let groups = body["groups"].as_array().expect("groups must be an array");
     let expected = [
+        "help",
         "company",
         "market",
         "fundamentals",
@@ -46,10 +47,7 @@ fn schema_has_13_groups_in_order() {
         "news",
     ];
     let names: Vec<&str> = groups.iter().filter_map(|g| g.as_str()).collect();
-    assert_eq!(
-        names, expected,
-        "groups must list 13 names in declared order"
-    );
+    assert_eq!(names, expected, "groups must list names in declared order");
 }
 
 #[test]
@@ -320,6 +318,18 @@ fn schema_enum_arg_has_possible_values() {
         assert!(
             pv["name"].is_string(),
             "each possible value must have a name"
+        );
+    }
+
+    for &topic in &["environment", "exit-codes", "schema", "examples"] {
+        let cmd = commands
+            .iter()
+            .find(|c| c["path"] == serde_json::json!(["help", topic]))
+            .unwrap_or_else(|| panic!("must have help {topic} leaf"));
+
+        assert_eq!(
+            cmd["api_key_required"], false,
+            "help {topic} should not require an API key"
         );
     }
 }

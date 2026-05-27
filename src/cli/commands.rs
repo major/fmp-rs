@@ -34,6 +34,7 @@ pub(crate) async fn dispatch_historical_eod(
 
 pub(super) async fn execute(client: &FmpClient, command: &Command) -> Result<CommandPayload> {
     match command {
+        Command::Help { .. } => unreachable!("Help command is handled before execute() in run()"),
         Command::Search { query } => run_query(client, SEARCH_SYMBOL, query).await,
         Command::Schema => unreachable!("Schema command is handled before execute() in run()"),
         Command::Commands { .. } => {

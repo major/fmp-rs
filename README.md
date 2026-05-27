@@ -20,7 +20,7 @@ cargo install rusty-fmp --locked
 
 GitHub releases also provide cargo-dist archives and shell or PowerShell installers for supported platforms.
 
-For local development, install a Rust toolchain with Rust 1.95 or newer, then provide an API key with either `FMP_API_KEY` in the environment or a local `.env` file.
+For local development, install a Rust toolchain with Rust 1.95 or newer, then provide an API key with either `FMP_API_KEY` in the environment or a local `.env` file. Run `fmp-agent help environment` for the full CLI configuration contract.
 
 ```bash
 FMP_API_KEY=your-key cargo run -- market quote AAPL
@@ -46,15 +46,15 @@ fmp-agent market quote AAPL
 fmp-agent company profile AAPL
 ```
 
-Four single-token aliases are preserved for ergonomics: `quote` (market quote), `historical` (market historical), `profile` (company profile), and `earnings` (calendar earnings). Run `fmp-agent commands` to list all available leaf commands, `fmp-agent completions <shell>` for bash/zsh/fish/powershell completions, or `fmp-agent schema` for machine-readable JSON metadata. Everything else requires the two-level `<group> <subcommand>` form.
+Four single-token aliases are preserved for ergonomics: `quote` (market quote), `historical` (market historical), `profile` (company profile), and `earnings` (calendar earnings). Run `fmp-agent commands` to list all available leaf commands, `fmp-agent completions <shell>` for bash/zsh/fish/powershell completions, or `fmp-agent schema` for machine-readable JSON metadata. Operational help is available through `fmp-agent help <topic>`. Everything else requires the two-level `<group> <subcommand>` form.
 
 ## Commands
 
-See [`SKILL.md`](SKILL.md) for the full command reference and examples. Commands follow a two-level grouped structure: a group name followed by a subcommand verb, such as `company profile`, `market quote`, `fundamentals income-statement`, `macro economic-indicators`, and `news stock`. The standalone `doctor` command is the first troubleshooting step for local configuration readiness. The 13 groups are: `company`, `market`, `fundamentals`, `analyst`, `insider`, `calendar`, `macro`, `technical`, `sec`, `etf`, `crypto`, `forex`, and `news`.
+See [`SKILL.md`](SKILL.md) for the full command reference and examples, or use `fmp-agent help examples` for representative examples from the binary itself. Commands follow a two-level grouped structure: a group name followed by a subcommand verb, such as `company profile`, `market quote`, `fundamentals income-statement`, `macro economic-indicators`, and `news stock`. The standalone `doctor` command is the first troubleshooting step for local configuration readiness. The API command groups are: `company`, `market`, `fundamentals`, `analyst`, `insider`, `calendar`, `macro`, `technical`, `sec`, `etf`, `crypto`, `forex`, and `news`.
 
 In the repo, use `cargo run -- <GROUP> <SUBCOMMAND>` with the same arguments before installing or after cleaning the build. After `cargo build`, run the built binary as `target/debug/fmp-agent`, for example `target/debug/fmp-agent market quote AAPL`.
 
-Successful command responses are the raw FMP JSON payload on one line for shell pipelines, and runtime errors are JSON on stderr. Help and version output are human-readable text. The CLI does not provide output formatting or filtering options.
+Successful command responses are the raw FMP JSON payload on one line for shell pipelines, and runtime errors are JSON on stderr. Help and version output are human-readable text. The CLI does not provide output formatting or filtering options. Run `fmp-agent help exit-codes` for exit codes and stderr parsing guidance.
 
 By default, empty JSON arrays from FMP are treated as successful raw API responses. This preserves upstream semantics because an empty array can mean several valid things, such as no rows for a date range, no news in the requested window, or a symbol that FMP does not recognize. For symbol lookup commands where an empty result should stop automation, pass `--strict-empty`; the CLI exits 7 with `empty_result` on stderr and suggests `fmp-agent search <SYMBOL>`.
 
@@ -64,7 +64,7 @@ Running `fmp-agent` without a command prints the generic help text.
 
 ### Schema introspection
 
-`fmp-agent schema` dumps CLI metadata as JSON without contacting the FMP API and without requiring `FMP_API_KEY`. The output is experimental and may change between releases. Fields include `schema_version` (currently `3`), `binary`, `version`, and `commands` (a flat array of leaf command entries). Each leaf includes `path`, `aliases`, `preferred_path`, `api_key_required`, `about`, `long_about`, and `args`. Argument entries include `kind`, `required`, `default`, `value_name`, the exact `long` and `short` flag spellings, a `parser` hint (`string`, `integer`, `bool`, `enum`, or `count`), `possible_values` for enum-like arguments, and a `multi_value` flag.
+`fmp-agent schema` dumps CLI metadata as JSON without contacting the FMP API and without requiring `FMP_API_KEY`. Run `fmp-agent help schema` for tool-calling guidance. The output is experimental and may change between releases. Fields include `schema_version` (currently `3`), `binary`, `version`, and `commands` (a flat array of leaf command entries). Each leaf includes `path`, `aliases`, `preferred_path`, `api_key_required`, `about`, `long_about`, and `args`. Argument entries include `kind`, `required`, `default`, `value_name`, the exact `long` and `short` flag spellings, a `parser` hint (`string`, `integer`, `bool`, `enum`, or `count`), `possible_values` for enum-like arguments, and a `multi_value` flag.
 
 ```bash
 fmp-agent schema | jq '.commands | length'
@@ -104,6 +104,7 @@ fmp-agent doctor              # JSON readiness: version, base URL validity, API 
 fmp-agent schema              # JSON metadata: all commands, args, defaults, api_key_required
 fmp-agent commands            # sorted list of leaf command paths, one per line
 fmp-agent completions <shell> # shell completions (bash, elvish, fish, powershell, zsh)
+fmp-agent help schema         # operational guidance for schema and tool-calling
 ```
 
 **Command chooser by intent:** Use the command path to select the right group.
@@ -148,6 +149,8 @@ rusty-fmp = { default-features = false }
 This excludes `clap` and `dotenvy` and exposes `FmpClient`, `Endpoint`, `Error`, and `Result`. The `cli` feature (enabled by default) adds the `Cli` parser and the `run` entry point used by the `fmp-agent` binary.
 
 ## Exit codes
+
+Run `fmp-agent help exit-codes` to view this guidance from the installed binary.
 
 | Code | Meaning |
 |------|---------|

@@ -33,6 +33,11 @@ fn broken_pipe_commands_does_not_panic() {
 }
 
 #[test]
+fn broken_pipe_help_topic_does_not_panic() {
+    assert_broken_pipe(&["help", "examples"]);
+}
+
+#[test]
 fn broken_pipe_completions_does_not_panic() {
     assert_broken_pipe(&["completions", "bash"]);
 }
@@ -48,7 +53,30 @@ fn commands_lists_leaf_paths_without_api_key() {
         .stdout(predicate::str::contains("company profile"))
         .stdout(predicate::str::contains("market quote"))
         .stdout(predicate::str::contains("fundamentals income-statement"))
+        .stdout(predicate::str::contains("help environment"))
+        .stdout(predicate::str::contains("help exit-codes"))
+        .stdout(predicate::str::contains("help schema"))
+        .stdout(predicate::str::contains("help examples"))
         .stdout(predicate::str::contains("news stock"));
+}
+
+#[test]
+fn help_topics_work_without_api_key() {
+    for (topic, expected) in [
+        ("environment", "FMP_API_KEY"),
+        ("exit-codes", "structured JSON line"),
+        ("schema", "tool-calling"),
+        ("examples", "market batch-quote"),
+    ] {
+        Command::cargo_bin("fmp-agent")
+            .unwrap()
+            .env_remove("FMP_API_KEY")
+            .args(["help", topic])
+            .assert()
+            .success()
+            .stdout(predicate::str::contains(expected))
+            .stderr(predicate::str::is_empty());
+    }
 }
 
 #[test]
