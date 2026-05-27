@@ -85,12 +85,17 @@ fn leaf_to_json(
                 .first()
                 .and_then(|v| v.to_str())
                 .map(|s| json!(s));
+            let value_name = a
+                .get_value_names()
+                .and_then(|names| names.first())
+                .map(|n| json!(n.as_str()));
             let help_text = a.get_help().map(|s| s.to_string());
             json!({
                 "name": a.get_id().as_str(),
                 "kind": kind,
                 "required": a.is_required_set(),
                 "default": default_val,
+                "value_name": value_name,
                 "help": help_text,
             })
         })

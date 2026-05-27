@@ -130,6 +130,29 @@ fn schema_canonical_has_alias_backref() {
 }
 
 #[test]
+fn schema_args_have_value_names() {
+    let body = schema_body();
+    let commands = body["commands"].as_array().unwrap();
+
+    // market quote has a positional "symbol" arg with value_name "SYMBOL"
+    let mq = commands
+        .iter()
+        .find(|c| c["path"] == serde_json::json!(["market", "quote"]))
+        .expect("must have market quote leaf");
+
+    let symbol_arg = mq["args"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|a| a["name"] == "symbol")
+        .expect("market quote must have symbol arg");
+
+    assert_eq!(symbol_arg["kind"], "positional");
+    assert_eq!(symbol_arg["value_name"], "SYMBOL");
+    assert_eq!(symbol_arg["required"], true);
+}
+
+#[test]
 fn schema_commands_have_args() {
     let body = schema_body();
     let commands = body["commands"].as_array().unwrap();
