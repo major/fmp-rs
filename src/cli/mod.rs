@@ -233,9 +233,9 @@ fn grouped_commands(cmd: &clap::Command) -> Vec<String> {
 /// Called when the user invokes `fmp-agent <group>` without a subcommand.
 pub(crate) fn print_group_help(group_name: &str) -> Result<()> {
     let mut command = <Cli as CommandFactory>::command();
-    let Some(group) = command.find_subcommand_mut(group_name) else {
-        return Err(Error::MissingArgument("group"));
-    };
+    let group = command
+        .find_subcommand_mut(group_name)
+        .expect("group name must match a registered Clap subcommand");
 
     // Override usage to include the full binary-qualified path and [OPTIONS],
     // matching the format shown by `fmp-agent <group> --help`. Without this,

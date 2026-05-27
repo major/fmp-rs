@@ -131,11 +131,13 @@ This excludes `clap` and `dotenvy` and exposes `FmpClient`, `Endpoint`, `Error`,
 | Code | Meaning |
 |------|---------|
 | 0 | Success |
-| 2 | Usage error (bad flags or arguments) |
+| 2 | Usage error (bad flags, missing arguments, or invalid dates) |
 | 3 | Configuration error (missing API key or invalid base URL) |
 | 4 | Network error (HTTP request failed) |
 | 5 | API error (server returned a non-2xx response) |
 | 6 | Parse error (JSON deserialization failed) |
+
+Exit code 2 is produced at parse time by Clap with human-readable usage text on stderr (bad flags and invalid dates are caught before the CLI reaches runtime validation). Exit codes 3-6 are runtime errors and use structured JSON on stderr: `{"ok":false,"error":{"kind":"<kind>","message":"..."}}`.
 
 ## Development
 

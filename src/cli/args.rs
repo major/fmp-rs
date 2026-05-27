@@ -4,6 +4,22 @@ use crate::cli::{groups, help};
 
 use clap::{Args, Parser, Subcommand};
 
+/// Validates that a date string is in `YYYY-MM-DD` format.
+///
+/// Used as a Clap [`value_parser`] so that invalid dates are caught at
+/// parse time and produce human-readable usage errors instead of
+/// structured JSON runtime errors.
+fn parse_date(s: &str) -> Result<String, clap::Error> {
+    jiff::civil::Date::strptime("%Y-%m-%d", s)
+        .map(|_| s.to_string())
+        .map_err(|_| {
+            clap::Error::raw(
+                clap::error::ErrorKind::ValueValidation,
+                format!("invalid date '{s}': expected YYYY-MM-DD"),
+            )
+        })
+}
+
 const DEFAULT_BASE_URL: &str = "https://financialmodelingprep.com/stable/";
 
 /// Financial Modeling Prep CLI configuration.
@@ -233,11 +249,11 @@ pub struct SymbolDateRangeArgs {
     pub symbol: String,
 
     /// Inclusive start date.
-    #[arg(long, help = help::FROM)]
+    #[arg(long, help = help::FROM, value_parser = parse_date)]
     pub from: Option<String>,
 
     /// Inclusive end date.
-    #[arg(long, help = help::TO)]
+    #[arg(long, help = help::TO, value_parser = parse_date)]
     pub to: Option<String>,
 }
 
@@ -245,11 +261,11 @@ pub struct SymbolDateRangeArgs {
 #[derive(Debug, Args)]
 pub struct DateRangeArgs {
     /// Inclusive start date.
-    #[arg(long, help = help::FROM)]
+    #[arg(long, help = help::FROM, value_parser = parse_date)]
     pub from: Option<String>,
 
     /// Inclusive end date.
-    #[arg(long, help = help::TO)]
+    #[arg(long, help = help::TO, value_parser = parse_date)]
     pub to: Option<String>,
 }
 
@@ -261,11 +277,11 @@ pub struct NameDateRangeArgs {
     pub name: String,
 
     /// Inclusive start date.
-    #[arg(long, help = help::FROM)]
+    #[arg(long, help = help::FROM, value_parser = parse_date)]
     pub from: Option<String>,
 
     /// Inclusive end date.
-    #[arg(long, help = help::TO)]
+    #[arg(long, help = help::TO, value_parser = parse_date)]
     pub to: Option<String>,
 }
 

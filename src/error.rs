@@ -21,10 +21,6 @@ pub enum Error {
     #[error("missing required CLI argument: {0}")]
     MissingArgument(&'static str),
 
-    /// A date value was not in `YYYY-MM-DD` format.
-    #[error("invalid date '{0}': expected YYYY-MM-DD")]
-    InvalidDate(String),
-
     /// The API returned a non-successful response.
     #[error("FMP API request failed with HTTP {status}: {message}")]
     Api {
@@ -57,7 +53,6 @@ impl Error {
             Self::MissingApiKey => "missing_api_key",
             Self::InvalidBaseUrl(_) => "invalid_base_url",
             Self::MissingArgument(_) => "missing_argument",
-            Self::InvalidDate(_) => "invalid_date",
             Self::Api { .. } => "api_error",
             Self::Http(_) => "http_error",
             Self::Json(_) => "json_error",
@@ -67,7 +62,7 @@ impl Error {
     /// Returns a process exit code for this error.
     ///
     /// Codes follow a simple convention:
-    /// - `2` - usage/argument error (aligns with clap convention)
+    /// - `2` - usage/argument error (missing required CLI argument)
     /// - `3` - configuration error (missing API key, invalid base URL)
     /// - `4` - network/HTTP error
     /// - `5` - API error (server returned an error response)
@@ -75,7 +70,7 @@ impl Error {
     #[must_use]
     pub fn exit_code(&self) -> ExitCode {
         match self {
-            Self::MissingArgument(_) | Self::InvalidDate(_) => ExitCode::from(2),
+            Self::MissingArgument(_) => ExitCode::from(2),
             Self::MissingApiKey | Self::InvalidBaseUrl(_) => ExitCode::from(3),
             Self::Http(_) => ExitCode::from(4),
             Self::Api { .. } => ExitCode::from(5),
