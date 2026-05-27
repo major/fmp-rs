@@ -43,6 +43,13 @@ pub(crate) enum Cmd {
     /// List supported stock symbols.
     #[command(about = help::MARKET_STOCK_LIST_ABOUT, long_about = help::MARKET_STOCK_LIST_LONG)]
     StockList,
+
+    /// Get a real-time market quote for a stock ticker.
+    #[command(
+        about = help::MARKET_REALTIME_QUOTE_ABOUT,
+        long_about = help::MARKET_REALTIME_QUOTE_LONG
+    )]
+    RealtimeQuote(SymbolArgs),
 }
 
 /// Dispatch a market subcommand.
@@ -61,5 +68,8 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
             run_by_symbol(client, crate::endpoint::STOCK_PRICE_CHANGE, &args.symbol).await
         }
         Cmd::StockList => run_endpoint(client, crate::endpoint::STOCK_LIST).await,
+        Cmd::RealtimeQuote(args) => {
+            run_by_symbol(client, crate::endpoint::REALTIME_QUOTE, &args.symbol).await
+        }
     }
 }

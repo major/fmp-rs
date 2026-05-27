@@ -135,3 +135,13 @@ pub const EARNINGS_SURPRISES: Endpoint = Endpoint::new("earnings-surprises");
 pub const COMPANY_OUTLOOK: Endpoint = Endpoint::new("company-outlook");
 /// ETF list endpoint.
 pub const ETF_LIST: Endpoint = Endpoint::new("etf-list");
+/// Delisted companies endpoint.
+pub const DELISTED_COMPANIES: Endpoint = Endpoint::new("delisted-companies");
+/// Symbol-based earnings endpoint.
+pub const EARNINGS: Endpoint = Endpoint::new("earnings");
+/// Real-time quote endpoint.
+pub const REALTIME_QUOTE: Endpoint = Endpoint::new("realtime-quote");
+/// Price target endpoint.
+pub const PRICE_TARGET: Endpoint = Endpoint::new("price-target");
+/// Consolidated financial statement growth endpoint.
+pub const FINANCIAL_STATEMENT_GROWTH: Endpoint = Endpoint::new("financial-statement-growth");

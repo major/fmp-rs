@@ -2,8 +2,8 @@
 
 use clap::Subcommand;
 
-use crate::cli::args::{SymbolArgs, SymbolLimitArgs};
-use crate::cli::dispatch::{run_by_symbol, run_by_symbol_limit};
+use crate::cli::args::{PagedArgs, SymbolArgs, SymbolLimitArgs};
+use crate::cli::dispatch::{run_by_symbol, run_by_symbol_limit, run_paged};
 use crate::cli::help;
 use crate::cli::output::CommandPayload;
 use crate::client::FmpClient;
@@ -67,6 +67,13 @@ pub(crate) enum Cmd {
         long_about = help::COMPANY_OUTLOOK_LONG
     )]
     Outlook(SymbolArgs),
+
+    /// List delisted companies.
+    #[command(
+        about = help::COMPANY_DELISTED_ABOUT,
+        long_about = help::COMPANY_DELISTED_LONG
+    )]
+    Delisted(PagedArgs),
 }
 
 /// Dispatch a company subcommand.
@@ -97,6 +104,15 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
         }
         Cmd::Outlook(args) => {
             run_by_symbol(client, crate::endpoint::COMPANY_OUTLOOK, &args.symbol).await
+        }
+        Cmd::Delisted(args) => {
+            run_paged(
+                client,
+                crate::endpoint::DELISTED_COMPANIES,
+                args.page,
+                args.limit,
+            )
+            .await
         }
     }
 }
