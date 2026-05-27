@@ -401,12 +401,12 @@ fn summarize_body(status: StatusCode, body: &str, api_key: &str) -> String {
             .to_owned();
     }
 
-    let summary: String = trimmed.chars().take(240).collect();
-    if api_key.is_empty() {
-        summary
+    let redacted = if api_key.is_empty() {
+        trimmed.to_owned()
     } else {
-        summary.replace(api_key, "***")
-    }
+        trimmed.replace(api_key, "***")
+    };
+    redacted.chars().take(240).collect()
 }
 
 #[cfg(test)]
@@ -938,6 +938,29 @@ mod tests {
         assert_eq!(error.kind(), "rate_limited");
         assert!(!message.contains("secret-key"));
         assert!(message.contains("apikey=***"));
+    }
+
+    #[tokio::test]
+    async fn rate_limited_body_redacts_key_before_truncating_summary() {
+        let server = MockServer::start_async().await;
+        let filler = "x".repeat(237);
+        server
+            .mock_async(|when, then| {
+                when.method(GET).path("/quote");
+                then.status(429)
+                    .body(format!("{filler}secret-key trailing text"));
+            })
+            .await;
+        let client =
+            FmpClient::with_base_url("secret-key", format!("{}/", server.base_url())).unwrap();
+
+        let error = client.by_symbol(QUOTE, "AAPL").await.unwrap_err();
+        let message = error.to_string();
+
+        assert_eq!(error.kind(), "rate_limited");
+        assert!(!message.contains("secret-key"));
+        assert!(message.contains("***"));
+        assert!(message.len() < 320);
     }
 
     #[tokio::test]
