@@ -111,6 +111,21 @@ pub(crate) enum Cmd {
     )]
     #[command(name = "annual-report")]
     AnnualReport(AnnualReportFormArgs),
+
+    /// Historical earnings per share data for a stock ticker.
+    #[command(
+        about = help::FUNDAMENTALS_EARNINGS_ABOUT,
+        long_about = help::FUNDAMENTALS_EARNINGS_LONG
+    )]
+    Earnings(SymbolArgs),
+
+    /// Annual statement growth command.
+    #[command(
+        about = help::FUNDAMENTALS_STATEMENT_GROWTH_ABOUT,
+        long_about = help::FUNDAMENTALS_STATEMENT_GROWTH_LONG
+    )]
+    #[command(name = "statement-growth")]
+    StatementGrowth(AnnualArgs),
 }
 
 /// Dispatches a fundamentals subcommand to the FMP API.
@@ -205,6 +220,16 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
                 &args.symbol,
                 args.year,
                 &args.period,
+            )
+            .await
+        }
+        Cmd::Earnings(args) => run_by_symbol(client, endpoint::EARNINGS, &args.symbol).await,
+        Cmd::StatementGrowth(args) => {
+            run_annual(
+                client,
+                endpoint::FINANCIAL_STATEMENT_GROWTH,
+                &args.symbol,
+                args.limit,
             )
             .await
         }

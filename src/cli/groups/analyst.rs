@@ -51,6 +51,13 @@ pub(crate) enum Cmd {
         long_about = help::ANALYST_EARNINGS_SURPRISES_LONG
     )]
     EarningsSurprises(SymbolArgs),
+
+    /// Get analyst price targets for a stock ticker.
+    #[command(
+        about = help::ANALYST_PRICE_TARGET_ABOUT,
+        long_about = help::ANALYST_PRICE_TARGET_LONG
+    )]
+    PriceTarget(SymbolArgs),
 }
 
 /// Dispatch an analyst command.
@@ -72,5 +79,6 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
         Cmd::EarningsSurprises(args) => {
             run_by_symbol(client, endpoint::EARNINGS_SURPRISES, &args.symbol).await
         }
+        Cmd::PriceTarget(args) => run_by_symbol(client, endpoint::PRICE_TARGET, &args.symbol).await,
     }
 }

@@ -57,7 +57,7 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["commands"],
     &["completions"],
     &["doctor"],
-    // company (8)
+    // company (9)
     &["company", "profile"],
     &["company", "executives"],
     &["company", "peers"],
@@ -66,7 +66,8 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["company", "rating"],
     &["company", "historical-rating"],
     &["company", "outlook"],
-    // market (7)
+    &["company", "delisted"],
+    // market (8)
     &["market", "quote"],
     &["market", "historical"],
     &["market", "dividends"],
@@ -74,7 +75,8 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["market", "batch-quote"],
     &["market", "price-change"],
     &["market", "stock-list"],
-    // fundamentals (13)
+    &["market", "realtime-quote"],
+    // fundamentals (15)
     &["fundamentals", "income-statement"],
     &["fundamentals", "income-statement-as-reported"],
     &["fundamentals", "balance-sheet"],
@@ -88,13 +90,16 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["fundamentals", "analyst-estimates"],
     &["fundamentals", "report-dates"],
     &["fundamentals", "annual-report"],
-    // analyst (6)
+    &["fundamentals", "earnings"],
+    &["fundamentals", "statement-growth"],
+    // analyst (7)
     &["analyst", "price-target-consensus"],
     &["analyst", "price-target-summary"],
     &["analyst", "grades"],
     &["analyst", "upgrades-downgrades"],
     &["analyst", "ratings-snapshot"],
     &["analyst", "earnings-surprises"],
+    &["analyst", "price-target"],
     // insider (1)
     &["insider", "latest"],
     // calendar (1)

@@ -28,12 +28,11 @@ pub(crate) const HELP_EXAMPLES_ABOUT: &str = "Show representative command exampl
 pub(crate) const HELP_EXAMPLES_LONG: &str = "Representative examples\n\nDiscovery, no API key required:\n  fmp-agent help environment\n  fmp-agent commands\n  fmp-agent commands --grouped\n  fmp-agent schema | jq '.commands[0]'\n  fmp-agent completions bash\n\nCommon market and company data:\n  fmp-agent quote AAPL\n  fmp-agent market batch-quote AAPL MSFT GOOGL\n  fmp-agent market historical AAPL --from 2024-01-01 --to 2024-12-31\n  fmp-agent company profile AAPL\n  fmp-agent company peers AAPL\n\nFundamentals, analyst, and calendars:\n  fmp-agent fundamentals income-statement AAPL --limit 5\n  fmp-agent fundamentals annual-report AAPL --year 2023\n  fmp-agent analyst grades AAPL\n  fmp-agent calendar earnings --from 2024-01-01 --to 2024-03-31\n\nNews, macro, and technicals:\n  fmp-agent news stock AAPL --limit 10\n  fmp-agent macro economic-indicators GDP --from 2024-01-01\n  fmp-agent technical sma AAPL --period-length 20 --timeframe 1day\n\nExamples:\n  fmp-agent help examples\n  fmp-agent help schema";
 
 pub(crate) const COMPANY_GROUP_ABOUT: &str = "Company data command group.";
-pub(crate) const COMPANY_GROUP_LONG: &str = "Company data commands.\n\nExamples:\n  fmp-agent company\n  fmp-agent company profile AAPL\n  fmp-agent company outlook AAPL";
+pub(crate) const COMPANY_GROUP_LONG: &str = "Company data commands.\n\nExamples:\n  fmp-agent company\n  fmp-agent company profile AAPL\n  fmp-agent company outlook AAPL\n  fmp-agent company delisted";
 pub(crate) const MARKET_GROUP_ABOUT: &str = "Market data command group.";
-pub(crate) const MARKET_GROUP_LONG: &str =
-    "Market data commands.\n\nExamples:\n  fmp-agent market\n  fmp-agent market quote AAPL";
+pub(crate) const MARKET_GROUP_LONG: &str = "Market data commands.\n\nExamples:\n  fmp-agent market\n  fmp-agent market quote AAPL\n  fmp-agent market realtime-quote AAPL";
 pub(crate) const FUNDAMENTALS_GROUP_ABOUT: &str = "Fundamentals command group.";
-pub(crate) const FUNDAMENTALS_GROUP_LONG: &str = "Fundamentals commands.\n\nExamples:\n  fmp-agent fundamentals\n  fmp-agent fundamentals income-statement AAPL";
+pub(crate) const FUNDAMENTALS_GROUP_LONG: &str = "Fundamentals commands.\n\nExamples:\n  fmp-agent fundamentals\n  fmp-agent fundamentals income-statement AAPL\n  fmp-agent fundamentals earnings AAPL";
 pub(crate) const ANALYST_GROUP_ABOUT: &str = "Analyst command group.";
 pub(crate) const ANALYST_GROUP_LONG: &str = "Analyst commands.\n\nExamples:\n  fmp-agent analyst\n  fmp-agent analyst grades AAPL\n  fmp-agent analyst upgrades-downgrades AAPL";
 pub(crate) const INSIDER_GROUP_ABOUT: &str = "Insider command group.";
@@ -84,6 +83,9 @@ pub(crate) const COMPANY_PEERS_ABOUT: &str = "Get peer company tickers for a sto
 pub(crate) const COMPANY_PEERS_LONG: &str = "Get a list of peer company tickers that trade in the same sector and industry.\n\nExamples:\n  fmp-agent company peers AAPL";
 pub(crate) const MARKET_STOCK_LIST_ABOUT: &str = "List supported stock symbols.";
 pub(crate) const MARKET_STOCK_LIST_LONG: &str = "List all supported stock symbols. Returns a large payload with ticker, name, exchange, and type for each instrument.\n\nExamples:\n  fmp-agent market stock-list";
+pub(crate) const MARKET_REALTIME_QUOTE_ABOUT: &str =
+    "Get a real-time market quote for a stock ticker.";
+pub(crate) const MARKET_REALTIME_QUOTE_LONG: &str = "Get a real-time market quote for a stock ticker including live price, volume, and change data.\n\nExamples:\n  fmp-agent market realtime-quote AAPL";
 pub(crate) const ETF_HOLDINGS_ABOUT: &str =
     "Get ETF holdings for a fund symbol; Starter accounts return an API error.";
 pub(crate) const ETF_HOLDINGS_LONG: &str = "Get ETF holdings for a fund symbol. Note: Starter plan accounts receive an API error for this endpoint; it is included to exercise structured error handling.\n\nExamples:\n  fmp-agent etf holdings SPY";
@@ -104,6 +106,8 @@ pub(crate) const COMPANY_HISTORICAL_RATING_LONG: &str = "Get historical company 
 pub(crate) const COMPANY_OUTLOOK_ABOUT: &str =
     "Get comprehensive company outlook for a stock ticker.";
 pub(crate) const COMPANY_OUTLOOK_LONG: &str = "Get a comprehensive company outlook for a stock ticker including target price, growth estimates, and analyst consensus metrics. Starter plan accounts receive symbol-limited results.\n\nExamples:\n  fmp-agent company outlook AAPL";
+pub(crate) const COMPANY_DELISTED_ABOUT: &str = "List delisted companies.";
+pub(crate) const COMPANY_DELISTED_LONG: &str = "List delisted companies with optional paging. Returns a large payload with symbol, company name, exchange, and delisting date.\n\nExamples:\n  fmp-agent company delisted\n  fmp-agent company delisted --page 0 --limit 100";
 pub(crate) const MARKET_QUOTE_ABOUT: &str = "Get the latest market quote for a stock ticker.";
 pub(crate) const MARKET_QUOTE_LONG: &str = "Get the latest market quote for a stock ticker including price, volume, and change data.\n\nExamples:\n  fmp-agent market quote AAPL\n  fmp-agent market quote TSLA";
 pub(crate) const MARKET_HISTORICAL_ABOUT: &str =
@@ -160,6 +164,12 @@ pub(crate) const FUNDAMENTALS_REPORT_DATES_LONG: &str = "Get available financial
 pub(crate) const FUNDAMENTALS_ANNUAL_REPORT_FORM_ABOUT: &str =
     "Get annual report form JSON for a stock ticker and fiscal year.";
 pub(crate) const FUNDAMENTALS_ANNUAL_REPORT_FORM_LONG: &str = "Get annual report form JSON for a stock ticker and fiscal year. The --year flag is required.\n\nExamples:\n  fmp-agent fundamentals annual-report AAPL --year 2023\n  fmp-agent fundamentals annual-report MSFT --year 2022 --period FY";
+pub(crate) const FUNDAMENTALS_EARNINGS_ABOUT: &str =
+    "Get historical earnings per share data for a stock ticker.";
+pub(crate) const FUNDAMENTALS_EARNINGS_LONG: &str = "Get historical earnings per share data for a stock ticker including reported date, EPS, and revenue.\n\nExamples:\n  fmp-agent fundamentals earnings AAPL";
+pub(crate) const FUNDAMENTALS_STATEMENT_GROWTH_ABOUT: &str =
+    "Get annual statement growth rows for a stock ticker.";
+pub(crate) const FUNDAMENTALS_STATEMENT_GROWTH_LONG: &str = "Get annual statement growth rows for a stock ticker showing consolidated growth data across all financial statements.\n\nExamples:\n  fmp-agent fundamentals statement-growth AAPL";
 pub(crate) const ANALYST_PRICE_TARGET_CONSENSUS_ABOUT: &str =
     "Get analyst price target consensus for a stock ticker.";
 pub(crate) const ANALYST_PRICE_TARGET_CONSENSUS_LONG: &str = "Get the consensus price target for a stock ticker aggregated across analyst estimates.\n\nExamples:\n  fmp-agent analyst price-target-consensus AAPL";
@@ -178,6 +188,8 @@ pub(crate) const ANALYST_RATINGS_SNAPSHOT_LONG: &str = "Get a snapshot of curren
 pub(crate) const ANALYST_EARNINGS_SURPRISES_ABOUT: &str =
     "Get earnings surprises for a stock ticker.";
 pub(crate) const ANALYST_EARNINGS_SURPRISES_LONG: &str = "Get earnings surprises for a stock ticker showing actual vs. estimated EPS and revenue with surprise percentages. Starter plan accounts receive symbol-limited results.\n\nExamples:\n  fmp-agent analyst earnings-surprises AAPL";
+pub(crate) const ANALYST_PRICE_TARGET_ABOUT: &str = "Get analyst price targets for a stock ticker.";
+pub(crate) const ANALYST_PRICE_TARGET_LONG: &str = "Get analyst price targets for a stock ticker including individual analyst forecasts with target prices and dates.\n\nExamples:\n  fmp-agent analyst price-target AAPL";
 pub(crate) const INSIDER_TRADING_LATEST_ABOUT: &str = "Get latest insider trading rows.";
 pub(crate) const INSIDER_TRADING_LATEST_LONG: &str = "Get latest insider trading rows. Uses zero-based paging.\n\nExamples:\n  fmp-agent insider latest\n  fmp-agent insider latest --page 1 --limit 20";
 pub(crate) const EARNINGS_CALENDAR_ABOUT: &str =
