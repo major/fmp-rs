@@ -62,7 +62,7 @@ Running `fmp-agent` without a command prints the generic help text.
 
 ### Schema introspection
 
-`fmp-agent schema` dumps CLI metadata as JSON without contacting the FMP API and without requiring `FMP_API_KEY`. The output is experimental and may change between releases. Fields include `schema_version` (currently `2`), `binary`, `version`, and `commands` (a list of group objects, each with leaf commands). Each leaf includes `path`, `aliases`, `preferred_path`, and `api_key_required`. This is useful for LLM tool-calling setups that need to discover available commands programmatically.
+`fmp-agent schema` dumps CLI metadata as JSON without contacting the FMP API and without requiring `FMP_API_KEY`. The output is experimental and may change between releases. Fields include `schema_version` (currently `2`), `binary`, `version`, and `commands` (a flat array of leaf command entries). Each leaf includes `path`, `aliases`, `preferred_path`, and `api_key_required`. This is useful for LLM tool-calling setups that need to discover available commands programmatically.
 
 ```bash
 fmp-agent schema | jq '.commands | length'
@@ -74,7 +74,7 @@ Example leaf shape:
 {
   "path": ["market", "quote"],
   "aliases": ["quote"],
-  "preferred_path": ["market", "quote"],
+  "preferred_path": "market quote",
   "api_key_required": true
 }
 ```
