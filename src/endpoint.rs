@@ -145,3 +145,13 @@ pub const REALTIME_QUOTE: Endpoint = Endpoint::new("realtime-quote");
 pub const PRICE_TARGET: Endpoint = Endpoint::new("price-target");
 /// Consolidated financial statement growth endpoint.
 pub const FINANCIAL_STATEMENT_GROWTH: Endpoint = Endpoint::new("financial-statement-growth");
+/// ETF info endpoint.
+pub const ETF_INFO: Endpoint = Endpoint::new("etf/info");
+/// Market risk premium endpoint.
+pub const MARKET_RISK_PREMIUM: Endpoint = Endpoint::new("market-risk-premium");
+/// Market hours endpoint.
+pub const MARKET_HOURS: Endpoint = Endpoint::new("market-hours");
+/// Aftermarket quote endpoint.
+pub const AFTERMARKET_QUOTE: Endpoint = Endpoint::new("aftermarket-quote");
+/// Aftermarket trade endpoint.
+pub const AFTERMARKET_TRADE: Endpoint = Endpoint::new("aftermarket-trade");

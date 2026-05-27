@@ -89,7 +89,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Transcript dates | `earning-call-transcript-dates?symbol=AAPL` | denied | HTTP 402 subscription restriction. |
 | Price target | `price-target?symbol=AAPL` | unconfirmed | Tested path returned HTTP 404 with an empty array, so the path or entitlement needs API Viewer confirmation. |
 | Company outlook | `company-outlook?symbol=AAPL` | unconfirmed | Tested path returned HTTP 404 with an empty array, so the path or entitlement needs API Viewer confirmation. |
-| Market open | `market-hours` | unconfirmed | Tested path returned HTTP 404 with an empty array, so the path or entitlement needs API Viewer confirmation. |
+| Market open | `market-hours` | inferred | Tested `market-hours`; implemented as `calendar market-hours`. Returns stock market open status and next session times. Starter access not yet probed. |
 
 ## Endpoint inventory
 
@@ -104,12 +104,14 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Company/reference | [Symbol lookup](https://site.financialmodelingprep.com/developer/docs/stock-ticker-symbol-lookup-api) | confirmed | high | Tested `search-symbol?query=AAPL`; needed for search/discovery commands. |
 | Company/reference | [Stock list](https://site.financialmodelingprep.com/developer/docs/stock-list-api) | confirmed | medium | Tested `stock-list`; implemented as `market-stock-list`. |
 | Company/reference | [Historical share float](https://site.financialmodelingprep.com/developer/docs/company-historical-share-float) | confirmed | medium | Tested `shares-float?symbol=AAPL`; implemented as `company-share-float`. Historical depth likely capped at 5 years. |
+| Company/reference | [Delisted companies](https://site.financialmodelingprep.com/developer/docs/delisted-companies) | unconfirmed | low | Implemented as `company-delisted` with paged args (page + limit). Starter access not yet probed. |
 | Company/reference | [All countries](https://site.financialmodelingprep.com/developer/docs/all-countries-company-information) | excluded | low | Non-US/global coverage is not Starter-safe. |
 | Company/reference | [Euronext prices](https://site.financialmodelingprep.com/developer/docs/euronext-prices-api) | excluded | low | Non-US/global coverage is not Starter-safe. |
 | Quote/market | [Stock market quote](https://site.financialmodelingprep.com/developer/docs/stock-market-quote-free-api) | confirmed | high | Tested `quote?symbol=AAPL`. |
 | Quote/market | [Realtime stock quote](https://site.financialmodelingprep.com/developer/docs/realtime-stock-quote-api) | inferred | high | Confirm delay/real-time behavior for account. |
 | Quote/market | [Quote order](https://site.financialmodelingprep.com/developer/docs/quote-order-quote) | inferred | low | Candidate after basic quote works. |
-| Quote/market | [Aftermarket quote](https://site.financialmodelingprep.com/developer/docs/aftermarket-quote-quote) | unknown | low | Not clearly mapped to Starter. |
+| Quote/market | [Aftermarket quote](https://site.financialmodelingprep.com/developer/docs/aftermarket-quote-quote) | inferred | low | Implemented as `market aftermarket-quote` via `aftermarket-quote?symbol=AAPL`. Returns extended-hours price, volume, and change. Starter access not yet probed. |
+| Quote/market | [Aftermarket trade](https://site.financialmodelingprep.com/developer/docs/aftermarket-trade-api) | inferred | low | Implemented as `market aftermarket-trade` via `aftermarket-trade?symbol=AAPL`. Returns extended-hours trade details. Starter access not yet probed. |
 | Quote/market | [Stock price change](https://site.financialmodelingprep.com/developer/docs/stock-price-change-api) | confirmed | high | Tested `stock-price-change?symbol=AAPL`; implemented as `market-price-change`. |
 | Quote/market | [All realtime full prices](https://site.financialmodelingprep.com/developer/docs/all-realtime-full-prices-quote) | unknown | low | Could be broad/high-volume, confirm entitlement. |
 | Historical/charts | [Historical stock data](https://site.financialmodelingprep.com/developer/docs/historical-stock-data-free-api) | confirmed | high | Tested `historical-price-eod/full?symbol=AAPL` with a January 2025 date range. |
@@ -155,7 +157,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Calendars/corporate actions | [Dividend calendar](https://site.financialmodelingprep.com/developer/docs/dividend-calendar-api) | excluded | low | Corporate calendars are excluded by pricing. |
 | Calendars/corporate actions | [Stock split calendar](https://site.financialmodelingprep.com/developer/docs/stock-split-calendar-api) | excluded | low | Corporate calendars are excluded by pricing. |
 | Calendars/corporate actions | [IPO calendar](https://site.financialmodelingprep.com/developer/docs/ipo-calendar-api) | excluded | low | Corporate calendars are excluded by pricing. |
-| Calendars/corporate actions | [Market open](https://site.financialmodelingprep.com/developer/docs/is-the-market-open-api) | unknown | low | Utility endpoint, confirm entitlement. |
+| Calendars/corporate actions | [Market open](https://site.financialmodelingprep.com/developer/docs/is-the-market-open-api) | inferred | low | Implemented as `calendar market-hours` via `market-hours`. Starter access not yet probed. |
 | SEC/filings/insider | [SEC filings](https://site.financialmodelingprep.com/developer/docs/sec-filings-api) | confirmed | medium | Tested `sec-filings-search/symbol?symbol=AAPL&from=2024-01-01&to=2024-03-01`; implemented as `sec-filings`. |
 | SEC/filings/insider | [SEC RSS feeds](https://site.financialmodelingprep.com/developer/docs/sec-rss-feeds-api) | unknown | low | Verify before exposing. |
 | SEC/filings/insider | [All SEC RSS feeds](https://site.financialmodelingprep.com/developer/docs/sec-all-rss-feeds-api) | unknown | low | Verify before exposing. |
@@ -172,13 +174,14 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | ETFs/funds/13F | [Historical ETF holdings](https://site.financialmodelingprep.com/developer/docs/historical-etf-holdings-api) | excluded | low | ETF holdings are excluded by pricing. |
 | ETFs/funds/13F | [ETF holdings dates](https://site.financialmodelingprep.com/developer/docs/historical-etf-holdings-available-dates-api) | excluded | low | ETF holdings are excluded by pricing. |
 | ETFs/funds/13F | [ETF expense ratio](https://site.financialmodelingprep.com/developer/docs/etf-expense-ratio-api) | unknown | low | Verify before exposing. |
+| ETFs/funds/13F | [ETF info](https://site.financialmodelingprep.com/developer/docs/etf-info-api) | inferred | high | Implemented as `etf info` via `etf/info?symbol=SPY`. Returns combined ETF metadata including name, asset class, inception date, expense ratio, description, and AUM. Starter access not yet probed. |
 | ETFs/funds/13F | [ETF sector weightings](https://site.financialmodelingprep.com/developer/docs/etf-sector-weightings-api) | excluded | low | ETF holdings/weightings are not Starter-safe. |
 | ETFs/funds/13F | [ETF country weightings](https://site.financialmodelingprep.com/developer/docs/etf-country-weightings-api) | excluded | low | ETF holdings/weightings are not Starter-safe. |
 | ETFs/funds/13F | [ETF stock exposure](https://site.financialmodelingprep.com/developer/docs/etf-stock-exposure-api) | excluded | low | ETF holdings/weightings are not Starter-safe. |
 | ETFs/funds/13F | [Mutual fund holders](https://site.financialmodelingprep.com/developer/docs/mutual-fund-holders-api) | excluded | low | Mutual fund holdings are excluded by pricing. |
 | ETFs/funds/13F | [Institutional ownership](https://site.financialmodelingprep.com/developer/docs/institutional-stock-ownership-api) | excluded | low | 13F institutional holdings are excluded by pricing. |
 | ETFs/funds/13F | [Form 13F](https://site.financialmodelingprep.com/developer/docs/form-13f-api) | excluded | low | 13F institutional holdings are excluded by pricing. |
-| Analyst/ratings/price targets | [Financial estimates](https://site.financialmodelingprep.com/developer/docs/stable/financial-estimates) | inferred | medium | Analyst estimate availability needs API Viewer confirmation. |
+| Analyst/ratings/price targets | [Financial estimates](https://site.financialmodelingprep.com/developer/docs/stable/financial-estimates) | confirmed | medium | Same `analyst-estimates` endpoint as Analyst estimates below; already covered by `fundamentals analyst-estimates`. |
 | Analyst/ratings/price targets | [Analyst estimates](https://site.financialmodelingprep.com/developer/docs/analyst-estimates-api) | confirmed | medium | Tested `analyst-estimates?symbol=AAPL&period=annual&limit=5`. |
 | Analyst/ratings/price targets | [Analyst recommendations](https://site.financialmodelingprep.com/developer/docs/analyst-stock-recommendations-api) | confirmed | medium | Tested `grades?symbol=AAPL`; implemented as `analyst-grades`. |
 | Analyst/ratings/price targets | [Price target](https://site.financialmodelingprep.com/developer/docs/price-target-api) | inferred | medium | Verify before exposing. |
@@ -187,6 +190,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Analyst/ratings/price targets | [Upgrades and downgrades](https://site.financialmodelingprep.com/developer/docs/upgrades-and-downgrades-api) | inferred | medium | Verify before exposing. |
 | Analyst/ratings/price targets | [Company rating](https://site.financialmodelingprep.com/developer/docs/companies-rating-free-api) | confirmed | medium | Tested `grades-consensus?symbol=AAPL`; implemented as `company-rating`. |
 | Analyst/ratings/price targets | [Historical rating](https://site.financialmodelingprep.com/developer/docs/historical-rating-company-information) | confirmed | low | Tested `ratings-historical?symbol=AAPL&limit=5`; implemented as `company-historical-rating`. |
+| Analyst/ratings/price targets | [Ratings snapshot](https://site.financialmodelingprep.com/developer/docs/stable/ratings-snapshot) | unconfirmed | low | Implemented as `analyst-ratings-snapshot` via `ratings-snapshot?symbol=AAPL`. Starter access not yet probed. |
 | Technicals | [Intraday SMA](https://site.financialmodelingprep.com/developer/docs/technical-intraday-sma) | confirmed | low | Tested daily `technical-indicators/sma?symbol=AAPL&periodLength=10&timeframe=1day`; implemented as `technical-sma`; intraday access still needs testing. |
 | Technicals | [Intraday EMA](https://site.financialmodelingprep.com/developer/docs/technical-intraday-ema) | excluded | low | Technical indicators are excluded by pricing. |
 | Technicals | [Intraday RSI](https://site.financialmodelingprep.com/developer/docs/technical-intraday-rsi) | excluded | low | Technical indicators are excluded by pricing. |
@@ -209,7 +213,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Economics | [Economic indicator](https://site.financialmodelingprep.com/developer/docs/economic-indicator-api) | confirmed | low | Tested `economic-indicators?name=GDP&from=2025-01-01&to=2025-12-31`; implemented as `economic-indicators`. |
 | Economics | [Economic calendar](https://site.financialmodelingprep.com/developer/docs/economic-calendar-api) | excluded | low | Corporate/economic calendar access is not Starter-safe from public pricing. |
 | Economics | [Treasury rates](https://site.financialmodelingprep.com/developer/docs/treasury-rates-api) | confirmed | low | Tested `treasury-rates?from=2025-01-01&to=2025-01-31`; implemented as `treasury-rates`. |
-| Economics | [Market risk premium](https://site.financialmodelingprep.com/developer/docs/market-risk-premium-api) | unknown | low | Not clearly mapped to Starter. |
+| Economics | [Market risk premium](https://site.financialmodelingprep.com/developer/docs/market-risk-premium-api) | inferred | medium | Implemented as `macro risk-premium` via `market-risk-premium`. Returns equity risk premium, country risk premium, and default spread. Starter access not yet probed. |
 
 ## Recommended first CLI surface
 

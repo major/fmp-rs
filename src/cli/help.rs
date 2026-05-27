@@ -86,11 +86,19 @@ pub(crate) const MARKET_STOCK_LIST_LONG: &str = "List all supported stock symbol
 pub(crate) const MARKET_REALTIME_QUOTE_ABOUT: &str =
     "Get a real-time market quote for a stock ticker.";
 pub(crate) const MARKET_REALTIME_QUOTE_LONG: &str = "Get a real-time market quote for a stock ticker including live price, volume, and change data.\n\nExamples:\n  fmp-agent market realtime-quote AAPL";
+pub(crate) const MARKET_AFTERMARKET_QUOTE_ABOUT: &str =
+    "Get aftermarket quote data for a stock ticker.";
+pub(crate) const MARKET_AFTERMARKET_QUOTE_LONG: &str = "Get aftermarket (pre-market and after-hours) quote data for a stock ticker including extended-hours price, volume, and change.\n\nExamples:\n  fmp-agent market aftermarket-quote AAPL";
+pub(crate) const MARKET_AFTERMARKET_TRADE_ABOUT: &str =
+    "Get aftermarket trade data for a stock ticker.";
+pub(crate) const MARKET_AFTERMARKET_TRADE_LONG: &str = "Get aftermarket (pre-market and after-hours) trade data for a stock ticker including extended-hours trade details.\n\nExamples:\n  fmp-agent market aftermarket-trade AAPL";
 pub(crate) const ETF_HOLDINGS_ABOUT: &str =
     "Get ETF holdings for a fund symbol; Starter accounts return an API error.";
 pub(crate) const ETF_HOLDINGS_LONG: &str = "Get ETF holdings for a fund symbol. Note: Starter plan accounts receive an API error for this endpoint; it is included to exercise structured error handling.\n\nExamples:\n  fmp-agent etf holdings SPY";
 pub(crate) const ETF_LIST_ABOUT: &str = "List supported ETF symbols.";
 pub(crate) const ETF_LIST_LONG: &str = "List all supported ETF symbols. Returns a large payload with ticker, name, and type for each instrument.\n\nExamples:\n  fmp-agent etf list";
+pub(crate) const ETF_INFO_ABOUT: &str = "Get ETF information for a fund symbol.";
+pub(crate) const ETF_INFO_LONG: &str = "Get ETF information for a fund symbol including expense ratio, AUM, sector breakdown, and holdings summary.\n\nExamples:\n  fmp-agent etf info SPY\n  fmp-agent etf info QQQ";
 pub(crate) const COMPANY_FINANCIAL_SCORES_ABOUT: &str =
     "Get financial quality scores for a stock ticker.";
 pub(crate) const COMPANY_FINANCIAL_SCORES_LONG: &str = "Get financial quality scores for a company including Piotroski score and intrinsic value rating.\n\nExamples:\n  fmp-agent company scores AAPL";
@@ -195,8 +203,13 @@ pub(crate) const INSIDER_TRADING_LATEST_LONG: &str = "Get latest insider trading
 pub(crate) const EARNINGS_CALENDAR_ABOUT: &str =
     "Get earnings calendar rows for an optional announcement date range.";
 pub(crate) const EARNINGS_CALENDAR_LONG: &str = "Get earnings calendar rows for an optional announcement date range.\n\nExamples:\n  fmp-agent calendar earnings\n  fmp-agent calendar earnings --from 2024-01-01 --to 2024-03-31";
+pub(crate) const CALENDAR_MARKET_HOURS_ABOUT: &str =
+    "Get current market open status and trading hours.";
+pub(crate) const CALENDAR_MARKET_HOURS_LONG: &str = "Get current market open status and trading hours including whether the stock market is currently open and the next session open and close times.\n\nExamples:\n  fmp-agent calendar market-hours";
 pub(crate) const TREASURY_RATES_ABOUT: &str = "Get treasury rate rows for an optional date range.";
 pub(crate) const TREASURY_RATES_LONG: &str = "Get treasury rate rows for an optional date range. Returns yields for standard maturities (1M, 2M, 3M, 6M, 1Y, 2Y, 3Y, 5Y, 7Y, 10Y, 20Y, 30Y).\n\nExamples:\n  fmp-agent macro treasury-rates\n  fmp-agent macro treasury-rates --from 2024-01-01 --to 2024-12-31";
+pub(crate) const MACRO_RISK_PREMIUM_ABOUT: &str = "Get the current market risk premium.";
+pub(crate) const MACRO_RISK_PREMIUM_LONG: &str = "Get the current market risk premium data including equity risk premium, country risk premium, and default spread.\n\nExamples:\n  fmp-agent macro risk-premium";
 pub(crate) const ECONOMIC_INDICATORS_ABOUT: &str =
     "Get economic indicator rows by indicator name and optional date range.";
 pub(crate) const ECONOMIC_INDICATORS_LONG: &str = "Get economic indicator rows by indicator name and optional date range. The indicator name is a positional argument.\n\nExamples:\n  fmp-agent macro economic-indicators GDP\n  fmp-agent macro economic-indicators GDP --from 2024-01-01 --to 2024-12-31";

@@ -50,6 +50,20 @@ pub(crate) enum Cmd {
         long_about = help::MARKET_REALTIME_QUOTE_LONG
     )]
     RealtimeQuote(SymbolArgs),
+
+    /// Get aftermarket quote data for a stock ticker.
+    #[command(
+        about = help::MARKET_AFTERMARKET_QUOTE_ABOUT,
+        long_about = help::MARKET_AFTERMARKET_QUOTE_LONG
+    )]
+    AftermarketQuote(SymbolArgs),
+
+    /// Get aftermarket trade data for a stock ticker.
+    #[command(
+        about = help::MARKET_AFTERMARKET_TRADE_ABOUT,
+        long_about = help::MARKET_AFTERMARKET_TRADE_LONG
+    )]
+    AftermarketTrade(SymbolArgs),
 }
 
 /// Dispatch a market subcommand.
@@ -70,6 +84,12 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
         Cmd::StockList => run_endpoint(client, crate::endpoint::STOCK_LIST).await,
         Cmd::RealtimeQuote(args) => {
             run_by_symbol(client, crate::endpoint::REALTIME_QUOTE, &args.symbol).await
+        }
+        Cmd::AftermarketQuote(args) => {
+            run_by_symbol(client, crate::endpoint::AFTERMARKET_QUOTE, &args.symbol).await
+        }
+        Cmd::AftermarketTrade(args) => {
+            run_by_symbol(client, crate::endpoint::AFTERMARKET_TRADE, &args.symbol).await
         }
     }
 }

@@ -3,7 +3,7 @@
 use clap::Subcommand;
 
 use crate::cli::args::DateRangeArgs;
-use crate::cli::dispatch::run_by_date_range;
+use crate::cli::dispatch::{run_by_date_range, run_endpoint};
 use crate::cli::help;
 use crate::cli::output::CommandPayload;
 use crate::client::FmpClient;
@@ -19,6 +19,13 @@ pub(crate) enum Cmd {
         long_about = help::EARNINGS_CALENDAR_LONG
     )]
     Earnings(DateRangeArgs),
+
+    /// Get current market open status and trading hours.
+    #[command(
+        about = help::CALENDAR_MARKET_HOURS_ABOUT,
+        long_about = help::CALENDAR_MARKET_HOURS_LONG
+    )]
+    MarketHours,
 }
 
 /// Dispatches a calendar command.
@@ -31,5 +38,6 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
         Cmd::Earnings(args) => {
             run_by_date_range(client, endpoint::EARNINGS_CALENDAR, &args.from, &args.to).await
         }
+        Cmd::MarketHours => run_endpoint(client, endpoint::MARKET_HOURS).await,
     }
 }
