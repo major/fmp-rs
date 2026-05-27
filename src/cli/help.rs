@@ -183,7 +183,7 @@ pub(crate) const COMMANDS_GROUPED: &str =
 
 pub(crate) const COMPLETIONS_ABOUT: &str =
     "Generate shell completions for bash, zsh, fish, or powershell.";
-pub(crate) const COMPLETIONS_LONG: &str = "Generate shell completions for the specified shell. The completions script is written to stdout. Supported shells: bash, elvish, fish, powershell, zsh.\n\nThis command does not require FMP_API_KEY and does not make any network requests.\n\nExamples:\n  fmp-agent completions bash\n  fmp-agent completions zsh | sudo tee /usr/share/zsh/site-functions/_fmp-agent\n  source <(fmp-agent completions bash)";
+pub(crate) const COMPLETIONS_LONG: &str = "Generate shell completions for the specified shell. The completions script is written to stdout. Supported shells: bash, elvish, fish, powershell, zsh.\n\nCompletions are generated at runtime from the current binary and are not shipped as pre-installed files.\n\nThis command does not require FMP_API_KEY and does not make any network requests.\n\nExamples:\n  fmp-agent completions bash\n  fmp-agent completions zsh | sudo tee /usr/share/zsh/site-functions/_fmp-agent\n  source <(fmp-agent completions bash)";
 
 pub(crate) const SYMBOL: &str =
     "Symbol accepted by this command, such as a stock ticker, forex pair, or crypto pair.";
