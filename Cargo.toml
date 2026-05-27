@@ -19,13 +19,12 @@ required-features = ["cli"]
 
 [features]
 default = ["cli"]
-cli = ["dep:clap", "dep:dotenvy", "dep:jiff", "dep:env_logger", "dep:clap-verbosity-flag", "dep:human-panic", "dep:clap_complete"]
+cli = ["dep:clap", "dep:dotenvy", "dep:jiff", "dep:env_logger", "dep:human-panic", "dep:clap_complete"]
 
 [dependencies]
 clap = { version = "4.6", features = ["derive", "env"], optional = true }
 dotenvy = { version = "0.15", optional = true }
 env_logger = { version = "0.11", optional = true }
-clap-verbosity-flag = { version = "3.0", optional = true }
 clap_complete = { version = "4.6", optional = true }
 human-panic = { version = "2.0", optional = true }
 jiff = { version = "0.2", optional = true }

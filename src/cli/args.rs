@@ -18,9 +18,9 @@ pub struct Cli {
     #[arg(long, global = true, env = "FMP_BASE_URL", default_value = DEFAULT_BASE_URL, help = help::BASE_URL)]
     pub base_url: String,
 
-    /// Log verbosity flags.
-    #[command(flatten)]
-    pub verbose: clap_verbosity_flag::Verbosity,
+    /// Increase log verbosity (-v for INFO, -vv for DEBUG, -vvv for TRACE).
+    #[arg(short = 'v', long = "verbose", action = clap::ArgAction::Count)]
+    pub verbose: u8,
 
     /// Command to execute.
     #[command(subcommand)]

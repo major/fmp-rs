@@ -26,7 +26,12 @@ async fn main() -> ExitCode {
         Err(error) => error.exit(),
     };
 
-    let level_filter = cli.verbose.log_level_filter();
+    let level_filter = match cli.verbose {
+        0 => log::LevelFilter::Off,
+        1 => log::LevelFilter::Info,
+        2 => log::LevelFilter::Debug,
+        _ => log::LevelFilter::Trace,
+    };
     env_logger::Builder::from_env(
         env_logger::Env::default().default_filter_or(level_filter.to_string()),
     )
