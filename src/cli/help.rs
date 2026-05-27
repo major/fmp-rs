@@ -8,31 +8,40 @@ pub(crate) const API_KEY: &str =
 pub(crate) const BASE_URL: &str = "FMP stable API base URL. Override for tests or proxies.";
 
 pub(crate) const COMPANY_GROUP_ABOUT: &str = "Company data command group.";
-pub(crate) const COMPANY_GROUP_LONG: &str = "Company data commands.\n\nExamples:\n  fmp-agent company\n  fmp-agent company profile AAPL";
+pub(crate) const COMPANY_GROUP_LONG: &str =
+    "Company data commands.\n\nExamples:\n  fmp-agent company\n  fmp-agent company profile AAPL";
 pub(crate) const MARKET_GROUP_ABOUT: &str = "Market data command group.";
-pub(crate) const MARKET_GROUP_LONG: &str = "Market data commands.\n\nExamples:\n  fmp-agent market\n  fmp-agent market quote AAPL";
+pub(crate) const MARKET_GROUP_LONG: &str =
+    "Market data commands.\n\nExamples:\n  fmp-agent market\n  fmp-agent market quote AAPL";
 pub(crate) const FUNDAMENTALS_GROUP_ABOUT: &str = "Fundamentals command group.";
 pub(crate) const FUNDAMENTALS_GROUP_LONG: &str = "Fundamentals commands.\n\nExamples:\n  fmp-agent fundamentals\n  fmp-agent fundamentals income-statement AAPL";
 pub(crate) const ANALYST_GROUP_ABOUT: &str = "Analyst command group.";
-pub(crate) const ANALYST_GROUP_LONG: &str = "Analyst commands.\n\nExamples:\n  fmp-agent analyst\n  fmp-agent analyst grades AAPL";
+pub(crate) const ANALYST_GROUP_LONG: &str =
+    "Analyst commands.\n\nExamples:\n  fmp-agent analyst\n  fmp-agent analyst grades AAPL";
 pub(crate) const INSIDER_GROUP_ABOUT: &str = "Insider command group.";
 pub(crate) const INSIDER_GROUP_LONG: &str = "Insider commands.\n\nExamples:\n  fmp-agent insider\n  fmp-agent insider latest --page 1 --limit 20";
 pub(crate) const CALENDAR_GROUP_ABOUT: &str = "Calendar command group.";
 pub(crate) const CALENDAR_GROUP_LONG: &str = "Calendar commands.\n\nExamples:\n  fmp-agent calendar\n  fmp-agent calendar earnings --from 2024-01-01 --to 2024-03-31";
 pub(crate) const MACRO_GROUP_ABOUT: &str = "Macro command group.";
-pub(crate) const MACRO_GROUP_LONG: &str = "Macro commands.\n\nExamples:\n  fmp-agent macro\n  fmp-agent macro economic-indicators GDP";
+pub(crate) const MACRO_GROUP_LONG: &str =
+    "Macro commands.\n\nExamples:\n  fmp-agent macro\n  fmp-agent macro economic-indicators GDP";
 pub(crate) const TECHNICAL_GROUP_ABOUT: &str = "Technical analysis command group.";
 pub(crate) const TECHNICAL_GROUP_LONG: &str = "Technical analysis commands.\n\nExamples:\n  fmp-agent technical\n  fmp-agent technical sma AAPL";
 pub(crate) const SEC_GROUP_ABOUT: &str = "SEC command group.";
-pub(crate) const SEC_GROUP_LONG: &str = "SEC commands.\n\nExamples:\n  fmp-agent sec\n  fmp-agent sec filings AAPL";
+pub(crate) const SEC_GROUP_LONG: &str =
+    "SEC commands.\n\nExamples:\n  fmp-agent sec\n  fmp-agent sec filings AAPL";
 pub(crate) const ETF_GROUP_ABOUT: &str = "ETF command group.";
-pub(crate) const ETF_GROUP_LONG: &str = "ETF commands.\n\nExamples:\n  fmp-agent etf\n  fmp-agent etf holdings SPY";
+pub(crate) const ETF_GROUP_LONG: &str =
+    "ETF commands.\n\nExamples:\n  fmp-agent etf\n  fmp-agent etf holdings SPY";
 pub(crate) const CRYPTO_GROUP_ABOUT: &str = "Cryptocurrency command group.";
-pub(crate) const CRYPTO_GROUP_LONG: &str = "Cryptocurrency commands.\n\nExamples:\n  fmp-agent crypto\n  fmp-agent crypto quote BTCUSD";
+pub(crate) const CRYPTO_GROUP_LONG: &str =
+    "Cryptocurrency commands.\n\nExamples:\n  fmp-agent crypto\n  fmp-agent crypto quote BTCUSD";
 pub(crate) const FOREX_GROUP_ABOUT: &str = "Forex command group.";
-pub(crate) const FOREX_GROUP_LONG: &str = "Forex commands.\n\nExamples:\n  fmp-agent forex\n  fmp-agent forex quote EURUSD";
+pub(crate) const FOREX_GROUP_LONG: &str =
+    "Forex commands.\n\nExamples:\n  fmp-agent forex\n  fmp-agent forex quote EURUSD";
 pub(crate) const NEWS_GROUP_ABOUT: &str = "News command group.";
-pub(crate) const NEWS_GROUP_LONG: &str = "News commands.\n\nExamples:\n  fmp-agent news\n  fmp-agent news stock AAPL";
+pub(crate) const NEWS_GROUP_LONG: &str =
+    "News commands.\n\nExamples:\n  fmp-agent news\n  fmp-agent news stock AAPL";
 
 pub(crate) const QUOTE_ALIAS_ABOUT: &str = "Get the latest market quote; alias for market quote.";
 pub(crate) const QUOTE_ALIAS_LONG: &str = "Top-level alias for `market quote`. Get the latest market quote for a stock ticker including price, volume, and change data.\n\nExamples:\n  fmp-agent quote AAPL\n  fmp-agent market quote AAPL";

@@ -6,8 +6,8 @@ use crate::error::Result;
 
 use super::args::{Command, SymbolArgs, SymbolDateRangeArgs};
 use super::dispatch::{run_by_date_range, run_by_symbol, run_by_symbol_date_range, run_query};
-use super::output::CommandPayload;
 use super::groups;
+use super::output::CommandPayload;
 
 /// Dispatch a shared quote command through the symbol-only helper.
 pub(crate) async fn dispatch_quote(

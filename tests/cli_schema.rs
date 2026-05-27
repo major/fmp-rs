@@ -211,9 +211,11 @@ fn schema_works_without_api_key() {
 
 #[test]
 fn other_commands_still_require_api_key() {
+    // dotenvy may load a valid key from .env, so set it to empty to
+    // confirm non-discovery commands still require a populated key.
     Command::cargo_bin("fmp-agent")
         .unwrap()
-        .env_remove("FMP_API_KEY")
+        .env("FMP_API_KEY", "")
         .args(["market", "quote", "AAPL"])
         .assert()
         .failure()
