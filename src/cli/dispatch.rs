@@ -4,20 +4,9 @@ use serde_json::json;
 
 use crate::client::FmpClient;
 use crate::endpoint::{ANNUAL_PERIOD, Endpoint};
-use crate::error::{Error, Result};
+use crate::error::Result;
 
 use super::output::CommandPayload;
-
-/// Validates that an optional date string is in `YYYY-MM-DD` format.
-///
-/// Returns an [`Error::InvalidDate`] if the value is present but does not
-/// parse as a valid calendar date.
-pub(crate) fn validate_date(_label: &str, value: &Option<String>) -> Result<()> {
-    if let Some(v) = value {
-        jiff::civil::Date::strptime("%Y-%m-%d", v).map_err(|_| Error::InvalidDate(v.clone()))?;
-    }
-    Ok(())
-}
 
 pub(super) async fn run_endpoint(client: &FmpClient, endpoint: Endpoint) -> Result<CommandPayload> {
     let data = client.endpoint(endpoint).await?;
@@ -73,8 +62,6 @@ pub(super) async fn run_by_symbol_date_range(
     from: &Option<String>,
     to: &Option<String>,
 ) -> Result<CommandPayload> {
-    validate_date("--from", from)?;
-    validate_date("--to", to)?;
     let data = client
         .by_symbol_date_range(endpoint, symbol, from.as_deref(), to.as_deref())
         .await?;
@@ -91,8 +78,6 @@ pub(super) async fn run_by_date_range(
     from: &Option<String>,
     to: &Option<String>,
 ) -> Result<CommandPayload> {
-    validate_date("--from", from)?;
-    validate_date("--to", to)?;
     let data = client
         .by_date_range(endpoint, from.as_deref(), to.as_deref())
         .await?;
@@ -110,8 +95,6 @@ pub(super) async fn run_by_name_date_range(
     from: &Option<String>,
     to: &Option<String>,
 ) -> Result<CommandPayload> {
-    validate_date("--from", from)?;
-    validate_date("--to", to)?;
     let data = client
         .by_name_date_range(endpoint, name, from.as_deref(), to.as_deref())
         .await?;

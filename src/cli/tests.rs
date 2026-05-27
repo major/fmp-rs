@@ -88,10 +88,9 @@ fn stock_news(symbol: &str) -> StockNewsArgs {
 }
 
 #[test]
+#[should_panic(expected = "group name must match a registered Clap subcommand")]
 fn print_group_help_unknown_group_returns_err() {
-    let result = super::print_group_help("nonexistent-group");
-
-    assert!(result.is_err());
+    let _ = super::print_group_help("nonexistent-group");
 }
 
 #[test]

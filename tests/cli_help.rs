@@ -47,7 +47,7 @@ fn help_explains_clap_and_json_error_paths() {
         .success()
         .stdout(predicate::str::contains("JSON envelope"))
         .stdout(predicate::str::contains(
-            "Clap's native human-readable usage text",
+            "Clap catches bad flags and invalid dates at parse time",
         ))
         .stdout(predicate::str::contains(
             "check the exit code first, then parse stderr only for exit codes 3-6",
