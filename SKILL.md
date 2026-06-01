@@ -174,7 +174,7 @@ Commands use the `<group> <verb>` form introduced in 0.4.0. See the README migra
 | `market historical <SYMBOL>`                   | `SymbolDateRange`  |
 | `market dividends <SYMBOL>`                    | `Symbol`           |
 | `market splits <SYMBOL>`                       | `Symbol`           |
-| `market price-change <SYMBOL>`                 | `Symbol`           |
+| `market price-change <SYMBOLS...>`             | `Symbols`          |
 | `market stock-list`                            | `Endpoint`         |
 | `market realtime-quote <SYMBOL>`               | `Symbol`           |
 | `etf holdings <SYMBOL>`                        | `Symbol` *         |
