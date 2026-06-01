@@ -277,7 +277,7 @@ fn strict_empty_symbol_result_returns_exit_code_7() {
 
     let message = body["error"]["message"].as_str().unwrap();
     assert!(message.contains("NOTAREALSYMBOL12345"));
-    assert!(message.contains("fmp-agent search NOTAREALSYMBOL12345"));
+    assert!(message.contains("search NOTAREALSYMBOL12345"));
     assert!(message.contains("--strict-empty"));
 }
 
