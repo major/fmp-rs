@@ -114,22 +114,37 @@ async fn run_price_change(client: &FmpClient, symbols: &[String]) -> Result<Comm
 
 fn reject_missing_price_change_symbols(symbols: &[String], data: &Value) -> Result<()> {
     let Value::Array(rows) = data else {
-        return Ok(());
+        if symbols.len() == 1 {
+            return Ok(());
+        }
+
+        return Err(Error::Api {
+            status: 200,
+            message: format!(
+                "stock-price-change response for multiple requested symbols must be an array; got {}",
+                value_type_name(data)
+            ),
+        });
     };
 
     if rows.is_empty() && symbols.len() == 1 {
         return Ok(());
     }
 
-    for symbol in symbols {
-        if !rows.iter().any(|row| row_symbol_matches(row, symbol)) {
-            return Err(Error::Api {
-                status: 200,
-                message: format!(
-                    "stock-price-change response did not include requested symbol {symbol}"
-                ),
-            });
-        }
+    let missing_symbols = symbols
+        .iter()
+        .filter(|symbol| !rows.iter().any(|row| row_symbol_matches(row, symbol)))
+        .map(String::as_str)
+        .collect::<Vec<_>>();
+
+    if !missing_symbols.is_empty() {
+        return Err(Error::Api {
+            status: 200,
+            message: format!(
+                "stock-price-change response did not include requested symbol(s): {}",
+                missing_symbols.join(",")
+            ),
+        });
     }
 
     Ok(())
@@ -141,16 +156,50 @@ fn row_symbol_matches(row: &Value, symbol: &str) -> bool {
         .is_some_and(|row_symbol| row_symbol.eq_ignore_ascii_case(symbol))
 }
 
+fn value_type_name(value: &Value) -> &'static str {
+    match value {
+        Value::Null => "null",
+        Value::Bool(_) => "boolean",
+        Value::Number(_) => "number",
+        Value::String(_) => "string",
+        Value::Array(_) => "array",
+        Value::Object(_) => "object",
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use serde_json::json;
+    use serde_json::{Value, json};
 
-    use super::reject_missing_price_change_symbols;
+    use super::{reject_missing_price_change_symbols, value_type_name};
 
     #[test]
     fn price_change_validation_allows_single_symbol_object() {
         reject_missing_price_change_symbols(&["AAPL".to_owned()], &json!({ "symbol": "AAPL" }))
             .unwrap();
+    }
+
+    #[test]
+    fn price_change_validation_rejects_multi_symbol_object() {
+        let error = reject_missing_price_change_symbols(
+            &["AAPL".to_owned(), "MSFT".to_owned()],
+            &json!({ "symbol": "AAPL" }),
+        )
+        .unwrap_err();
+
+        assert_eq!(error.kind(), "api_error");
+        assert!(error.to_string().contains("multiple requested symbols"));
+        assert!(error.to_string().contains("object"));
+    }
+
+    #[test]
+    fn value_type_name_describes_json_types() {
+        assert_eq!(value_type_name(&Value::Null), "null");
+        assert_eq!(value_type_name(&json!(true)), "boolean");
+        assert_eq!(value_type_name(&json!(1)), "number");
+        assert_eq!(value_type_name(&json!("AAPL")), "string");
+        assert_eq!(value_type_name(&json!([])), "array");
+        assert_eq!(value_type_name(&json!({})), "object");
     }
 
     #[test]
@@ -170,12 +219,13 @@ mod tests {
     #[test]
     fn price_change_validation_rejects_partial_multi_symbol_response() {
         let error = reject_missing_price_change_symbols(
-            &["ALAB".to_owned(), "NOPE".to_owned()],
+            &["ALAB".to_owned(), "NOPE".to_owned(), "BAD".to_owned()],
             &json!([{ "symbol": "ALAB" }]),
         )
         .unwrap_err();
 
         assert_eq!(error.kind(), "api_error");
         assert!(error.to_string().contains("NOPE"));
+        assert!(error.to_string().contains("BAD"));
     }
 }

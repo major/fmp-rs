@@ -737,13 +737,38 @@ async fn price_change_two_symbols_returns_ordered_rows() {
 }
 
 #[tokio::test]
-async fn price_change_missing_symbol_returns_clear_error() {
+async fn price_change_two_symbols_rejects_non_array_payload() {
     let server = MockServer::start_async().await;
     server
         .mock_async(|when, then| {
             when.method(GET)
                 .path("/stock-price-change")
-                .query_param("symbol", "ALAB,NOPE")
+                .query_param("symbol", "ALAB,CLS")
+                .query_param("apikey", "test-key");
+            then.status(200)
+                .json_body(json!({ "symbol": "ALAB", "1D": 0.1 }));
+        })
+        .await;
+
+    let command = Command::Market {
+        command: Some(groups::market::Cmd::PriceChange(symbols(&["ALAB", "CLS"]))),
+    };
+
+    let error = execute(&test_client(&server), &command).await.unwrap_err();
+
+    assert_eq!(error.kind(), "api_error");
+    assert!(error.to_string().contains("multiple requested symbols"));
+    assert!(error.to_string().contains("object"));
+}
+
+#[tokio::test]
+async fn price_change_missing_symbols_return_clear_error() {
+    let server = MockServer::start_async().await;
+    server
+        .mock_async(|when, then| {
+            when.method(GET)
+                .path("/stock-price-change")
+                .query_param("symbol", "ALAB,NOPE,BAD")
                 .query_param("apikey", "test-key");
             then.status(200)
                 .json_body(json!([{ "symbol": "ALAB", "1D": 0.1 }]));
@@ -751,13 +776,16 @@ async fn price_change_missing_symbol_returns_clear_error() {
         .await;
 
     let command = Command::Market {
-        command: Some(groups::market::Cmd::PriceChange(symbols(&["ALAB", "NOPE"]))),
+        command: Some(groups::market::Cmd::PriceChange(symbols(&[
+            "ALAB", "NOPE", "BAD",
+        ]))),
     };
 
     let error = execute(&test_client(&server), &command).await.unwrap_err();
 
     assert_eq!(error.kind(), "api_error");
     assert!(error.to_string().contains("NOPE"));
+    assert!(error.to_string().contains("BAD"));
 }
 
 #[tokio::test]
