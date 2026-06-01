@@ -14,9 +14,7 @@ fn bare_command_prints_help() {
         .assert()
         .success()
         .stderr(predicate::str::is_empty())
-        .stdout(predicate::str::contains(
-            "Usage: fmp-agent [OPTIONS] <COMMAND>",
-        ))
+        .stdout(predicate::str::contains("[OPTIONS] <COMMAND>"))
         .stdout(predicate::str::contains("Commands:"))
         .stdout(predicate::str::contains("fmp-agent help environment"))
         .stdout(predicate::str::contains("fmp-agent help exit-codes"))
@@ -33,7 +31,7 @@ fn help_group_lists_topics() {
         .env("NO_COLOR", "1")
         .assert()
         .success()
-        .stdout(predicate::str::contains("Usage: fmp-agent help"))
+        .stdout(predicate::str::contains("help [OPTIONS] [COMMAND]"))
         .stdout(predicate::str::contains("environment"))
         .stdout(predicate::str::contains("exit-codes"))
         .stdout(predicate::str::contains("schema"))
@@ -193,15 +191,15 @@ fn grouped_command_specific_help_present() {
     for (args, usage) in [
         (
             &["company", "profile", "--help"][..],
-            "Usage: fmp-agent company profile",
+            "company profile [OPTIONS] <SYMBOL>",
         ),
         (
             &["market", "quote", "--help"][..],
-            "Usage: fmp-agent market quote",
+            "market quote [OPTIONS] <SYMBOL>",
         ),
         (
             &["news", "stock", "--help"][..],
-            "Usage: fmp-agent news stock",
+            "news stock [OPTIONS] <SYMBOL>",
         ),
     ] {
         Command::cargo_bin("fmp-agent")
