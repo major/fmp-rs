@@ -46,10 +46,11 @@ const EXPECTED_LEAVES: &[&[&str]] = &[
     &["historical"],
     &["profile"],
     &["earnings"],
-    // Help topics (4)
+    // Help topics (5)
     &["help", "environment"],
     &["help", "exit-codes"],
     &["help", "schema"],
+    &["help", "troubleshooting"],
     &["help", "examples"],
     // Top-level standalone (5)
     &["search"],

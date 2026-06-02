@@ -221,7 +221,7 @@ Commands use the `<group> <verb>` form introduced in 0.4.0. See the README migra
 | `analyst upgrades-downgrades <SYMBOL>`           | Unavailable * |
 | `analyst earnings-surprises <SYMBOL>`            | Unavailable * |
 
-\* These analyst commands correspond to legacy-only FMP docs and return `endpoint_unavailable` locally. Use `analyst price-target-consensus`, `analyst price-target-summary`, and `analyst grades` for stable analyst data.
+\* These analyst commands correspond to legacy-only FMP docs and return `endpoint_unavailable` locally. Use `analyst price-target-consensus`, `analyst price-target-summary`, and `analyst grades` for stable analyst data. If an older installed CLI returns `api_error` with `HTTP 404: []` for one of these commands, run `fmp-agent --version`, update the binary, or run `fmp-agent help troubleshooting` for the installed guidance.
 
 ### Calendars, rates, technicals, filings
 

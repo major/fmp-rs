@@ -166,6 +166,32 @@ Exit code 2 is produced at parse time by Clap with human-readable usage text on 
 
 HTTP 429 responses use exit code 5 with `error.kind` set to `rate_limited`. Agents should treat that kind as retryable later with backoff, not as a subscription, authentication, or generic API failure. Other non-429 API failures continue to use `api_error`. Commands that FMP only documents as legacy endpoints use exit code 5 with `error.kind` set to `endpoint_unavailable` and do not make a network request.
 
+### Legacy endpoint troubleshooting
+
+Run `fmp-agent help troubleshooting` to view this guidance from the installed binary without requiring `FMP_API_KEY` or making a network request.
+
+Some FMP endpoints only exist in legacy documentation and no longer have a stable API path. Current `fmp-agent` builds catch those commands locally, return exit code 5 with `error.kind` set to `endpoint_unavailable`, and name a stable fallback when one exists.
+
+If an installed CLI returns `error.kind` set to `api_error` with a message like `HTTP 404: []` for `analyst upgrades-downgrades SYMBOL`, check the installed version first:
+
+```bash
+fmp-agent --version
+```
+
+That 404 shape usually means the binary is older than the local `endpoint_unavailable` guard. Update with the same channel you used to install it, for example:
+
+```bash
+cargo install rusty-fmp --locked
+```
+
+For analyst grade actions, use the stable replacement:
+
+```bash
+fmp-agent analyst grades IBM
+```
+
+Other legacy commands follow the same pattern: `analyst price-target` points to `analyst price-target-consensus` or `analyst price-target-summary`, `analyst earnings-surprises` has no stable per-symbol replacement, and `company outlook` points to stable company and fundamentals commands.
+
 ## Development
 
 ```bash

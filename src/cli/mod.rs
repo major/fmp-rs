@@ -177,6 +177,7 @@ fn help_topic_text(topic: &args::HelpTopic) -> &'static str {
         args::HelpTopic::Environment => help::HELP_ENVIRONMENT_LONG,
         args::HelpTopic::ExitCodes => help::HELP_EXIT_CODES_LONG,
         args::HelpTopic::Schema => help::HELP_SCHEMA_LONG,
+        args::HelpTopic::Troubleshooting => help::HELP_TROUBLESHOOTING_LONG,
         args::HelpTopic::Examples => help::HELP_EXAMPLES_LONG,
     }
 }
