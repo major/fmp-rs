@@ -56,6 +56,7 @@ fn commands_lists_leaf_paths_without_api_key() {
         .stdout(predicate::str::contains("help environment"))
         .stdout(predicate::str::contains("help exit-codes"))
         .stdout(predicate::str::contains("help schema"))
+        .stdout(predicate::str::contains("help troubleshooting"))
         .stdout(predicate::str::contains("help examples"))
         .stdout(predicate::str::contains("news stock"));
 }
@@ -66,6 +67,7 @@ fn help_topics_work_without_api_key() {
         ("environment", "FMP_API_KEY"),
         ("exit-codes", "structured JSON line"),
         ("schema", "tool-calling"),
+        ("troubleshooting", "analyst grades SYMBOL"),
         ("examples", "market batch-quote"),
     ] {
         Command::cargo_bin("fmp-agent")

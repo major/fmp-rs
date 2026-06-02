@@ -246,6 +246,13 @@ pub(crate) enum HelpTopic {
     #[command(about = help::HELP_SCHEMA_ABOUT, long_about = help::HELP_SCHEMA_LONG)]
     Schema,
 
+    /// Troubleshooting help topic.
+    #[command(
+        about = help::HELP_TROUBLESHOOTING_ABOUT,
+        long_about = help::HELP_TROUBLESHOOTING_LONG
+    )]
+    Troubleshooting,
+
     /// Representative examples help topic.
     #[command(about = help::HELP_EXAMPLES_ABOUT, long_about = help::HELP_EXAMPLES_LONG)]
     Examples,
