@@ -2,7 +2,7 @@
 name = "rusty-fmp"
 version = "0.5.2"
 edition = "2024"
-rust-version = "1.95"
+rust-version = "1.96"
 description = "JSON CLI and client library for Financial Modeling Prep"
 license = "MIT"
 repository = "https://github.com/major/fmp-rs"
