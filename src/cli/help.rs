@@ -78,6 +78,7 @@ pub(crate) const SEARCH_ABOUT: &str =
     "Search for tradable stock symbols by ticker or company name.";
 pub(crate) const SEARCH_LONG: &str = "Search for tradable stock symbols by ticker fragment or company name. The query is a positional argument.\n\nExamples:\n  fmp-agent search Apple\n  fmp-agent search AAPL";
 pub(crate) const SEARCH_QUERY: &str = "Ticker fragment or company name to search for.";
+pub(crate) const STATEMENT_PERIOD: &str = "Statement period to request: annual or quarter.";
 pub(crate) const COMPANY_PROFILE_ABOUT: &str =
     "Get company profile and reference data for a stock ticker.";
 pub(crate) const COMPANY_PROFILE_LONG: &str = "Get company profile and reference data including sector, industry, description, and headquarters for a stock ticker.\n\nExamples:\n  fmp-agent company profile AAPL\n  fmp-agent company profile MSFT";
@@ -138,17 +139,17 @@ pub(crate) const MARKET_PRICE_CHANGE_ABOUT: &str =
     "Get price change percentages for one or more stock tickers.";
 pub(crate) const MARKET_PRICE_CHANGE_LONG: &str = "Get price change percentages for one or more stock tickers across multiple time periods (1D, 5D, 1M, 3M, 6M, ytd, 1Y, 3Y, 5Y, 10Y, max). Single-symbol calls keep the upstream response shape; multi-symbol calls return one row per symbol.\n\nExamples:\n  fmp-agent market price-change AAPL\n  fmp-agent market price-change ALAB CLS";
 pub(crate) const FUNDAMENTALS_INCOME_STATEMENT_ABOUT: &str =
-    "Get annual income statement rows for a stock ticker.";
-pub(crate) const FUNDAMENTALS_INCOME_STATEMENT_LONG: &str = "Get annual income statement rows for a stock ticker. Returns up to the limit of most-recent fiscal years.\n\nExamples:\n  fmp-agent fundamentals income-statement AAPL\n  fmp-agent fundamentals income-statement AAPL --limit 10";
+    "Get annual or quarterly income statement rows for a stock ticker.";
+pub(crate) const FUNDAMENTALS_INCOME_STATEMENT_LONG: &str = "Get income statement rows for a stock ticker. Defaults to annual rows and accepts --period annual or --period quarter.\n\nExamples:\n  fmp-agent fundamentals income-statement AAPL\n  fmp-agent fundamentals income-statement AAPL --period quarter --limit 4";
 pub(crate) const FUNDAMENTALS_INCOME_STATEMENT_AS_REPORTED_ABOUT: &str =
     "Get annual as-reported income statement rows for a stock ticker.";
 pub(crate) const FUNDAMENTALS_INCOME_STATEMENT_AS_REPORTED_LONG: &str = "Get annual as-reported income statement rows for a stock ticker as filed with the SEC.\n\nExamples:\n  fmp-agent fundamentals income-statement-as-reported AAPL";
 pub(crate) const FUNDAMENTALS_BALANCE_SHEET_ABOUT: &str =
-    "Get annual balance sheet rows for a stock ticker.";
-pub(crate) const FUNDAMENTALS_BALANCE_SHEET_LONG: &str = "Get annual balance sheet rows for a stock ticker.\n\nExamples:\n  fmp-agent fundamentals balance-sheet AAPL\n  fmp-agent fundamentals balance-sheet MSFT --limit 3";
+    "Get annual or quarterly balance sheet rows for a stock ticker.";
+pub(crate) const FUNDAMENTALS_BALANCE_SHEET_LONG: &str = "Get balance sheet rows for a stock ticker. Defaults to annual rows and accepts --period annual or --period quarter.\n\nExamples:\n  fmp-agent fundamentals balance-sheet AAPL\n  fmp-agent fundamentals balance-sheet MSFT --period quarter --limit 4";
 pub(crate) const FUNDAMENTALS_CASH_FLOW_ABOUT: &str =
-    "Get annual cash flow statement rows for a stock ticker.";
-pub(crate) const FUNDAMENTALS_CASH_FLOW_LONG: &str = "Get annual cash flow statement rows for a stock ticker.\n\nExamples:\n  fmp-agent fundamentals cash-flow AAPL";
+    "Get annual or quarterly cash flow statement rows for a stock ticker.";
+pub(crate) const FUNDAMENTALS_CASH_FLOW_LONG: &str = "Get cash flow statement rows for a stock ticker. Defaults to annual rows and accepts --period annual or --period quarter.\n\nExamples:\n  fmp-agent fundamentals cash-flow AAPL\n  fmp-agent fundamentals cash-flow AAPL --period quarter --limit 4";
 pub(crate) const FUNDAMENTALS_RATIOS_ABOUT: &str =
     "Get annual financial ratio rows for a stock ticker.";
 pub(crate) const FUNDAMENTALS_RATIOS_LONG: &str = "Get annual financial ratio rows for a stock ticker including P/E, P/B, debt-to-equity, and return metrics.\n\nExamples:\n  fmp-agent fundamentals ratios AAPL";
@@ -178,7 +179,7 @@ pub(crate) const FUNDAMENTALS_ANNUAL_REPORT_FORM_ABOUT: &str =
 pub(crate) const FUNDAMENTALS_ANNUAL_REPORT_FORM_LONG: &str = "Get annual report form JSON for a stock ticker and fiscal year. The --year flag is required.\n\nExamples:\n  fmp-agent fundamentals annual-report AAPL --year 2023\n  fmp-agent fundamentals annual-report MSFT --year 2022 --period FY";
 pub(crate) const FUNDAMENTALS_EARNINGS_ABOUT: &str =
     "Get historical earnings per share data for a stock ticker.";
-pub(crate) const FUNDAMENTALS_EARNINGS_LONG: &str = "Get historical earnings per share data for a stock ticker including reported date, EPS, and revenue.\n\nExamples:\n  fmp-agent fundamentals earnings AAPL";
+pub(crate) const FUNDAMENTALS_EARNINGS_LONG: &str = "Get historical earnings per share data for a stock ticker including reported date, EPS, and revenue. Returns up to the limit of most-recent rows.\n\nExamples:\n  fmp-agent fundamentals earnings AAPL\n  fmp-agent fundamentals earnings AAPL --limit 4";
 pub(crate) const FUNDAMENTALS_STATEMENT_GROWTH_ABOUT: &str =
     "Get annual statement growth rows for a stock ticker.";
 pub(crate) const FUNDAMENTALS_STATEMENT_GROWTH_LONG: &str = "Get annual statement growth rows for a stock ticker showing consolidated growth data across all financial statements.\n\nExamples:\n  fmp-agent fundamentals statement-growth AAPL";

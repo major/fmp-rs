@@ -189,6 +189,96 @@ fn invalid_option_value_gives_parse_error() {
 }
 
 #[test]
+fn invalid_statement_period_gives_parse_error() {
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env("FMP_API_KEY", "test-key")
+        .env("FMP_BASE_URL", "http://127.0.0.1:1/")
+        .args([
+            "fundamentals",
+            "income-statement",
+            "AAPL",
+            "--period",
+            "monthly",
+        ])
+        .assert()
+        .code(2)
+        .stderr(predicate::str::contains("monthly"))
+        .stderr(predicate::str::contains("period"));
+}
+
+#[test]
+fn quarterly_fundamentals_sends_expected_query() {
+    use httpmock::Method::GET;
+    use httpmock::MockServer;
+    use serde_json::json;
+
+    let server = MockServer::start();
+    let mock = server.mock(|when, then| {
+        when.method(GET)
+            .path("/income-statement")
+            .query_param("symbol", "WOLF")
+            .query_param("period", "quarter")
+            .query_param("limit", "4")
+            .query_param("apikey", "test-key");
+        then.status(200).json_body(json!([{ "symbol": "WOLF" }]));
+    });
+
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env("FMP_API_KEY", "test-key")
+        .args([
+            "--base-url",
+            &format!("{}/", server.base_url()),
+            "fundamentals",
+            "income-statement",
+            "WOLF",
+            "--period",
+            "quarter",
+            "--limit",
+            "4",
+        ])
+        .assert()
+        .success();
+
+    mock.assert();
+}
+
+#[test]
+fn fundamentals_earnings_sends_limit_query() {
+    use httpmock::Method::GET;
+    use httpmock::MockServer;
+    use serde_json::json;
+
+    let server = MockServer::start();
+    let mock = server.mock(|when, then| {
+        when.method(GET)
+            .path("/earnings")
+            .query_param("symbol", "WOLF")
+            .query_param("limit", "4")
+            .query_param("apikey", "test-key");
+        then.status(200).json_body(json!([{ "symbol": "WOLF" }]));
+    });
+
+    Command::cargo_bin("fmp-agent")
+        .unwrap()
+        .env("FMP_API_KEY", "test-key")
+        .args([
+            "--base-url",
+            &format!("{}/", server.base_url()),
+            "fundamentals",
+            "earnings",
+            "WOLF",
+            "--limit",
+            "4",
+        ])
+        .assert()
+        .success();
+
+    mock.assert();
+}
+
+#[test]
 fn unknown_subcommand_suggests_similar() {
     Command::cargo_bin("fmp-agent")
         .unwrap()

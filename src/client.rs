@@ -193,8 +193,8 @@ impl FmpClient {
         self.get(endpoint, &params).await
     }
 
-    /// Calls a statement-style `endpoint` with `symbol`, fixed `period=annual`,
-    /// and `limit` (defaulting to [`ANNUAL_LIMIT`]).
+    /// Calls an annual `endpoint` with `symbol` and `limit` (defaulting to
+    /// [`ANNUAL_LIMIT`]).
     ///
     /// # Errors
     ///
@@ -205,14 +205,23 @@ impl FmpClient {
         symbol: &str,
         limit: Option<u16>,
     ) -> Result<Value> {
+        self.annual_with_period(endpoint, symbol, None, limit).await
+    }
+
+    /// Calls a statement-style `endpoint` with `symbol`, `period` (defaulting
+    /// to [`ANNUAL_PERIOD`]), and `limit` (defaulting to [`ANNUAL_LIMIT`]).
+    pub(crate) async fn annual_with_period(
+        &self,
+        endpoint: Endpoint,
+        symbol: &str,
+        period: Option<&str>,
+        limit: Option<u16>,
+    ) -> Result<Value> {
+        let period = period.unwrap_or(ANNUAL_PERIOD);
         let limit = limit.unwrap_or(ANNUAL_LIMIT).to_string();
         self.get(
             endpoint,
-            &[
-                ("symbol", symbol),
-                ("period", ANNUAL_PERIOD),
-                ("limit", &limit),
-            ],
+            &[("symbol", symbol), ("period", period), ("limit", &limit)],
         )
         .await
     }
@@ -847,6 +856,29 @@ mod tests {
         for mock in mocks {
             mock.assert_async().await;
         }
+    }
+
+    #[tokio::test]
+    async fn annual_endpoint_sends_custom_period_and_limit() {
+        let server = MockServer::start_async().await;
+        let mock = server
+            .mock_async(|when, then| {
+                when.method(GET)
+                    .path("/income-statement")
+                    .query_param("symbol", "AAPL")
+                    .query_param("period", "quarter")
+                    .query_param("limit", "4")
+                    .query_param("apikey", "test-key");
+                then.status(200).json_body(json!([{ "symbol": "AAPL" }]));
+            })
+            .await;
+
+        test_client(&server)
+            .annual_with_period(INCOME_STATEMENT, "AAPL", Some("quarter"), Some(4))
+            .await
+            .unwrap();
+
+        mock.assert_async().await;
     }
 
     #[tokio::test]

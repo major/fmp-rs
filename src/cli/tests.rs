@@ -7,7 +7,8 @@ use crate::client::FmpClient;
 
 use super::args::{
     AnnualArgs, AnnualReportFormArgs, Cli, Command, DateRangeArgs, NameDateRangeArgs, PagedArgs,
-    StockNewsArgs, SymbolArgs, SymbolDateRangeArgs, SymbolLimitArgs, SymbolsArgs, TechnicalSmaArgs,
+    StatementArgs, StatementPeriod, StockNewsArgs, SymbolArgs, SymbolDateRangeArgs,
+    SymbolLimitArgs, SymbolsArgs, TechnicalSmaArgs,
 };
 use super::commands::execute;
 use super::groups;
@@ -40,6 +41,22 @@ fn annual(symbol: &str) -> AnnualArgs {
     AnnualArgs {
         symbol: symbol.to_owned(),
         limit: 5,
+    }
+}
+
+fn annual_statement(symbol: &str) -> StatementArgs {
+    StatementArgs {
+        symbol: symbol.to_owned(),
+        period: StatementPeriod::Annual,
+        limit: 5,
+    }
+}
+
+fn quarterly(symbol: &str, limit: u16) -> StatementArgs {
+    StatementArgs {
+        symbol: symbol.to_owned(),
+        period: StatementPeriod::Quarter,
+        limit,
     }
 }
 
@@ -148,6 +165,36 @@ fn parses_grouped_commands() {
             command: Some(groups::fundamentals::Cmd::Income(_))
         }
     ));
+
+    let quarterly = Cli::parse_from([
+        "fmp",
+        "fundamentals",
+        "income-statement",
+        "AAPL",
+        "--period",
+        "quarter",
+        "--limit",
+        "4",
+    ]);
+    let Command::Fundamentals {
+        command: Some(groups::fundamentals::Cmd::Income(args)),
+    } = quarterly.command
+    else {
+        panic!("expected quarterly income-statement command");
+    };
+    assert_eq!(args.period, StatementPeriod::Quarter);
+    assert_eq!(args.limit, 4);
+
+    let fundamentals_earnings =
+        Cli::parse_from(["fmp", "fundamentals", "earnings", "AAPL", "--limit", "4"]);
+    let Command::Fundamentals {
+        command: Some(groups::fundamentals::Cmd::Earnings(args)),
+    } = fundamentals_earnings.command
+    else {
+        panic!("expected fundamentals earnings command");
+    };
+    assert_eq!(args.symbol, "AAPL");
+    assert_eq!(args.limit, 4);
 
     let macro_cmd = Cli::parse_from(["fmp", "macro", "economic-indicators", "GDP"]);
     assert!(matches!(
@@ -392,7 +439,7 @@ async fn execute_grouped_commands_use_endpoint_descriptors() {
         (
             "income-statement",
             Command::Fundamentals {
-                command: Some(groups::fundamentals::Cmd::Income(annual("AAPL"))),
+                command: Some(groups::fundamentals::Cmd::Income(annual_statement("AAPL"))),
             },
             json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
         ),
@@ -406,16 +453,18 @@ async fn execute_grouped_commands_use_endpoint_descriptors() {
         (
             "balance-sheet-statement",
             Command::Fundamentals {
-                command: Some(groups::fundamentals::Cmd::BalanceSheet(annual("AAPL"))),
+                command: Some(groups::fundamentals::Cmd::BalanceSheet(quarterly(
+                    "AAPL", 4,
+                ))),
             },
-            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
+            json!({ "symbol": "AAPL", "period": "quarter", "limit": 4 }),
         ),
         (
             "cash-flow-statement",
             Command::Fundamentals {
-                command: Some(groups::fundamentals::Cmd::CashFlow(annual("AAPL"))),
+                command: Some(groups::fundamentals::Cmd::CashFlow(quarterly("AAPL", 4))),
             },
-            json!({ "symbol": "AAPL", "period": "annual", "limit": 5 }),
+            json!({ "symbol": "AAPL", "period": "quarter", "limit": 4 }),
         ),
         (
             "ratios",
@@ -490,6 +539,13 @@ async fn execute_grouped_commands_use_endpoint_descriptors() {
                 ))),
             },
             json!({ "symbol": "AAPL", "year": 2022, "period": "FY" }),
+        ),
+        (
+            "earnings",
+            Command::Fundamentals {
+                command: Some(groups::fundamentals::Cmd::Earnings(symbol_limit("AAPL", 4))),
+            },
+            json!({ "symbol": "AAPL", "limit": 4 }),
         ),
         (
             "price-target-consensus",

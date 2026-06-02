@@ -5,8 +5,12 @@
 
 use clap::Subcommand;
 
-use crate::cli::args::{AnnualArgs, AnnualReportFormArgs, SymbolArgs};
-use crate::cli::dispatch::{run_annual, run_annual_report_form, run_by_symbol};
+use crate::cli::args::{
+    AnnualArgs, AnnualReportFormArgs, StatementArgs, SymbolArgs, SymbolLimitArgs,
+};
+use crate::cli::dispatch::{
+    run_annual, run_annual_report_form, run_by_symbol, run_by_symbol_limit, run_statement,
+};
 use crate::cli::help;
 use crate::cli::output::CommandPayload;
 use crate::client::FmpClient;
@@ -22,7 +26,7 @@ pub(crate) enum Cmd {
         long_about = help::FUNDAMENTALS_INCOME_STATEMENT_LONG
     )]
     #[command(name = "income-statement")]
-    Income(AnnualArgs),
+    Income(StatementArgs),
 
     /// As-reported income statement command.
     #[command(
@@ -37,14 +41,14 @@ pub(crate) enum Cmd {
         about = help::FUNDAMENTALS_BALANCE_SHEET_ABOUT,
         long_about = help::FUNDAMENTALS_BALANCE_SHEET_LONG
     )]
-    BalanceSheet(AnnualArgs),
+    BalanceSheet(StatementArgs),
 
     /// Cash flow command.
     #[command(
         about = help::FUNDAMENTALS_CASH_FLOW_ABOUT,
         long_about = help::FUNDAMENTALS_CASH_FLOW_LONG
     )]
-    CashFlow(AnnualArgs),
+    CashFlow(StatementArgs),
 
     /// Financial ratios command.
     #[command(
@@ -117,7 +121,7 @@ pub(crate) enum Cmd {
         about = help::FUNDAMENTALS_EARNINGS_ABOUT,
         long_about = help::FUNDAMENTALS_EARNINGS_LONG
     )]
-    Earnings(SymbolArgs),
+    Earnings(SymbolLimitArgs),
 
     /// Annual statement growth command.
     #[command(
@@ -132,7 +136,14 @@ pub(crate) enum Cmd {
 pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPayload> {
     match cmd {
         Cmd::Income(args) => {
-            run_annual(client, endpoint::INCOME_STATEMENT, &args.symbol, args.limit).await
+            run_statement(
+                client,
+                endpoint::INCOME_STATEMENT,
+                &args.symbol,
+                args.period.as_str(),
+                args.limit,
+            )
+            .await
         }
         Cmd::IncomeAsReported(args) => {
             run_annual(
@@ -144,19 +155,21 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
             .await
         }
         Cmd::BalanceSheet(args) => {
-            run_annual(
+            run_statement(
                 client,
                 endpoint::BALANCE_SHEET_STATEMENT,
                 &args.symbol,
+                args.period.as_str(),
                 args.limit,
             )
             .await
         }
         Cmd::CashFlow(args) => {
-            run_annual(
+            run_statement(
                 client,
                 endpoint::CASH_FLOW_STATEMENT,
                 &args.symbol,
+                args.period.as_str(),
                 args.limit,
             )
             .await
@@ -223,7 +236,9 @@ pub(crate) async fn dispatch(client: &FmpClient, cmd: &Cmd) -> Result<CommandPay
             )
             .await
         }
-        Cmd::Earnings(args) => run_by_symbol(client, endpoint::EARNINGS, &args.symbol).await,
+        Cmd::Earnings(args) => {
+            run_by_symbol_limit(client, endpoint::EARNINGS, &args.symbol, args.limit).await
+        }
         Cmd::StatementGrowth(args) => {
             run_annual(
                 client,

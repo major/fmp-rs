@@ -391,7 +391,7 @@ fn schema_args_long_flag_matches_clap_spelling() {
     let body = schema_body();
     let commands = body["commands"].as_array().unwrap();
 
-    // fundamentals income-statement has --limit with default 5
+    // fundamentals income-statement has --period with enum values and --limit with default 5
     let income = commands
         .iter()
         .find(|c| c["path"] == serde_json::json!(["fundamentals", "income-statement"]))
@@ -406,6 +406,38 @@ fn schema_args_long_flag_matches_clap_spelling() {
 
     assert_eq!(limit_arg["long"], "limit");
     assert_eq!(limit_arg["default"], 5);
+
+    let period_arg = income["args"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|a| a["name"] == "period")
+        .expect("income statement must have period arg");
+
+    assert_eq!(period_arg["long"], "period");
+    assert_eq!(period_arg["default"], "annual");
+    assert_eq!(period_arg["parser"]["hint"], "enum");
+    assert_eq!(
+        period_arg["possible_values"],
+        serde_json::json!([
+            { "name": "annual", "help": "Annual fiscal period rows" },
+            { "name": "quarter", "help": "Quarterly fiscal period rows" }
+        ])
+    );
+
+    let ratios = commands
+        .iter()
+        .find(|c| c["path"] == serde_json::json!(["fundamentals", "ratios"]))
+        .expect("must have ratios leaf");
+
+    assert!(
+        ratios["args"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|a| a["name"] != "period"),
+        "unconfirmed annual fundamentals must not expose --period"
+    );
 
     // sec filings has --from and --to
     let filings = commands

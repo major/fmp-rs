@@ -208,7 +208,10 @@ Commands use the `<group> <verb>` form introduced in 0.4.0. See the README migra
 | `fundamentals analyst-estimates <SYMBOL>`                        | `Annual`            |
 | `fundamentals report-dates <SYMBOL>`                             | `Symbol`            |
 | `fundamentals annual-report <SYMBOL> --year <YEAR>`             | `AnnualReportForm`  |
+| `fundamentals earnings <SYMBOL>`                                 | `SymbolLimit`       |
 | `fundamentals statement-growth <SYMBOL>`                         | `Annual`            |
+
+Income statement, balance sheet, and cash flow fundamentals accept `--period annual` (default) or `--period quarter` plus `--limit <N>` (default 5). Use quarterly periods for recent statement context, for example `fundamentals income-statement WOLF --period quarter --limit 4`. Other annual fundamentals commands keep the annual `--limit <N>` shape until quarterly access is confirmed in `docs/api-inventory.md`.
 
 ### Analyst
 
@@ -269,6 +272,8 @@ fmp-agent technical sma AAPL --period-length 20 --timeframe 1day
 
 # Fundamentals
 fmp-agent fundamentals income-statement AAPL --limit 5
+fmp-agent fundamentals income-statement WOLF --period quarter --limit 4
+fmp-agent fundamentals earnings WOLF --limit 4
 fmp-agent fundamentals annual-report AAPL --year 2022
 
 # Calendars and macros

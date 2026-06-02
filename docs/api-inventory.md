@@ -43,8 +43,11 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Batch quote | `batch-quote?symbols=AAPL,MSFT,GOOGL` | confirmed | Array with quote fields for multiple symbols. Uses comma-separated `symbols` parameter. |
 | Historical EOD | `historical-price-eod/full?symbol=AAPL&from=2025-01-01&to=2025-01-31` | confirmed | Array of daily bars with `date`, `open`, `high`, `low`, `close`, `volume`. |
 | Income statement | `income-statement?symbol=AAPL&period=annual&limit=5` | confirmed | Array of annual statements with `date`, `symbol`, `reportedCurrency`, `fiscalYear`, `period`. |
+| Income statement (quarterly) | `income-statement?symbol=AAPL&period=quarter&limit=4` | confirmed | Array of quarterly statements with `date`, `symbol`, `reportedCurrency`, `fiscalYear`, `period`. |
 | Balance sheet | `balance-sheet-statement?symbol=AAPL&period=annual&limit=5` | confirmed | Array of annual statements with `date`, `symbol`, `reportedCurrency`, `fiscalYear`, `period`. |
+| Balance sheet (quarterly) | `balance-sheet-statement?symbol=AAPL&period=quarter&limit=4` | confirmed | Array of quarterly statements with `date`, `symbol`, `reportedCurrency`, `fiscalYear`, `period`. |
 | Cash flow | `cash-flow-statement?symbol=AAPL&period=annual&limit=5` | confirmed | Array of annual statements with `date`, `symbol`, `reportedCurrency`, `fiscalYear`, `period`. |
+| Cash flow (quarterly) | `cash-flow-statement?symbol=AAPL&period=quarter&limit=4` | confirmed | Array of quarterly statements with `date`, `symbol`, `reportedCurrency`, `fiscalYear`, `period`. |
 | Financial ratios | `ratios?symbol=AAPL&period=annual&limit=5` | confirmed | Array with ratio fields such as `grossProfitMargin`, `ebitMargin`, `ebitdaMargin`. |
 | Key metrics | `key-metrics?symbol=AAPL&period=annual&limit=5` | confirmed | Array with metric fields such as `marketCap`, `enterpriseValue`, `evToSales`. |
 | Stock news | `news/stock?symbols=AAPL&limit=5` | confirmed | Array with news fields such as `symbol`, `publishedDate`, `publisher`, `title`, `url`. |
@@ -81,6 +84,7 @@ These probes used representative symbols and short date ranges. A `confirmed` re
 | Analyst grades | `grades?symbol=AAPL` | confirmed | Array with grade action fields such as `symbol`, `date`, `gradingCompany`, `previousGrade`, `newGrade`, and `action`. |
 | Annual report form JSON | `financial-reports-json?symbol=AAPL&year=2022&period=FY` | confirmed | Object with annual report sections such as `Cover Page` plus `symbol`, `period`, and `year`. |
 | Historical rating | `ratings-historical?symbol=AAPL&limit=5` | confirmed | Array with rating fields such as `symbol`, `date`, `rating`, `overallScore`, and component scores. |
+| Earnings history | `earnings?symbol=AAPL&limit=4` | confirmed | Array with historical earnings fields such as `symbol`, `date`, `epsActual`, `epsEstimated`, `revenueActual`, and `revenueEstimated`. |
 | Stock list | `stock-list` | confirmed | Array with supported stock symbols and company metadata such as `symbol`, `companyName`, `price`, `exchange`, and `type`. |
 | Latest insider trading | `insider-trading/latest?page=0&limit=5` | confirmed | Array with insider trading fields such as `symbol`, `filingDate`, `transactionDate`, `transactionType`, and `reportingName`. |
 | Insider trading search | `insider-trading/search?symbol=AAPL` | unconfirmed | Implemented as `insider search` using the stable search endpoint path discovered from FMP docs; needs API Viewer confirmation. |
