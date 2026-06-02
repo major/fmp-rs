@@ -1,6 +1,8 @@
 use assert_cmd::Command;
 use predicates::prelude::*;
 use serde_json::{Value, json};
+use std::fs;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 fn doctor_output(command: &mut Command) -> Value {
     let output = command.assert().success().get_output().stdout.clone();
@@ -11,7 +13,11 @@ fn doctor_output(command: &mut Command) -> Value {
 #[test]
 fn doctor_reports_missing_key_without_failing() {
     let mut command = Command::cargo_bin("fmp-agent").unwrap();
-    command.env_remove("FMP_API_KEY").arg("doctor");
+    command
+        .current_dir(isolated_cwd("doctor-missing-key"))
+        .env_remove("FMP_API_KEY")
+        .env_remove("FMP_BASE_URL")
+        .arg("doctor");
 
     let body = doctor_output(&mut command);
 
@@ -23,10 +29,24 @@ fn doctor_reports_missing_key_without_failing() {
     assert_eq!(body["live_connectivity"]["checked"], false);
 }
 
+fn isolated_cwd(name: &str) -> std::path::PathBuf {
+    let nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let dir = std::env::temp_dir().join(format!("fmp-agent-{name}-{nanos}"));
+    fs::create_dir_all(&dir).unwrap();
+    dir
+}
+
 #[test]
 fn doctor_reports_present_key_without_revealing_it() {
     let mut command = Command::cargo_bin("fmp-agent").unwrap();
-    command.env("FMP_API_KEY", "secret-test-key").arg("doctor");
+    command
+        .current_dir(isolated_cwd("doctor-present-key"))
+        .env("FMP_API_KEY", "secret-test-key")
+        .env_remove("FMP_BASE_URL")
+        .arg("doctor");
 
     let output = command.assert().success().get_output().stdout.clone();
     let stdout = String::from_utf8(output).unwrap();
@@ -44,6 +64,7 @@ fn doctor_reports_present_key_without_revealing_it() {
 fn doctor_reports_invalid_base_url_as_structured_status() {
     let mut command = Command::cargo_bin("fmp-agent").unwrap();
     command
+        .current_dir(isolated_cwd("doctor-invalid-base-url"))
         .env("FMP_API_KEY", "test-key")
         .env("FMP_BASE_URL", "not a url")
         .arg("doctor");
@@ -61,6 +82,7 @@ fn doctor_reports_invalid_base_url_as_structured_status() {
 fn doctor_redacts_credentials_from_invalid_base_url() {
     let mut command = Command::cargo_bin("fmp-agent").unwrap();
     command
+        .current_dir(isolated_cwd("doctor-redacts-base-url"))
         .env("FMP_API_KEY", "test-key")
         .env(
             "FMP_BASE_URL",
@@ -82,7 +104,9 @@ fn doctor_redacts_credentials_from_invalid_base_url() {
 fn doctor_help_documents_no_network_access() {
     Command::cargo_bin("fmp-agent")
         .unwrap()
+        .current_dir(isolated_cwd("doctor-help"))
         .env_remove("FMP_API_KEY")
+        .env_remove("FMP_BASE_URL")
         .args(["doctor", "--help"])
         .assert()
         .success()

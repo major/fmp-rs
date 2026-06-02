@@ -86,6 +86,34 @@ fn schema_batch_quote_multi_value_arg() {
 }
 
 #[test]
+fn schema_price_change_multi_value_arg() {
+    let body = schema_body();
+    let commands = body["commands"].as_array().unwrap();
+
+    let price_change = commands
+        .iter()
+        .find(|c| c["path"] == serde_json::json!(["market", "price-change"]))
+        .expect("must have market price-change leaf");
+
+    assert_eq!(price_change["name"], "price-change");
+    assert_eq!(price_change["api_key_required"], true);
+    assert_eq!(price_change["preferred_path"], "market price-change");
+    assert!(price_change["aliases"].as_array().unwrap().is_empty());
+
+    let symbols_arg = price_change["args"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|a| a["name"] == "symbols")
+        .expect("price-change must have symbols arg");
+
+    assert_eq!(symbols_arg["kind"], "positional");
+    assert_eq!(symbols_arg["required"], true);
+    assert_eq!(symbols_arg["parser"]["hint"], "string");
+    assert_eq!(symbols_arg["multi_value"], true);
+}
+
+#[test]
 fn schema_market_quote_leaf() {
     let body = schema_body();
     let commands = body["commands"].as_array().unwrap();

@@ -103,6 +103,16 @@ impl FmpClient {
         self.get(endpoint, &[("symbol", symbol)]).await
     }
 
+    /// Calls `endpoint` with a `?symbol=...` parameter (comma-joined).
+    ///
+    /// # Errors
+    ///
+    /// See [module-level errors](self#errors).
+    pub async fn by_symbol_list(&self, endpoint: Endpoint, symbols: &[String]) -> Result<Value> {
+        let joined = symbols.join(",");
+        self.get(endpoint, &[("symbol", &joined)]).await
+    }
+
     /// Calls `endpoint` with a `?symbols=...` parameter (comma-joined).
     ///
     /// # Errors
@@ -579,6 +589,31 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn by_symbol_list_joins_with_comma() {
+        let server = MockServer::start_async().await;
+        let mock = server
+            .mock_async(|when, then| {
+                when.method(GET)
+                    .path("/stock-price-change")
+                    .query_param("symbol", "ALAB,CLS")
+                    .query_param("apikey", "test-key");
+                then.status(200)
+                    .json_body(json!([{ "symbol": "ALAB" }, { "symbol": "CLS" }]));
+            })
+            .await;
+
+        let symbols = vec!["ALAB".to_owned(), "CLS".to_owned()];
+        let value = test_client(&server)
+            .by_symbol_list(STOCK_PRICE_CHANGE, &symbols)
+            .await
+            .unwrap();
+
+        mock.assert_async().await;
+        assert_eq!(value[0]["symbol"], "ALAB");
+        assert_eq!(value[1]["symbol"], "CLS");
+    }
+
+    #[tokio::test]
     async fn by_symbol_sends_expected_requests() {
         let server = MockServer::start_async().await;
         let endpoints = [
@@ -589,7 +624,6 @@ mod tests {
             ETF_HOLDINGS,
             DIVIDENDS,
             SPLITS,
-            STOCK_PRICE_CHANGE,
             FINANCIAL_SCORES,
             SHARES_FLOAT,
             GRADES_CONSENSUS,

@@ -131,8 +131,8 @@ pub(crate) const MARKET_BATCH_QUOTE_ABOUT: &str =
     "Get the latest market quotes for multiple stock tickers in one request.";
 pub(crate) const MARKET_BATCH_QUOTE_LONG: &str = "Get the latest market quotes for multiple stock tickers in a single API request. Accepts one or more symbols as positional arguments and returns current price, volume, and change data for each.\n\nExamples:\n  fmp-agent market batch-quote AAPL\n  fmp-agent market batch-quote AAPL MSFT GOOGL";
 pub(crate) const MARKET_PRICE_CHANGE_ABOUT: &str =
-    "Get price change percentages for a stock ticker.";
-pub(crate) const MARKET_PRICE_CHANGE_LONG: &str = "Get price change percentages for a stock ticker across multiple time periods (1D, 5D, 1M, 3M, 6M, YTD, 1Y, 3Y, 5Y, 10Y).\n\nExamples:\n  fmp-agent market price-change AAPL";
+    "Get price change percentages for one or more stock tickers.";
+pub(crate) const MARKET_PRICE_CHANGE_LONG: &str = "Get price change percentages for one or more stock tickers across multiple time periods (1D, 5D, 1M, 3M, 6M, ytd, 1Y, 3Y, 5Y, 10Y, max). Single-symbol calls keep the upstream response shape; multi-symbol calls return one row per symbol.\n\nExamples:\n  fmp-agent market price-change AAPL\n  fmp-agent market price-change ALAB CLS";
 pub(crate) const FUNDAMENTALS_INCOME_STATEMENT_ABOUT: &str =
     "Get annual income statement rows for a stock ticker.";
 pub(crate) const FUNDAMENTALS_INCOME_STATEMENT_LONG: &str = "Get annual income statement rows for a stock ticker. Returns up to the limit of most-recent fiscal years.\n\nExamples:\n  fmp-agent fundamentals income-statement AAPL\n  fmp-agent fundamentals income-statement AAPL --limit 10";

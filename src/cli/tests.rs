@@ -132,6 +132,15 @@ fn parses_grouped_commands() {
     };
     assert_eq!(args.symbols, vec!["AAPL", "MSFT", "GOOGL"]);
 
+    let price_change = Cli::parse_from(["fmp", "market", "price-change", "ALAB", "CLS"]);
+    let Command::Market {
+        command: Some(groups::market::Cmd::PriceChange(args)),
+    } = price_change.command
+    else {
+        panic!("expected price-change command");
+    };
+    assert_eq!(args.symbols, vec!["ALAB", "CLS"]);
+
     let fundamentals = Cli::parse_from(["fmp", "fundamentals", "income-statement", "AAPL"]);
     assert!(matches!(
         fundamentals.command,
@@ -354,13 +363,6 @@ async fn execute_grouped_commands_use_endpoint_descriptors() {
             "splits",
             Command::Market {
                 command: Some(groups::market::Cmd::Splits(symbol("AAPL"))),
-            },
-            json!({ "symbol": "AAPL" }),
-        ),
-        (
-            "stock-price-change",
-            Command::Market {
-                command: Some(groups::market::Cmd::PriceChange(symbol("AAPL"))),
             },
             json!({ "symbol": "AAPL" }),
         ),
@@ -666,6 +668,148 @@ async fn execute_grouped_commands_use_endpoint_descriptors() {
         assert_eq!(payload.query, expected_query);
         assert_eq!(payload.data, json!([{ "ok": true }]));
     }
+}
+
+#[tokio::test]
+async fn price_change_one_symbol_uses_symbols_query_and_keeps_payload_shape() {
+    let server = MockServer::start_async().await;
+    server
+        .mock_async(|when, then| {
+            when.method(GET)
+                .path("/stock-price-change")
+                .query_param("symbol", "AAPL")
+                .query_param("apikey", "test-key");
+            then.status(200).json_body(json!({
+                "1D": 0.1,
+                "5D": 0.2,
+                "1M": 0.3,
+                "3M": 0.4,
+                "6M": 0.5,
+                "ytd": 0.6,
+                "1Y": 0.7,
+                "3Y": 0.8,
+                "5Y": 0.9,
+                "10Y": 1.0,
+                "max": 1.1,
+                "symbol": "AAPL"
+            }));
+        })
+        .await;
+
+    let command = Command::Market {
+        command: Some(groups::market::Cmd::PriceChange(symbols(&["AAPL"]))),
+    };
+
+    let payload = execute(&test_client(&server), &command).await.unwrap();
+
+    assert_eq!(payload.endpoint, "stock-price-change");
+    assert_eq!(payload.query, json!({ "symbol": "AAPL" }));
+    assert!(payload.data.is_object());
+    assert_eq!(payload.data["symbol"], "AAPL");
+}
+
+#[tokio::test]
+async fn price_change_two_symbols_returns_ordered_rows() {
+    let server = MockServer::start_async().await;
+    server
+        .mock_async(|when, then| {
+            when.method(GET)
+                .path("/stock-price-change")
+                .query_param("symbol", "ALAB,CLS")
+                .query_param("apikey", "test-key");
+            then.status(200).json_body(json!([
+                { "symbol": "ALAB", "1D": 0.1 },
+                { "symbol": "CLS", "1D": 0.2 }
+            ]));
+        })
+        .await;
+
+    let command = Command::Market {
+        command: Some(groups::market::Cmd::PriceChange(symbols(&["ALAB", "CLS"]))),
+    };
+
+    let payload = execute(&test_client(&server), &command).await.unwrap();
+
+    assert_eq!(payload.endpoint, "stock-price-change");
+    assert_eq!(payload.query, json!({ "symbol": "ALAB,CLS" }));
+    assert_eq!(payload.data[0]["symbol"], "ALAB");
+    assert_eq!(payload.data[1]["symbol"], "CLS");
+}
+
+#[tokio::test]
+async fn price_change_two_symbols_rejects_non_array_payload() {
+    let server = MockServer::start_async().await;
+    server
+        .mock_async(|when, then| {
+            when.method(GET)
+                .path("/stock-price-change")
+                .query_param("symbol", "ALAB,CLS")
+                .query_param("apikey", "test-key");
+            then.status(200)
+                .json_body(json!({ "symbol": "ALAB", "1D": 0.1 }));
+        })
+        .await;
+
+    let command = Command::Market {
+        command: Some(groups::market::Cmd::PriceChange(symbols(&["ALAB", "CLS"]))),
+    };
+
+    let error = execute(&test_client(&server), &command).await.unwrap_err();
+
+    assert_eq!(error.kind(), "api_error");
+    assert!(error.to_string().contains("multiple requested symbols"));
+    assert!(error.to_string().contains("object"));
+}
+
+#[tokio::test]
+async fn price_change_missing_symbols_return_clear_error() {
+    let server = MockServer::start_async().await;
+    server
+        .mock_async(|when, then| {
+            when.method(GET)
+                .path("/stock-price-change")
+                .query_param("symbol", "ALAB,NOPE,BAD")
+                .query_param("apikey", "test-key");
+            then.status(200)
+                .json_body(json!([{ "symbol": "ALAB", "1D": 0.1 }]));
+        })
+        .await;
+
+    let command = Command::Market {
+        command: Some(groups::market::Cmd::PriceChange(symbols(&[
+            "ALAB", "NOPE", "BAD",
+        ]))),
+    };
+
+    let error = execute(&test_client(&server), &command).await.unwrap_err();
+
+    assert_eq!(error.kind(), "api_error");
+    assert!(error.to_string().contains("NOPE"));
+    assert!(error.to_string().contains("BAD"));
+}
+
+#[tokio::test]
+async fn price_change_single_missing_symbol_keeps_empty_payload_success() {
+    let server = MockServer::start_async().await;
+    server
+        .mock_async(|when, then| {
+            when.method(GET)
+                .path("/stock-price-change")
+                .query_param("symbol", "NOPE")
+                .query_param("apikey", "test-key");
+            then.status(200).json_body(json!([]));
+        })
+        .await;
+
+    let command = Command::Market {
+        command: Some(groups::market::Cmd::PriceChange(symbols(&["NOPE"]))),
+    };
+
+    let payload = execute(&test_client(&server), &command).await.unwrap();
+
+    assert_eq!(payload.endpoint, "stock-price-change");
+    assert_eq!(payload.query, json!({ "symbol": "NOPE" }));
+    assert_eq!(payload.data, json!([]));
 }
 
 #[tokio::test]
