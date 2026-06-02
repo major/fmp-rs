@@ -113,7 +113,7 @@ fmp-agent help schema         # operational guidance for schema and tool-calling
 |---|---|
 | Get latest price or historical bars for a ticker | `market quote`, `market batch-quote`, `market historical` |
 | Get company info, executives, peers, ratings | `company profile`, `company executives`, `company peers` |
-| Get income statements, balance sheets, ratios | `fundamentals income-statement`, `fundamentals balance-sheet` |
+| Get income statements, balance sheets, ratios | `fundamentals income-statement`, `fundamentals balance-sheet --period quarter` |
 | Get analyst price targets or grades | `analyst price-target-consensus`, `analyst grades` |
 | Get earnings calendar or economic data | `calendar earnings`, `macro treasury-rates` |
 | Get technical indicators (SMA) | `technical sma` |
@@ -123,7 +123,7 @@ fmp-agent help schema         # operational guidance for schema and tool-calling
 | Check local setup before API calls | `doctor` |
 | Search for a ticker by name | `search` |
 
-**Shape-based dispatch:** Commands follow reusable argument shapes (Symbol, SymbolLimit, DateRange, Annual, etc.). The `schema` output includes per-command `args` with exact flag spellings, parser type hints, possible values for enums, and defaults so agents can construct valid invocations without scraping `--help`.
+**Shape-based dispatch:** Commands follow reusable argument shapes (Symbol, SymbolLimit, DateRange, Annual, etc.). The `schema` output includes per-command `args` with exact flag spellings, parser type hints, possible values for enums, and defaults so agents can construct valid invocations without scraping `--help`. Income statement, balance sheet, and cash flow fundamentals default to `--period annual --limit 5`; use `--period quarter --limit N` for recent quarterly rows.
 
 ```json
 {
@@ -131,6 +131,7 @@ fmp-agent help schema         # operational guidance for schema and tool-calling
   "path": ["fundamentals", "income-statement"],
   "args": [
     { "name": "symbol", "kind": "positional", "required": true, "default": null, "long": null, "parser": { "hint": "string" }, "multi_value": false },
+    { "name": "period", "kind": "option", "required": false, "default": "annual", "long": "period", "parser": { "hint": "enum" }, "possible_values": [{ "name": "annual", "help": "Annual fiscal period rows" }, { "name": "quarter", "help": "Quarterly fiscal period rows" }], "multi_value": false },
     { "name": "limit", "kind": "option", "required": false, "default": 5, "long": "limit", "parser": { "hint": "integer" }, "multi_value": false }
   ],
   "api_key_required": true

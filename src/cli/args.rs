@@ -2,7 +2,9 @@
 
 use crate::cli::{groups, help};
 
-use clap::{Args, Parser, Subcommand};
+use clap::{Args, Parser, Subcommand, ValueEnum};
+
+use crate::endpoint::{ANNUAL_PERIOD, QUARTER_PERIOD};
 
 /// Validates that a date string is in `YYYY-MM-DD` format.
 ///
@@ -358,6 +360,49 @@ pub struct AnnualArgs {
     pub limit: u16,
 }
 
+/// Shared statement endpoint arguments.
+#[derive(Debug, Args)]
+pub struct StatementArgs {
+    /// Stock ticker symbol.
+    #[arg(help = help::STOCK_SYMBOL)]
+    pub symbol: String,
+
+    /// Fiscal period to request.
+    #[arg(long, value_enum, default_value_t = StatementPeriod::Annual, help = help::STATEMENT_PERIOD)]
+    pub period: StatementPeriod,
+
+    /// Maximum number of statement rows to return.
+    #[arg(long, default_value_t = 5, help = help::ANNUAL_LIMIT)]
+    pub limit: u16,
+}
+
+/// Supported statement periods for statement-style fundamentals endpoints.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, ValueEnum)]
+pub enum StatementPeriod {
+    /// Annual fiscal period rows.
+    #[default]
+    Annual,
+    /// Quarterly fiscal period rows.
+    Quarter,
+}
+
+impl StatementPeriod {
+    /// Returns the FMP API query value for this period.
+    #[must_use]
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::Annual => ANNUAL_PERIOD,
+            Self::Quarter => QUARTER_PERIOD,
+        }
+    }
+}
+
+impl std::fmt::Display for StatementPeriod {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str(self.as_str())
+    }
+}
+
 /// Simple moving average arguments.
 #[derive(Debug, Args)]
 pub struct TechnicalSmaArgs {
@@ -396,4 +441,15 @@ pub struct PagedArgs {
     /// Maximum number of items to return.
     #[arg(long, default_value_t = 10, help = help::PAGE_LIMIT)]
     pub limit: u16,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::StatementPeriod;
+
+    #[test]
+    fn statement_period_displays_api_values() {
+        assert_eq!(StatementPeriod::Annual.to_string(), "annual");
+        assert_eq!(StatementPeriod::Quarter.to_string(), "quarter");
+    }
 }

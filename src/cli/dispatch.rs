@@ -3,7 +3,7 @@
 use serde_json::json;
 
 use crate::client::FmpClient;
-use crate::endpoint::{ANNUAL_PERIOD, Endpoint};
+use crate::endpoint::Endpoint;
 use crate::error::{Error, Result};
 
 use super::output::CommandPayload;
@@ -144,7 +144,25 @@ pub(super) async fn run_annual(
     let data = client.annual(endpoint, symbol, Some(limit)).await?;
     Ok(CommandPayload::new(
         endpoint.path(),
-        json!({ "symbol": symbol, "period": ANNUAL_PERIOD, "limit": limit }),
+        json!({ "symbol": symbol, "period": crate::endpoint::ANNUAL_PERIOD, "limit": limit }),
+        data,
+    ))
+    .map(|payload| payload.symbol_lookup(endpoint.path(), symbol))
+}
+
+pub(super) async fn run_statement(
+    client: &FmpClient,
+    endpoint: Endpoint,
+    symbol: &str,
+    period: &str,
+    limit: u16,
+) -> Result<CommandPayload> {
+    let data = client
+        .annual_with_period(endpoint, symbol, Some(period), Some(limit))
+        .await?;
+    Ok(CommandPayload::new(
+        endpoint.path(),
+        json!({ "symbol": symbol, "period": period, "limit": limit }),
         data,
     ))
     .map(|payload| payload.symbol_lookup(endpoint.path(), symbol))

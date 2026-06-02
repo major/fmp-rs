@@ -7,6 +7,9 @@
 /// Default period used by annual statement-style endpoints.
 pub const ANNUAL_PERIOD: &str = "annual";
 
+/// Quarterly period value accepted by statement-style endpoints.
+pub const QUARTER_PERIOD: &str = "quarter";
+
 /// Default row limit for annual statement-style endpoints.
 pub const ANNUAL_LIMIT: u16 = 5;
 
