@@ -4,7 +4,7 @@ Keep `AGENTS.md`, `README.md`, and `SKILL.md` updated with code changes. Stale d
 
 ## Project shape
 
-- Rust 2024 crate package named `rusty-fmp`, MSRV 1.95 from `Cargo.toml`; it builds the CLI binary as `fmp-agent`.
+- Rust 2024 crate package named `rusty-fmp`, MSRV 1.96 from `Cargo.toml`; it builds the CLI binary as `fmp-agent`.
 - The crate has a default `cli` feature that pulls in `clap` and `dotenvy` and enables the `cli` module. Library-only consumers depend with `default-features = false` and get just `FmpClient`, `Endpoint`, `Error`, and `Result`. The `fmp-agent` binary has `required-features = ["cli"]`.
 - `src/main.rs` is intentionally thin: load `.env`, parse Clap, call `rusty_fmp::run`, render structured JSON errors to stderr.
 - `src/lib.rs` denies missing docs. Always re-exports `FmpClient`, `Endpoint`, `Error`, `Result`. Behind the `cli` feature it also exposes the `cli` module and re-exports only the documented CLI entry points: `Cli` and `run`.
@@ -82,7 +82,7 @@ Keep `AGENTS.md`, `README.md`, and `SKILL.md` updated with code changes. Stale d
 ```
 
 - CodeRabbit uses `.coderabbit.yaml`. Keep its path instructions aligned with this repo's JSON CLI, library-only feature support, and endpoint inventory rules.
-- `rust-toolchain.toml` pins Rust 1.95 for local consistency with the MSRV workflow.
+- `rust-toolchain.toml` pins Rust 1.96 for local consistency with the MSRV workflow.
 
 ## Review guidelines
 

@@ -299,4 +299,4 @@ make audit          # cargo audit
 make machete        # cargo machete (unused deps)
 ```
 
-CI mirrors `make check` across Linux, macOS, and Windows, with an MSRV job pinned to Rust 1.95. Keep command help strings in `src/cli/help.rs` so `--help`, generated man pages, `schema` output, and this reference stay aligned.
+CI mirrors `make check` across Linux, macOS, and Windows, with an MSRV job pinned to Rust 1.96. Keep command help strings in `src/cli/help.rs` so `--help`, generated man pages, `schema` output, and this reference stay aligned.

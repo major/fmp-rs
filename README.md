@@ -3,7 +3,7 @@
 [![Crates.io](https://img.shields.io/crates/v/rusty-fmp.svg)](https://crates.io/crates/rusty-fmp)
 [![Docs.rs](https://docs.rs/rusty-fmp/badge.svg)](https://docs.rs/rusty-fmp)
 [![CI](https://github.com/major/fmp-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/major/fmp-rs/actions/workflows/ci.yml)
-[![MSRV](https://img.shields.io/badge/MSRV-1.95-blue.svg)](https://github.com/major/fmp-rs/blob/main/Cargo.toml)
+[![MSRV](https://img.shields.io/badge/MSRV-1.96-blue.svg)](https://github.com/major/fmp-rs/blob/main/Cargo.toml)
 [![License](https://img.shields.io/crates/l/rusty-fmp.svg)](https://crates.io/crates/rusty-fmp)
 
 `fmp-agent` is a Rust CLI for a Starter-plan Financial Modeling Prep account. It calls the FMP stable API and returns raw JSON payloads for shell pipelines.
@@ -20,7 +20,7 @@ cargo install rusty-fmp --locked
 
 GitHub releases also provide cargo-dist archives and shell or PowerShell installers for supported platforms.
 
-For local development, install a Rust toolchain with Rust 1.95 or newer, then provide an API key with either `FMP_API_KEY` in the environment or a local `.env` file. Run `fmp-agent help environment` for the full CLI configuration contract.
+For local development, install a Rust toolchain with Rust 1.96 or newer, then provide an API key with either `FMP_API_KEY` in the environment or a local `.env` file. Run `fmp-agent help environment` for the full CLI configuration contract.
 
 ```bash
 FMP_API_KEY=your-key cargo run -- market quote AAPL
@@ -202,7 +202,7 @@ make audit
 make machete
 ```
 
-`make check` runs formatting, clippy, tests, and docs for the supported feature shapes: the default CLI build and the library-only `--no-default-features` build. The GitHub CI workflow mirrors those checks across Linux, macOS, and Windows, with an MSRV job pinned to Rust 1.95. The integration tests also check that the library dependency example above matches the package version in `Cargo.toml`, so release bumps do not leave stale copy-paste instructions behind.
+`make check` runs formatting, clippy, tests, and docs for the supported feature shapes: the default CLI build and the library-only `--no-default-features` build. The GitHub CI workflow mirrors those checks across Linux, macOS, and Windows, with an MSRV job pinned to Rust 1.96. The integration tests also check that the library dependency example above matches the package version in `Cargo.toml`, so release bumps do not leave stale copy-paste instructions behind.
 
 `make machete` runs [`cargo machete`](https://github.com/bnjbvr/cargo-machete) to catch unused entries in `Cargo.toml`. Install it once with `cargo install cargo-machete --locked`. The same check runs as the `machete` job in CI. The `[lints.rust]` table in `Cargo.toml` separately denies the `unused` lint group so dead code and unused imports fail `cargo build` even without the `-D warnings` flag.
 
